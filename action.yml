@@ -1,0 +1,17 @@
+name: "Setup SDL"
+description: "Set up SDL and add the path of SDL2.dll to the PATH."
+inputs:
+  version:
+    description: "Minimum required version of SDL (2.x.y, 2-any, 2-latest, 2-head, 3-head), or git hash"
+    default: "2-HEAD"
+    required: true
+  pre-release:
+    description: "Allow pre-releases"
+    default: "true"
+    required: true
+outputs:
+  prefix:
+    description: "Actual root of the SDL package"
+runs:
+  using: "node16"
+  main: "packed/index.js"

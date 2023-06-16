@@ -1,0 +1,42 @@
+{
+  "name": "setup-sdl",
+  "description": "Setup SDL GitHub Action",
+  "license": "MIT",
+  "homepage": "https://github.com/madebr/setup-sdl",
+  "bugs": {
+    "url": "https://github.com/madebr/setup-sdl/issues"
+  },
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/madebr/setup-sdl.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write **/*.ts",
+    "format-check": "prettier --check **/*.ts",
+    "lint": "eslint src/**/*.ts",
+    "pack": "ncc build build/main.js -o packed",
+    "dev": "npm run build && npm run pack && node packed/index.js",
+    "all": "npm run format && npm run lint && npm run build && npm run pack"
+  },
+  "keywords": [
+    "GitHub",
+    "Actions",
+    "SDL"
+  ],
+  "dependencies": {
+    "@actions/core": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
+    "@vercel/ncc": "^0.36.1",
+    "eslint": "^8.33.0",
+    "eslint-plugin-github": "^4.3.6",
+    "js-yaml": "^4.1.0",
+    "prettier": "2.8.3",
+    "typescript": "^4.9.5"
+  }
+}

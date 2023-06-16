@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "node16",
+    "outDir": "./build",
+    "rootDir": "./src",
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "noEmitOnError": true,
+    "types": ["node"]
+  },
+  "exclude": ["node_modules", "**/*.test.ts"]
+}
