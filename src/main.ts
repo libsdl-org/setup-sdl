@@ -10,6 +10,7 @@ import { SetupSdlError } from "./util";
 import {
   SdlRelease,
   SdlReleaseType,
+  SdlVersion,
   parse_requested_sdl_version,
 } from "./version";
 
@@ -94,19 +95,6 @@ async function cmake_configure_build(
   });
 }
 
-function detect_sdl_major_version(prefix: string): number {
-  const sdl3_dir = `${prefix}/include/SDL3`;
-  if (fs.existsSync(sdl3_dir)) {
-    return 3;
-  }
-
-  const sdl2_dir = `${prefix}/include/SDL2`;
-  if (fs.existsSync(sdl2_dir)) {
-    return 2;
-  }
-  throw new SetupSdlError("Could not determine version of SDL");
-}
-
 async function run() {
   const SDL_BUILD_PLATFORM = get_sdl_build_platform();
   core.info(`build platform=${SDL_BUILD_PLATFORM}`);
@@ -181,6 +169,10 @@ async function run() {
 
   await checkout_sdl_git_hash(git_hash, source_dir);
 
+  const SDL_VERSION =
+    SdlVersion.detect_sdl_version_from_source_tree(source_dir);
+  core.info(`SDL version is ${SDL_VERSION.toString()}`);
+
   await cmake_configure_build(
     source_dir,
     build_dir,
@@ -189,10 +181,9 @@ async function run() {
     cmake_args
   );
 
-  const sdl_major_version = detect_sdl_major_version(install_dir);
-
-  core.exportVariable(`SDL${sdl_major_version}_ROOT`, install_dir);
+  core.exportVariable(`SDL${SDL_VERSION.major}_ROOT`, install_dir);
   core.setOutput("prefix", install_dir);
+  core.setOutput("version", SDL_VERSION.toString());
 }
 
 run();

@@ -20,6 +20,8 @@ inputs:
 outputs:
   prefix:
     description: "Actual root of the SDL package"
+  version:
+    description: "SDL version"
 runs:
   using: "node16"
   main: "packed/index.js"

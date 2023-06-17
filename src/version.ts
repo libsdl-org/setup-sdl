@@ -1,3 +1,5 @@
+import * as fs from "fs";
+
 import { SDL_TAGS } from "./constants";
 import { SetupSdlError } from "./util";
 
@@ -69,6 +71,65 @@ export class SdlVersion {
 
   toString(): string {
     return `${this.major}.${this.minor}.${this.patch}`;
+  }
+
+  static detect_sdl_version_from_source_tree(path: string): SdlVersion {
+    let SDL_version_h_path: string | null = null;
+
+    if (SDL_version_h_path == null) {
+      const sdl3_SDL_version_h_path = `${path}/include/SDL3/SDL_version.h`;
+      if (fs.existsSync(sdl3_SDL_version_h_path)) {
+        SDL_version_h_path = sdl3_SDL_version_h_path;
+      }
+    }
+
+    if (SDL_version_h_path == null) {
+      const sdl3_SDL_version_h_path = `${path}/include/SDL_version.h`;
+      if (fs.existsSync(sdl3_SDL_version_h_path)) {
+        SDL_version_h_path = sdl3_SDL_version_h_path;
+      }
+    }
+    if (SDL_version_h_path == null) {
+      throw new SetupSdlError("Could not determine version of SDL source tree");
+    }
+
+    const SDL_version_h = fs.readFileSync(SDL_version_h_path, "utf8");
+
+    const match_major = SDL_version_h.match(
+      /#define[ \t]+SDL_MAJOR_VERSION[ \t]+([0-9]+)/
+    );
+    if (!match_major) {
+      throw new SdlVersion(
+        `Unable to extract major SDL version from ${SDL_version_h_path}`
+      );
+    }
+    const major_version = Number(match_major[1]);
+
+    const match_minor = SDL_version_h.match(
+      /#define[ \t]+SDL_MINOR_VERSION[ \t]+([0-9]+)/
+    );
+    if (!match_minor) {
+      throw new SdlVersion(
+        `Unable to extract minor SDL version from ${SDL_version_h_path}`
+      );
+    }
+    const minor_version = Number(match_minor[1]);
+
+    const match_patch = SDL_version_h.match(
+      /#define[ \t]+SDL_PATCHLEVEL[ \t]+([0-9]+)/
+    );
+    if (!match_patch) {
+      throw new SdlVersion(
+        `Unable to extract patch SDL version from ${SDL_version_h_path}`
+      );
+    }
+    const patch_version = Number(match_patch[1]);
+
+    return new SdlVersion({
+      major: major_version,
+      minor: minor_version,
+      patch: patch_version,
+    });
   }
 }
 

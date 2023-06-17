@@ -136,17 +136,6 @@ async function cmake_configure_build(source_dir, build_dir, prefix_dir, build_ty
         child_process.execSync(install_command, { stdio: "inherit" });
     });
 }
-function detect_sdl_major_version(prefix) {
-    const sdl3_dir = `${prefix}/include/SDL3`;
-    if (fs.existsSync(sdl3_dir)) {
-        return 3;
-    }
-    const sdl2_dir = `${prefix}/include/SDL2`;
-    if (fs.existsSync(sdl2_dir)) {
-        return 2;
-    }
-    throw new util_1.SetupSdlError("Could not determine version of SDL");
-}
 async function run() {
     const SDL_BUILD_PLATFORM = (0, platform_1.get_sdl_build_platform)();
     core.info(`build platform=${SDL_BUILD_PLATFORM}`);
@@ -203,10 +192,12 @@ async function run() {
         cmake_args += " -GNinja";
     }
     await checkout_sdl_git_hash(git_hash, source_dir);
+    const SDL_VERSION = version_1.SdlVersion.detect_sdl_version_from_source_tree(source_dir);
+    core.info(`SDL version is ${SDL_VERSION.toString()}`);
     await cmake_configure_build(source_dir, build_dir, install_dir, CMAKE_BUILD_TYPE, cmake_args);
-    const sdl_major_version = detect_sdl_major_version(install_dir);
-    core.exportVariable(`SDL${sdl_major_version}_ROOT`, install_dir);
+    core.exportVariable(`SDL${SDL_VERSION.major}_ROOT`, install_dir);
     core.setOutput("prefix", install_dir);
+    core.setOutput("version", SDL_VERSION.toString());
 }
 run();
 
@@ -374,12 +365,36 @@ exports.SetupSdlError = SetupSdlError;
 /***/ }),
 
 /***/ 6970:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parse_requested_sdl_version = exports.SdlRelease = exports.SdlReleaseType = exports.SdlVersion = void 0;
+const fs = __importStar(__nccwpck_require__(7147));
 const constants_1 = __nccwpck_require__(7077);
 const util_1 = __nccwpck_require__(9731);
 class SdlVersion {
@@ -438,6 +453,45 @@ class SdlVersion {
     }
     toString() {
         return `${this.major}.${this.minor}.${this.patch}`;
+    }
+    static detect_sdl_version_from_source_tree(path) {
+        let SDL_version_h_path = null;
+        if (SDL_version_h_path == null) {
+            const sdl3_SDL_version_h_path = `${path}/include/SDL3/SDL_version.h`;
+            if (fs.existsSync(sdl3_SDL_version_h_path)) {
+                SDL_version_h_path = sdl3_SDL_version_h_path;
+            }
+        }
+        if (SDL_version_h_path == null) {
+            const sdl3_SDL_version_h_path = `${path}/include/SDL_version.h`;
+            if (fs.existsSync(sdl3_SDL_version_h_path)) {
+                SDL_version_h_path = sdl3_SDL_version_h_path;
+            }
+        }
+        if (SDL_version_h_path == null) {
+            throw new util_1.SetupSdlError("Could not determine version of SDL source tree");
+        }
+        const SDL_version_h = fs.readFileSync(SDL_version_h_path, "utf8");
+        const match_major = SDL_version_h.match(/#define[ \t]+SDL_MAJOR_VERSION[ \t]+([0-9]+)/);
+        if (!match_major) {
+            throw new SdlVersion(`Unable to extract major SDL version from ${SDL_version_h_path}`);
+        }
+        const major_version = Number(match_major[1]);
+        const match_minor = SDL_version_h.match(/#define[ \t]+SDL_MINOR_VERSION[ \t]+([0-9]+)/);
+        if (!match_minor) {
+            throw new SdlVersion(`Unable to extract minor SDL version from ${SDL_version_h_path}`);
+        }
+        const minor_version = Number(match_minor[1]);
+        const match_patch = SDL_version_h.match(/#define[ \t]+SDL_PATCHLEVEL[ \t]+([0-9]+)/);
+        if (!match_patch) {
+            throw new SdlVersion(`Unable to extract patch SDL version from ${SDL_version_h_path}`);
+        }
+        const patch_version = Number(match_patch[1]);
+        return new SdlVersion({
+            major: major_version,
+            minor: minor_version,
+            patch: patch_version,
+        });
     }
 }
 exports.SdlVersion = SdlVersion;
