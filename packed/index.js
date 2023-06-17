@@ -171,6 +171,7 @@ function calculate_state_hash(sdl_git_hash) {
         ...misc_state,
     ];
     const state_string = complete_state.join("##");
+    core.debug(`state_string=${state_string}`);
     return crypto.createHash("sha256").update(state_string).digest("hex");
 }
 async function run() {
@@ -215,13 +216,13 @@ async function run() {
             git_branch_hash = sdl_release.tag;
         }
     }
-    const git_hash = await convert_git_branch_tag_to_hash(git_branch_hash);
-    const STATE_HASH = calculate_state_hash(git_hash);
-    core.info(`Hash is ${STATE_HASH}`);
+    const GIT_HASH = await convert_git_branch_tag_to_hash(git_branch_hash);
+    const STATE_HASH = calculate_state_hash(GIT_HASH);
+    core.info(`setup-sdl state = ${STATE_HASH}`);
     const SOURCE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/source`;
     const BUILD_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/build`;
     const PACKAGE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/package`;
-    await checkout_sdl_git_hash(git_hash, SOURCE_DIR);
+    await checkout_sdl_git_hash(GIT_HASH, SOURCE_DIR);
     const SDL_VERSION = version_1.SdlVersion.detect_sdl_version_from_source_tree(SOURCE_DIR);
     core.info(`SDL version is ${SDL_VERSION.toString()}`);
     const CACHE_KEY = `setup-sdl-${STATE_HASH}`;
