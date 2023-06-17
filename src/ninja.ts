@@ -1,15 +1,12 @@
 import * as fs from "fs";
+import * as path from "path";
 import * as process from "process";
 
 import * as core from "@actions/core";
 import * as tc from "@actions/tool-cache";
 
 import { NINJA_VERSION } from "./constants";
-import {
-  SdlBuildPlatform,
-  get_platform_root_directory,
-  get_platform_path_env_separator,
-} from "./platform";
+import { SdlBuildPlatform, get_platform_root_directory } from "./platform";
 
 export function get_ninja_download_url(
   platform: SdlBuildPlatform,
@@ -53,7 +50,5 @@ export async function configure_ninja_build_tool(platform: SdlBuildPlatform) {
     );
   }
 
-  const path_env_sep = get_platform_path_env_separator(platform);
-
-  process.env.PATH = ninja_directory + path_env_sep + process.env.PATH;
+  process.env.PATH = ninja_directory + path.delimiter + process.env.PATH;
 }

@@ -4,6 +4,7 @@ import * as fs from "fs";
 import * as core from "@actions/core";
 
 import { SDL_GIT_URL } from "./constants";
+import { setup_vc_environment } from "./msvc";
 import { configure_ninja_build_tool } from "./ninja";
 import { SetupSdlError } from "./util";
 
@@ -16,6 +17,7 @@ import {
 import {
   get_sdl_build_platform,
   get_platform_root_directory,
+  SdlBuildPlatform,
 } from "./platform";
 
 async function convert_git_branch_tag_to_hash(
@@ -155,6 +157,12 @@ async function run() {
   if (USE_NINJA) {
     await core.group(`Configuring Ninja`, async () => {
       await configure_ninja_build_tool(SDL_BUILD_PLATFORM);
+    });
+  }
+
+  if (SDL_BUILD_PLATFORM == SdlBuildPlatform.Windows) {
+    await core.group(`Configuring VS environment`, async () => {
+      setup_vc_environment();
     });
   }
 

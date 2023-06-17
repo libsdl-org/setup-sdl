@@ -21,19 +21,6 @@ export function get_sdl_build_platform(): SdlBuildPlatform {
   throw new SetupSdlError("Unsupported build platform");
 }
 
-export function get_platform_path_env_separator(
-  platform: SdlBuildPlatform
-): string {
-  switch (platform) {
-    case SdlBuildPlatform.Windows:
-      return ";";
-    case SdlBuildPlatform.Macos:
-    case SdlBuildPlatform.Linux:
-    default:
-      return ":";
-  }
-}
-
 export function get_platform_root_directory(
   platform: SdlBuildPlatform
 ): string {
