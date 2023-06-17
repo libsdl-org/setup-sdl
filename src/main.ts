@@ -160,11 +160,11 @@ async function run() {
     });
   }
 
-  if (SDL_BUILD_PLATFORM == SdlBuildPlatform.Windows) {
-    await core.group(`Configuring VS environment`, async () => {
-      setup_vc_environment();
-    });
-  }
+  //   if (SDL_BUILD_PLATFORM == SdlBuildPlatform.Windows) {
+  //     await core.group(`Configuring VS environment`, async () => {
+  //       setup_vc_environment();
+  //     });
+  //   }
 
   const source_dir = `${SETUP_SDL_ROOT}/src`;
   const build_dir = `${SETUP_SDL_ROOT}/build`;

@@ -272,7 +272,7 @@ function setupMSVCDevCmd(
 }
 
 export function setup_vc_environment() {
-  const arch = core.getInput("vc_arch");
+  const arch = core.getInput("msvc-arch");
   const sdk = core.getInput("vc_sdk");
   const toolset = core.getBooleanInput("vc_toolset");
   const uwp = core.getBooleanInput("vc_uwp");
