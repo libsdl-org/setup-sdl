@@ -172,6 +172,10 @@ export function parse_requested_sdl_version(
   const LATEST_SUFFIX = "-latest";
   let version: SdlVersion;
   let version_type: SdlReleaseType;
+  version_request = version_request.toLowerCase();
+  if (version_request.startsWith("sdl")) {
+    version_request = version_request.substring(3);
+  }
   try {
     if (version_request.endsWith(HEAD_SUFFIX)) {
       version_type = SdlReleaseType.Head;

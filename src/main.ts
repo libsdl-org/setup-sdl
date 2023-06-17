@@ -69,9 +69,8 @@ async function convert_git_branch_tag_to_hash(
 }
 
 async function echo_command_and_execute(command: string, directory: string) {
-  await core.group(`Executing "${command}`, async () => {
-    child_process.execSync(command, { stdio: "inherit", cwd: directory });
-  });
+  core.info(`Executing "${command}`);
+  child_process.execSync(command, { stdio: "inherit", cwd: directory });
 }
 
 async function checkout_sdl_git_hash(

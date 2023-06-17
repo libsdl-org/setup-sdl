@@ -101,9 +101,8 @@ async function convert_git_branch_tag_to_hash(branch_tag) {
     return git_hash;
 }
 async function echo_command_and_execute(command, directory) {
-    await core.group(`Executing "${command}`, async () => {
-        child_process.execSync(command, { stdio: "inherit", cwd: directory });
-    });
+    core.info(`Executing "${command}`);
+    child_process.execSync(command, { stdio: "inherit", cwd: directory });
 }
 async function checkout_sdl_git_hash(branch_tag_hash, directory) {
     fs.mkdirSync(directory, { recursive: true });
@@ -393,6 +392,10 @@ function parse_requested_sdl_version(version_request) {
     const LATEST_SUFFIX = "-latest";
     let version;
     let version_type;
+    version_request = version_request.toLowerCase();
+    if (version_request.startsWith("sdl")) {
+        version_request = version_request.substring(3);
+    }
     try {
         if (version_request.endsWith(HEAD_SUFFIX)) {
             version_type = SdlReleaseType.Head;

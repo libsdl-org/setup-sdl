@@ -3,7 +3,7 @@ description: "Set up SDL and add the path of SDL2.dll to the PATH."
 inputs:
   version:
     description: "Minimum required version of SDL (2.x.y, 2-any, 2-latest, 2-head, 3-head), or git hash"
-    default: "2-HEAD"
+    default: "2-any"
     required: true
   pre-release:
     description: "Allow pre-releases"
