@@ -9,6 +9,10 @@ inputs:
     description: "Allow pre-releases"
     default: "true"
     required: true
+  build-type:
+    description: "CMake build type (Release/Debug/RelWithDebInfo/MinSizeRel)"
+    default: "Release"
+    required: true
 outputs:
   prefix:
     description: "Actual root of the SDL package"
