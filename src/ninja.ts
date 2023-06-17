@@ -21,7 +21,7 @@ export function get_ninja_download_url(
       zip_filename = "ninja-mac.zip";
       break;
     case SdlBuildPlatform.Windows:
-      zip_filename = "ninja-windows.zip";
+      zip_filename = "ninja-win.zip";
       break;
   }
   return `https://github.com/ninja-build/ninja/releases/download/v${version}/${zip_filename}`;
