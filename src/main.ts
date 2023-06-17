@@ -4,7 +4,6 @@ import * as fs from "fs";
 import * as core from "@actions/core";
 
 import { SDL_GIT_URL } from "./constants";
-import { setup_vc_environment } from "./msvc";
 import { configure_ninja_build_tool } from "./ninja";
 import { SetupSdlError } from "./util";
 
@@ -17,7 +16,6 @@ import {
 import {
   get_sdl_build_platform,
   get_platform_root_directory,
-  SdlBuildPlatform,
 } from "./platform";
 
 async function convert_git_branch_tag_to_hash(
@@ -96,6 +94,19 @@ async function cmake_configure_build(
   });
 }
 
+function detect_sdl_major_version(prefix: string): number {
+  const sdl3_dir = `${prefix}/include/SDL3`;
+  if (fs.existsSync(sdl3_dir)) {
+    return 3;
+  }
+
+  const sdl2_dir = `${prefix}/include/SDL2`;
+  if (fs.existsSync(sdl2_dir)) {
+    return 2;
+  }
+  throw new SetupSdlError("Could not determine version of SDL");
+}
+
 async function run() {
   const SDL_BUILD_PLATFORM = get_sdl_build_platform();
   core.info(`build platform=${SDL_BUILD_PLATFORM}`);
@@ -160,12 +171,6 @@ async function run() {
     });
   }
 
-  //   if (SDL_BUILD_PLATFORM == SdlBuildPlatform.Windows) {
-  //     await core.group(`Configuring VS environment`, async () => {
-  //       setup_vc_environment();
-  //     });
-  //   }
-
   const source_dir = `${SETUP_SDL_ROOT}/src`;
   const build_dir = `${SETUP_SDL_ROOT}/build`;
   const install_dir = `${SETUP_SDL_ROOT}`;
@@ -184,6 +189,9 @@ async function run() {
     cmake_args
   );
 
+  const sdl_major_version = detect_sdl_major_version(install_dir);
+
+  core.exportVariable(`SDL${sdl_major_version}_ROOT`, install_dir);
   core.setOutput("prefix", install_dir);
 }
 

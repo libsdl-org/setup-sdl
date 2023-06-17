@@ -136,6 +136,17 @@ async function cmake_configure_build(source_dir, build_dir, prefix_dir, build_ty
         child_process.execSync(install_command, { stdio: "inherit" });
     });
 }
+function detect_sdl_major_version(prefix) {
+    const sdl3_dir = `${prefix}/include/SDL3`;
+    if (fs.existsSync(sdl3_dir)) {
+        return 3;
+    }
+    const sdl2_dir = `${prefix}/include/SDL2`;
+    if (fs.existsSync(sdl2_dir)) {
+        return 2;
+    }
+    throw new util_1.SetupSdlError("Could not determine version of SDL");
+}
 async function run() {
     const SDL_BUILD_PLATFORM = (0, platform_1.get_sdl_build_platform)();
     core.info(`build platform=${SDL_BUILD_PLATFORM}`);
@@ -184,11 +195,6 @@ async function run() {
             await (0, ninja_1.configure_ninja_build_tool)(SDL_BUILD_PLATFORM);
         });
     }
-    //   if (SDL_BUILD_PLATFORM == SdlBuildPlatform.Windows) {
-    //     await core.group(`Configuring VS environment`, async () => {
-    //       setup_vc_environment();
-    //     });
-    //   }
     const source_dir = `${SETUP_SDL_ROOT}/src`;
     const build_dir = `${SETUP_SDL_ROOT}/build`;
     const install_dir = `${SETUP_SDL_ROOT}`;
@@ -198,6 +204,8 @@ async function run() {
     }
     await checkout_sdl_git_hash(git_hash, source_dir);
     await cmake_configure_build(source_dir, build_dir, install_dir, CMAKE_BUILD_TYPE, cmake_args);
+    const sdl_major_version = detect_sdl_major_version(install_dir);
+    core.exportVariable(`SDL${sdl_major_version}_ROOT`, install_dir);
     core.setOutput("prefix", install_dir);
 }
 run();
