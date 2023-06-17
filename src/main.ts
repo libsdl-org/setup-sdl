@@ -1,7 +1,6 @@
 import * as child_process from "child_process";
 import * as crypto from "crypto";
 import * as fs from "fs";
-import * as os from "os";
 
 import * as cache from "@actions/cache";
 import * as core from "@actions/core";
@@ -20,6 +19,7 @@ import {
 import {
   get_sdl_build_platform,
   get_platform_root_directory,
+  SdlBuildPlatform,
 } from "./platform";
 
 async function convert_git_branch_tag_to_hash(
@@ -98,7 +98,10 @@ async function cmake_configure_build(
   });
 }
 
-function calculate_state_hash(sdl_git_hash: string) {
+function calculate_state_hash(
+  sdl_git_hash: string,
+  build_platform: SdlBuildPlatform
+) {
   const ENV_KEYS = [
     "AR",
     "CC",
@@ -122,7 +125,10 @@ function calculate_state_hash(sdl_git_hash: string) {
     inputs_state.push(`${key}=${v}`);
   }
 
-  const misc_state = [`GIT_HASH=${sdl_git_hash}`, `platform=${os.platform()}`];
+  const misc_state = [
+    `GIT_HASH=${sdl_git_hash}`,
+    `build_platform=${build_platform}`,
+  ];
 
   const complete_state: string[] = [
     "ENVIRONMENT",
@@ -198,7 +204,7 @@ async function run() {
     git_branch_hash
   );
 
-  const STATE_HASH = calculate_state_hash(GIT_HASH);
+  const STATE_HASH = calculate_state_hash(GIT_HASH, SDL_BUILD_PLATFORM);
   core.info(`setup-sdl state = ${STATE_HASH}`);
 
   const SOURCE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/source`;
@@ -237,6 +243,7 @@ async function run() {
       cmake_args
     );
 
+    core.info(`Caching ${CACHE_PATHS}.`);
     await cache.saveCache(CACHE_PATHS, CACHE_KEY);
   }
 

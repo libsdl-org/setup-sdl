@@ -84,7 +84,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const child_process = __importStar(__nccwpck_require__(2081));
 const crypto = __importStar(__nccwpck_require__(6113));
 const fs = __importStar(__nccwpck_require__(7147));
-const os = __importStar(__nccwpck_require__(2037));
 const cache = __importStar(__nccwpck_require__(7799));
 const core = __importStar(__nccwpck_require__(2186));
 const constants_1 = __nccwpck_require__(7077);
@@ -139,7 +138,7 @@ async function cmake_configure_build(SOURCE_DIR, build_dir, prefix_dir, build_ty
         child_process.execSync(install_command, { stdio: "inherit" });
     });
 }
-function calculate_state_hash(sdl_git_hash) {
+function calculate_state_hash(sdl_git_hash, build_platform) {
     const ENV_KEYS = [
         "AR",
         "CC",
@@ -161,7 +160,10 @@ function calculate_state_hash(sdl_git_hash) {
         const v = core.getInput(key);
         inputs_state.push(`${key}=${v}`);
     }
-    const misc_state = [`GIT_HASH=${sdl_git_hash}`, `platform=${os.platform()}`];
+    const misc_state = [
+        `GIT_HASH=${sdl_git_hash}`,
+        `build_platform=${build_platform}`,
+    ];
     const complete_state = [
         "ENVIRONMENT",
         ...env_state,
@@ -217,7 +219,7 @@ async function run() {
         }
     }
     const GIT_HASH = await convert_git_branch_tag_to_hash(git_branch_hash);
-    const STATE_HASH = calculate_state_hash(GIT_HASH);
+    const STATE_HASH = calculate_state_hash(GIT_HASH, SDL_BUILD_PLATFORM);
     core.info(`setup-sdl state = ${STATE_HASH}`);
     const SOURCE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/source`;
     const BUILD_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/build`;
@@ -240,6 +242,7 @@ async function run() {
             cmake_args += " -GNinja";
         }
         await cmake_configure_build(SOURCE_DIR, BUILD_DIR, PACKAGE_DIR, CMAKE_BUILD_TYPE, cmake_args);
+        core.info(`Caching ${CACHE_PATHS}.`);
         await cache.saveCache(CACHE_PATHS, CACHE_KEY);
     }
     core.exportVariable(`SDL${SDL_VERSION.major}_ROOT`, PACKAGE_DIR);
