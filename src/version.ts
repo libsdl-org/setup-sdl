@@ -1,5 +1,5 @@
-import { SDL_TAGS } from "./tags";
-import { SetupSdlError } from "./error";
+import { SDL_TAGS } from "./constants";
+import { SetupSdlError } from "./util";
 
 export class SdlVersion {
   major: number;

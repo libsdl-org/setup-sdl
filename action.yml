@@ -13,6 +13,10 @@ inputs:
     description: "CMake build type (Release/Debug/RelWithDebInfo/MinSizeRel)"
     default: "Release"
     required: true
+  ninja:
+    description: "Use Ninja make files"
+    default: "true"
+    required: true
 outputs:
   prefix:
     description: "Actual root of the SDL package"

@@ -1,10 +1,11 @@
 import * as child_process from "child_process";
 import * as fs from "fs";
-import * as os from "os";
 
 import * as core from "@actions/core";
 
-import { SetupSdlError } from "./error";
+import { SDL_GIT_URL } from "./constants";
+import { configure_ninja_build_tool } from "./ninja";
+import { SetupSdlError } from "./util";
 
 import {
   SdlRelease,
@@ -12,41 +13,10 @@ import {
   parse_requested_sdl_version,
 } from "./version";
 
-const SDL_GIT_URL = "https://github.com/libsdl-org/SDL.git";
-
-enum SdlBuildPlatform {
-  Windows = "Windows",
-  Linux = "Linux",
-  Macos = "MacOS",
-}
-
-function get_sdl_build_platform(): SdlBuildPlatform {
-  switch (os.platform()) {
-    case "linux":
-      return SdlBuildPlatform.Linux;
-    case "darwin":
-      return SdlBuildPlatform.Macos;
-    case "win32":
-      return SdlBuildPlatform.Windows;
-  }
-  throw new SetupSdlError("Unsupported build platform");
-}
-
-function get_platform_root_directory(build_platform: SdlBuildPlatform): string {
-  const root: null | string = core.getInput("root");
-  if (root) {
-    return root;
-  }
-  switch (build_platform) {
-    case SdlBuildPlatform.Windows:
-      return "C:/setupsdl";
-    case SdlBuildPlatform.Macos:
-    case SdlBuildPlatform.Linux:
-      return "/tmp/setup-sdl";
-    default:
-      throw new SetupSdlError("Unsupported SDL build platform");
-  }
-}
+import {
+  get_sdl_build_platform,
+  get_platform_root_directory,
+} from "./platform";
 
 async function convert_git_branch_tag_to_hash(
   branch_tag: string
@@ -131,6 +101,8 @@ async function run() {
   const SETUP_SDL_ROOT = get_platform_root_directory(SDL_BUILD_PLATFORM);
   core.info(`root=${SETUP_SDL_ROOT}`);
 
+  const USE_NINJA = core.getBooleanInput("ninja");
+
   const REQUESTED_VERSION_TYPE = parse_requested_sdl_version(
     core.getInput("version")
   );
@@ -180,10 +152,19 @@ async function run() {
     git_branch_hash
   );
 
+  if (USE_NINJA) {
+    await core.group(`Configuring Ninja`, async () => {
+      await configure_ninja_build_tool(SDL_BUILD_PLATFORM);
+    });
+  }
+
   const source_dir = `${SETUP_SDL_ROOT}/src`;
   const build_dir = `${SETUP_SDL_ROOT}/build`;
   const install_dir = `${SETUP_SDL_ROOT}`;
-  const cmake_args = `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`;
+  let cmake_args = `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`;
+  if (USE_NINJA) {
+    cmake_args += " -GNinja";
+  }
 
   await checkout_sdl_git_hash(git_hash, source_dir);
 
