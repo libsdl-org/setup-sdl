@@ -33,6 +33,6 @@ export function get_platform_root_directory(
       return "C:/setupsdl";
     case SdlBuildPlatform.Macos:
     case SdlBuildPlatform.Linux:
-      return "/tmp/setup-sdl";
+      return `${os.tmpdir()}/setupsdl`;
   }
 }

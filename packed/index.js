@@ -83,6 +83,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const child_process = __importStar(__nccwpck_require__(2081));
 const crypto = __importStar(__nccwpck_require__(6113));
+const os = __importStar(__nccwpck_require__(2037));
 const fs = __importStar(__nccwpck_require__(7147));
 const cache = __importStar(__nccwpck_require__(7799));
 const core = __importStar(__nccwpck_require__(2186));
@@ -118,27 +119,35 @@ async function checkout_sdl_git_hash(branch_tag_hash, directory) {
         await echo_command_and_execute(`git checkout FETCH_HEAD`, directory);
     });
 }
-async function cmake_configure_build(SOURCE_DIR, build_dir, prefix_dir, build_type, cmake_args) {
-    if (!cmake_args) {
-        cmake_args = "";
+function execute_child_process(command, shell) {
+    core.info(`${command}`);
+    let final_command;
+    if (shell && shell.indexOf("{0}") >= 0) {
+        const cmd_file = `${os.tmpdir}/cmd.txt`;
+        fs.writeFileSync(cmd_file, command);
+        final_command = shell.replace("{0}", cmd_file);
+        core.info(`-> ${final_command}`);
     }
-    const configure_command = `cmake -S "${SOURCE_DIR}" -B ${build_dir} ${cmake_args}`;
-    const build_command = `cmake --build "${build_dir}" --config ${build_type}`;
-    const install_command = `cmake --install "${build_dir}" --prefix ${prefix_dir} --config ${build_type}`;
+    else {
+        final_command = command;
+    }
+    child_process.execSync(final_command, { stdio: "inherit" });
+}
+async function cmake_configure_build(args) {
+    const configure_command = `cmake -S "${args.source_dir}" -B "${args.build_dir}" ${args.cmake_args}`;
+    const build_command = `cmake --build "${args.build_dir}" --config ${args.build_type}`;
+    const install_command = `cmake --install "${args.build_dir}" --prefix ${args.package_dir} --config ${args.build_type}`;
     await core.group(`Configuring SDL (CMake)`, async () => {
-        core.info(configure_command);
-        child_process.execSync(configure_command, { stdio: "inherit" });
+        execute_child_process(configure_command, args.shell);
     });
     await core.group(`Building SDL (CMake)`, async () => {
-        core.info(build_command);
-        child_process.execSync(build_command, { stdio: "inherit" });
+        execute_child_process(build_command, args.shell);
     });
     await core.group(`Installing SDL (CMake)`, async () => {
-        core.info(install_command);
-        child_process.execSync(install_command, { stdio: "inherit" });
+        execute_child_process(install_command, args.shell);
     });
 }
-function calculate_state_hash(sdl_git_hash, build_platform) {
+function calculate_state_hash(args) {
     const ENV_KEYS = [
         "AR",
         "CC",
@@ -146,7 +155,10 @@ function calculate_state_hash(sdl_git_hash, build_platform) {
         "ARFLAGS",
         "CFLAGS",
         "CXXFLAGS",
+        "INCLUDES",
         "LDFLAGS",
+        "LIB",
+        "LIBPATH",
         "CMAKE_PREFIX_PATH",
         "PKG_CONFIG_PATH",
     ];
@@ -154,15 +166,16 @@ function calculate_state_hash(sdl_git_hash, build_platform) {
     for (const key of ENV_KEYS) {
         env_state.push(`${key}=${process.env[key]}`);
     }
-    const ACTION_KEYS = ["build-type", "ninja"];
+    const ACTION_KEYS = ["build-type", "discriminator", "ninja"];
     const inputs_state = [];
     for (const key of ACTION_KEYS) {
         const v = core.getInput(key);
         inputs_state.push(`${key}=${v}`);
     }
     const misc_state = [
-        `GIT_HASH=${sdl_git_hash}`,
-        `build_platform=${build_platform}`,
+        `GIT_HASH=${args.git_hash}`,
+        `build_platform=${args.build_platform}`,
+        `shell=${args.shell}`,
     ];
     const complete_state = [
         "ENVIRONMENT",
@@ -181,6 +194,12 @@ async function run() {
     core.info(`build platform=${SDL_BUILD_PLATFORM}`);
     const SETUP_SDL_ROOT = (0, platform_1.get_platform_root_directory)(SDL_BUILD_PLATFORM);
     core.info(`root=${SETUP_SDL_ROOT}`);
+    const IGNORED_SHELLS = ["bash", "pwsh", "sh", "cmd", "pwsh", "powershell"];
+    let shell_in = core.getInput("shell");
+    if (IGNORED_SHELLS.indexOf(shell_in) >= 0) {
+        shell_in = "";
+    }
+    const SHELL = shell_in;
     const USE_NINJA = core.getBooleanInput("ninja");
     const REQUESTED_VERSION_TYPE = (0, version_1.parse_requested_sdl_version)(core.getInput("version"));
     const CMAKE_BUILD_TYPE = core.getInput("build-type");
@@ -219,7 +238,11 @@ async function run() {
         }
     }
     const GIT_HASH = await convert_git_branch_tag_to_hash(git_branch_hash);
-    const STATE_HASH = calculate_state_hash(GIT_HASH, SDL_BUILD_PLATFORM);
+    const STATE_HASH = calculate_state_hash({
+        git_hash: GIT_HASH,
+        build_platform: SDL_BUILD_PLATFORM,
+        shell: SHELL,
+    });
     core.info(`setup-sdl state = ${STATE_HASH}`);
     const SOURCE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/source`;
     const BUILD_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/build`;
@@ -241,7 +264,14 @@ async function run() {
         if (USE_NINJA) {
             cmake_args += " -GNinja";
         }
-        await cmake_configure_build(SOURCE_DIR, BUILD_DIR, PACKAGE_DIR, CMAKE_BUILD_TYPE, cmake_args);
+        await cmake_configure_build({
+            source_dir: SOURCE_DIR,
+            build_dir: BUILD_DIR,
+            package_dir: PACKAGE_DIR,
+            build_type: CMAKE_BUILD_TYPE,
+            cmake_args: cmake_args,
+            shell: SHELL,
+        });
         core.info(`Caching ${CACHE_PATHS}.`);
         await cache.saveCache(CACHE_PATHS, CACHE_KEY);
     }
@@ -389,7 +419,7 @@ function get_platform_root_directory(platform) {
             return "C:/setupsdl";
         case SdlBuildPlatform.Macos:
         case SdlBuildPlatform.Linux:
-            return "/tmp/setup-sdl";
+            return `${os.tmpdir()}/setupsdl`;
     }
 }
 exports.get_platform_root_directory = get_platform_root_directory;
