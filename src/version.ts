@@ -176,7 +176,7 @@ export class SdlRelease {
 
   static get_releases(): SdlRelease[] {
     const releases: SdlRelease[] = [];
-    const R = new RegExp("(release-|prerelease-)([0-9.]+)(-RC([0-9]+))");
+    const R = new RegExp("(release-|prerelease-)?([0-9.]+)(-RC([0-9]+))?");
 
     for (const tag of SDL_TAGS) {
       const m = tag.match(R);
@@ -184,16 +184,16 @@ export class SdlRelease {
         throw new SetupSdlError(`Invalid tag: ${tag}`);
       }
       let prerelease: number | null = null;
-      if (m[1] != null) {
-        prerelease = 0;
+      if (m[1] != null && m[1] != "release-") {
+        prerelease = 1;
       } else if (m[3] != null && m[4] != null) {
-        prerelease = Number(m[4]);
+        prerelease = Number(m[4]) + 1;
       }
       const version = m[2];
       releases.push(new SdlRelease(new SdlVersion(version), prerelease, tag));
     }
     releases.sort(function (release1, release2) {
-      return -release1.compare(release2);
+      return release1.compare(release2);
     });
     return releases;
   }
@@ -229,15 +229,15 @@ export class SdlRelease {
       return cmp;
     }
     if (this.prerelease != null && other.prerelease != null) {
-      return Number(this.prerelease) - Number(other.prerelease);
+      return Number(other.prerelease) - Number(this.prerelease);
     }
     if (this.prerelease == null && other.prerelease == null) {
       return 0;
     }
     if (this.prerelease != null) {
-      return -1;
+      return 1;
     }
-    return 0;
+    return -1;
   }
 
   equals(other: SdlRelease): boolean {
@@ -252,16 +252,31 @@ export class SdlRelease {
 export function parse_requested_sdl_version(
   version_request: string
 ): { version: SdlVersion; type: SdlReleaseType } | null {
+  const ANY_SUFFIX = "-any";
   const HEAD_SUFFIX = "-head";
   const LATEST_SUFFIX = "-latest";
+
   let version: SdlVersion;
   let version_type: SdlReleaseType;
+
   version_request = version_request.toLowerCase();
   if (version_request.startsWith("sdl")) {
     version_request = version_request.substring(3);
   }
+
   try {
-    if (version_request.endsWith(HEAD_SUFFIX)) {
+    if (version_request.endsWith(ANY_SUFFIX)) {
+      version_type = SdlReleaseType.Any;
+      const version_str = version_request.substring(
+        0,
+        version_request.length - ANY_SUFFIX.length
+      );
+      version = new SdlVersion({
+        major: Number(version_str),
+        minor: 0,
+        patch: 0,
+      });
+    } else if (version_request.endsWith(HEAD_SUFFIX)) {
       version_type = SdlReleaseType.Head;
       const version_str = version_request.substring(
         0,

@@ -1,6 +1,6 @@
 {
   "name": "setup-sdl",
-  "description": "Setup SDL GitHub Action",
+  "description": "GitHub actin to setup SDL",
   "license": "MIT",
   "homepage": "https://github.com/madebr/setup-sdl",
   "bugs": {
@@ -11,6 +11,9 @@
     "type": "git",
     "url": "https://github.com/madebr/setup-sdl.git"
   },
+  "directories": {
+    "test": "tests"
+  },
   "scripts": {
     "build": "tsc",
     "format": "prettier --write **/*.ts",
@@ -18,7 +21,17 @@
     "lint": "eslint src/**/*.ts",
     "pack": "ncc build build/main.js -o packed",
     "dev": "npm run build && npm run pack && node packed/index.js",
-    "all": "npm run format && npm run lint && npm run build && npm run pack"
+    "all": "npm run format && npm run lint && npm run build && npm run pack",
+    "test": "jest"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/*.test.ts"
+    ],
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    }
   },
   "keywords": [
     "GitHub",
@@ -32,14 +45,17 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.2",
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.50.0",
     "@vercel/ncc": "^0.36.1",
     "eslint": "^8.33.0",
     "eslint-plugin-github": "^4.3.6",
+    "jest": "^29.5.0",
     "js-yaml": "^4.1.0",
     "prettier": "2.8.3",
+    "ts-jest": "^29.1.0",
     "typescript": "^4.9.5"
   }
 }

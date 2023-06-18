@@ -80,77 +80,189 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const child_process = __importStar(__nccwpck_require__(2081));
-const crypto = __importStar(__nccwpck_require__(6113));
-const fs = __importStar(__nccwpck_require__(7147));
-const os = __importStar(__nccwpck_require__(2037));
-const path = __importStar(__nccwpck_require__(1017));
-const cache = __importStar(__nccwpck_require__(7799));
-const core = __importStar(__nccwpck_require__(2186));
-const constants_1 = __nccwpck_require__(7077);
-const ninja_1 = __nccwpck_require__(6526);
-const util_1 = __nccwpck_require__(9731);
-const version_1 = __nccwpck_require__(6970);
-const platform_1 = __nccwpck_require__(5527);
-async function convert_git_branch_tag_to_hash(branch_tag) {
-    const git_hash = await core.group(`Calculating git hash of ${branch_tag}`, async () => {
-        const command = `git ls-remote ${constants_1.SDL_GIT_URL} ${branch_tag}`;
-        core.info(`Executing "${command}"`);
-        const output = child_process.execSync(command, {
-            stdio: "pipe",
-            encoding: "utf8",
-        });
-        const git_hash = output.split("\t")[0];
-        core.info(`git hash = ${git_hash}`);
-        return git_hash;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
-    return git_hash;
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var child_process = __importStar(__nccwpck_require__(2081));
+var crypto = __importStar(__nccwpck_require__(6113));
+var fs = __importStar(__nccwpck_require__(7147));
+var os = __importStar(__nccwpck_require__(2037));
+var path = __importStar(__nccwpck_require__(1017));
+var cache = __importStar(__nccwpck_require__(7799));
+var core = __importStar(__nccwpck_require__(2186));
+var constants_1 = __nccwpck_require__(7077);
+var ninja_1 = __nccwpck_require__(6526);
+var util_1 = __nccwpck_require__(9731);
+var version_1 = __nccwpck_require__(6970);
+var platform_1 = __nccwpck_require__(5527);
+function convert_git_branch_tag_to_hash(branch_tag) {
+    return __awaiter(this, void 0, void 0, function () {
+        var git_hash;
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, core.group("Calculating git hash of ".concat(branch_tag), function () { return __awaiter(_this, void 0, void 0, function () {
+                        var command, output, git_hash;
+                        return __generator(this, function (_a) {
+                            command = "git ls-remote ".concat(constants_1.SDL_GIT_URL, " ").concat(branch_tag);
+                            core.info("Executing \"".concat(command, "\""));
+                            output = child_process.execSync(command, {
+                                stdio: "pipe",
+                                encoding: "utf8",
+                            });
+                            git_hash = output.split("\t")[0];
+                            core.info("git hash = ".concat(git_hash));
+                            return [2 /*return*/, git_hash];
+                        });
+                    }); })];
+                case 1:
+                    git_hash = _a.sent();
+                    return [2 /*return*/, git_hash];
+            }
+        });
+    });
 }
-async function echo_command_and_execute(command, directory) {
-    core.info(`Executing "${command}`);
-    child_process.execSync(command, { stdio: "inherit", cwd: directory });
+function echo_command_and_execute(command, directory) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            core.info("Executing \"".concat(command));
+            child_process.execSync(command, { stdio: "inherit", cwd: directory });
+            return [2 /*return*/];
+        });
+    });
 }
-async function checkout_sdl_git_hash(branch_tag_hash, directory) {
-    fs.mkdirSync(directory, { recursive: true });
-    await core.group(`Checking out ${branch_tag_hash} into ${directory}`, async () => {
-        await echo_command_and_execute(`git init`, directory);
-        await echo_command_and_execute(`git remote add SDL ${constants_1.SDL_GIT_URL}`, directory);
-        await echo_command_and_execute(`git fetch --depth 1 SDL ${branch_tag_hash}`, directory);
-        await echo_command_and_execute(`git checkout FETCH_HEAD`, directory);
+function checkout_sdl_git_hash(branch_tag_hash, directory) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    fs.mkdirSync(directory, { recursive: true });
+                    return [4 /*yield*/, core.group("Checking out ".concat(branch_tag_hash, " into ").concat(directory), function () { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, echo_command_and_execute("git init", directory)];
+                                    case 1:
+                                        _a.sent();
+                                        return [4 /*yield*/, echo_command_and_execute("git remote add SDL ".concat(constants_1.SDL_GIT_URL), directory)];
+                                    case 2:
+                                        _a.sent();
+                                        return [4 /*yield*/, echo_command_and_execute("git fetch --depth 1 SDL ".concat(branch_tag_hash), directory)];
+                                    case 3:
+                                        _a.sent();
+                                        return [4 /*yield*/, echo_command_and_execute("git checkout FETCH_HEAD", directory)];
+                                    case 4:
+                                        _a.sent();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
     });
 }
 function execute_child_process(command, shell) {
-    core.info(`${command}`);
-    let final_command;
+    core.info("".concat(command));
+    var final_command;
     if (shell && shell.indexOf("{0}") >= 0) {
-        const cmd_file = `${os.tmpdir}/cmd.txt`;
+        var cmd_file = "".concat(os.tmpdir, "/cmd.txt");
         fs.writeFileSync(cmd_file, command);
         final_command = shell.replace("{0}", cmd_file);
-        core.info(`-> ${final_command}`);
+        core.info("-> ".concat(final_command));
     }
     else {
         final_command = command;
     }
     child_process.execSync(final_command, { stdio: "inherit" });
 }
-async function cmake_configure_build(args) {
-    const cmake_args = args.cmake_args.join(" ");
-    const configure_command = `cmake -S "${args.source_dir}" -B "${args.build_dir}" ${cmake_args}`;
-    const build_command = `cmake --build "${args.build_dir}" --config ${args.build_type}`;
-    const install_command = `cmake --install "${args.build_dir}" --prefix ${args.package_dir} --config ${args.build_type}`;
-    await core.group(`Configuring SDL (CMake)`, async () => {
-        execute_child_process(configure_command, args.shell);
-    });
-    await core.group(`Building SDL (CMake)`, async () => {
-        execute_child_process(build_command, args.shell);
-    });
-    await core.group(`Installing SDL (CMake)`, async () => {
-        execute_child_process(install_command, args.shell);
+function cmake_configure_build(args) {
+    return __awaiter(this, void 0, void 0, function () {
+        var cmake_args, configure_command, build_command, install_command;
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    cmake_args = args.cmake_args.join(" ");
+                    configure_command = "cmake -S \"".concat(args.source_dir, "\" -B \"").concat(args.build_dir, "\" ").concat(cmake_args);
+                    build_command = "cmake --build \"".concat(args.build_dir, "\" --config ").concat(args.build_type);
+                    install_command = "cmake --install \"".concat(args.build_dir, "\" --prefix ").concat(args.package_dir, " --config ").concat(args.build_type);
+                    return [4 /*yield*/, core.group("Configuring SDL (CMake)", function () { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                execute_child_process(configure_command, args.shell);
+                                return [2 /*return*/];
+                            });
+                        }); })];
+                case 1:
+                    _a.sent();
+                    return [4 /*yield*/, core.group("Building SDL (CMake)", function () { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                execute_child_process(build_command, args.shell);
+                                return [2 /*return*/];
+                            });
+                        }); })];
+                case 2:
+                    _a.sent();
+                    return [4 /*yield*/, core.group("Installing SDL (CMake)", function () { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                execute_child_process(install_command, args.shell);
+                                return [2 /*return*/];
+                            });
+                        }); })];
+                case 3:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
     });
 }
 function calculate_state_hash(args) {
-    const ENV_KEYS = [
+    var ENV_KEYS = [
         "AR",
         "CC",
         "CXX",
@@ -165,46 +277,47 @@ function calculate_state_hash(args) {
         "CMAKE_TOOLCHAIN_FILE",
         "PKG_CONFIG_PATH",
     ];
-    const env_state = [];
-    for (const key of ENV_KEYS) {
-        env_state.push(`${key}=${process.env[key]}`);
+    var env_state = [];
+    for (var _i = 0, ENV_KEYS_1 = ENV_KEYS; _i < ENV_KEYS_1.length; _i++) {
+        var key = ENV_KEYS_1[_i];
+        env_state.push("".concat(key, "=").concat(process.env[key]));
     }
-    const ACTION_KEYS = [
+    var ACTION_KEYS = [
         "build-type",
         "cmake-toolchain-file",
         "discriminator",
         "ninja",
     ];
-    const inputs_state = [];
-    for (const key of ACTION_KEYS) {
-        const v = core.getInput(key);
-        inputs_state.push(`${key}=${v}`);
+    var inputs_state = [];
+    for (var _a = 0, ACTION_KEYS_1 = ACTION_KEYS; _a < ACTION_KEYS_1.length; _a++) {
+        var key = ACTION_KEYS_1[_a];
+        var v = core.getInput(key);
+        inputs_state.push("".concat(key, "=").concat(v));
     }
-    const misc_state = [
-        `GIT_HASH=${args.git_hash}`,
-        `build_platform=${args.build_platform}`,
-        `shell=${args.shell}`,
+    var misc_state = [
+        "GIT_HASH=".concat(args.git_hash),
+        "build_platform=".concat(args.build_platform),
+        "shell=".concat(args.shell),
     ];
     if (args.cmake_toolchain_file) {
-        const toolchain_contents = fs.readFileSync(args.cmake_toolchain_file, {
+        var toolchain_contents = fs.readFileSync(args.cmake_toolchain_file, {
             encoding: "utf8",
         });
-        const cmake_toolchain_file_hash = crypto
+        var cmake_toolchain_file_hash = crypto
             .createHash("sha256")
             .update(toolchain_contents)
             .digest("hex");
-        misc_state.push(`cmake_toolchain_file_hash=${cmake_toolchain_file_hash}`);
+        misc_state.push("cmake_toolchain_file_hash=".concat(cmake_toolchain_file_hash));
     }
-    const complete_state = [
-        "ENVIRONMENT",
-        ...env_state,
-        "INPUTS",
-        ...inputs_state,
-        "MISC",
-        ...misc_state,
-    ];
-    const state_string = complete_state.join("##");
-    core.debug(`state_string=${state_string}`);
+    var complete_state = __spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray([
+        "ENVIRONMENT"
+    ], env_state, true), [
+        "INPUTS"
+    ], false), inputs_state, true), [
+        "MISC"
+    ], false), misc_state, true);
+    var state_string = complete_state.join("##");
+    core.debug("state_string=".concat(state_string));
     return crypto.createHash("sha256").update(state_string).digest("hex");
 }
 function resolve_workspace_path(in_path) {
@@ -214,132 +327,162 @@ function resolve_workspace_path(in_path) {
     if (fs.existsSync(in_path)) {
         return path.resolve(in_path);
     }
-    const workspace_path = path.resolve(`${process.env.GITHUB_WORKSPACE}`, in_path);
+    var workspace_path = path.resolve("".concat(process.env.GITHUB_WORKSPACE), in_path);
     if (fs.existsSync(workspace_path)) {
         return workspace_path;
     }
     return undefined;
 }
 function get_cmake_toolchain_path() {
-    const in_cmake_toolchain_file = core.getInput("cmake-toolchain-file");
+    var in_cmake_toolchain_file = core.getInput("cmake-toolchain-file");
     if (in_cmake_toolchain_file) {
-        const resolved_cmake_toolchain_file = resolve_workspace_path(in_cmake_toolchain_file);
+        var resolved_cmake_toolchain_file = resolve_workspace_path(in_cmake_toolchain_file);
         if (!resolved_cmake_toolchain_file) {
-            throw new util_1.SetupSdlError(`Cannot find CMake toolchain file: ${in_cmake_toolchain_file}`);
+            throw new util_1.SetupSdlError("Cannot find CMake toolchain file: ".concat(in_cmake_toolchain_file));
         }
         return resolved_cmake_toolchain_file;
     }
-    const env_cmake_toolchain_file = process.env.CMAKE_TOOLCHAIN_FILE;
+    var env_cmake_toolchain_file = process.env.CMAKE_TOOLCHAIN_FILE;
     if (env_cmake_toolchain_file) {
-        const resolved_cmake_toolchain_file = resolve_workspace_path(env_cmake_toolchain_file);
+        var resolved_cmake_toolchain_file = resolve_workspace_path(env_cmake_toolchain_file);
         if (!resolved_cmake_toolchain_file) {
-            throw new util_1.SetupSdlError(`Cannot find CMake toolchain file: ${env_cmake_toolchain_file}`);
+            throw new util_1.SetupSdlError("Cannot find CMake toolchain file: ".concat(env_cmake_toolchain_file));
         }
         return resolved_cmake_toolchain_file;
     }
     return undefined;
 }
-async function run() {
-    const SDL_BUILD_PLATFORM = (0, platform_1.get_sdl_build_platform)();
-    core.info(`build platform=${SDL_BUILD_PLATFORM}`);
-    const SETUP_SDL_ROOT = (0, platform_1.get_platform_root_directory)(SDL_BUILD_PLATFORM);
-    core.info(`root=${SETUP_SDL_ROOT}`);
-    const IGNORED_SHELLS = ["bash", "pwsh", "sh", "cmd", "pwsh", "powershell"];
-    let shell_in = core.getInput("shell");
-    if (IGNORED_SHELLS.indexOf(shell_in) >= 0) {
-        shell_in = "";
-    }
-    const SHELL = shell_in;
-    const REQUESTED_VERSION_TYPE = (0, version_1.parse_requested_sdl_version)(core.getInput("version"));
-    const CMAKE_BUILD_TYPE = core.getInput("build-type");
-    const CMAKE_BUILD_TYPES = [
-        "Release",
-        "Debug",
-        "MinSizeRel",
-        "RelWithDebInfo",
-    ];
-    if (!CMAKE_BUILD_TYPES.includes(CMAKE_BUILD_TYPE)) {
-        throw new util_1.SetupSdlError("Invalid build-type");
-    }
-    let git_branch_hash;
-    if (REQUESTED_VERSION_TYPE == null) {
-        git_branch_hash = core.getInput("version");
-    }
-    else {
-        const { version: requested_version, type: requested_type } = REQUESTED_VERSION_TYPE;
-        if (requested_type == version_1.SdlReleaseType.Head) {
-            if (requested_version.major == 2) {
-                git_branch_hash = "SDL2";
+function run() {
+    return __awaiter(this, void 0, void 0, function () {
+        var SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, found_cache_key, SOURCE_DIR, BUILD_DIR, USE_NINJA, cmake_args, SDL_VERSION;
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    SDL_BUILD_PLATFORM = (0, platform_1.get_sdl_build_platform)();
+                    core.info("build platform=".concat(SDL_BUILD_PLATFORM));
+                    SETUP_SDL_ROOT = (0, platform_1.get_platform_root_directory)(SDL_BUILD_PLATFORM);
+                    core.info("root=".concat(SETUP_SDL_ROOT));
+                    IGNORED_SHELLS = ["bash", "pwsh", "sh", "cmd", "pwsh", "powershell"];
+                    shell_in = core.getInput("shell");
+                    if (IGNORED_SHELLS.indexOf(shell_in) >= 0) {
+                        shell_in = "";
+                    }
+                    SHELL = shell_in;
+                    REQUESTED_VERSION_TYPE = (0, version_1.parse_requested_sdl_version)(core.getInput("version"));
+                    CMAKE_BUILD_TYPE = core.getInput("build-type");
+                    CMAKE_BUILD_TYPES = [
+                        "Release",
+                        "Debug",
+                        "MinSizeRel",
+                        "RelWithDebInfo",
+                    ];
+                    if (!CMAKE_BUILD_TYPES.includes(CMAKE_BUILD_TYPE)) {
+                        throw new util_1.SetupSdlError("Invalid build-type");
+                    }
+                    if (REQUESTED_VERSION_TYPE == null) {
+                        git_branch_hash = core.getInput("version");
+                    }
+                    else {
+                        requested_version = REQUESTED_VERSION_TYPE.version, requested_type = REQUESTED_VERSION_TYPE.type;
+                        if (requested_type == version_1.SdlReleaseType.Head) {
+                            if (requested_version.major == 2) {
+                                git_branch_hash = "SDL2";
+                            }
+                            else if (requested_version.major == 3) {
+                                git_branch_hash = "main";
+                            }
+                            else {
+                                throw new util_1.SetupSdlError("Invalid -head version");
+                            }
+                        }
+                        else {
+                            sdl_release = version_1.SdlRelease.find_release(requested_version, core.getBooleanInput("pre-release"), requested_type);
+                            if (!sdl_release) {
+                                throw new util_1.SetupSdlError("Could not find a matching SDL release for ".concat(requested_version));
+                            }
+                            git_branch_hash = sdl_release.tag;
+                        }
+                    }
+                    return [4 /*yield*/, convert_git_branch_tag_to_hash(git_branch_hash)];
+                case 1:
+                    GIT_HASH = _a.sent();
+                    CMAKE_TOOLCHAIN_FILE = get_cmake_toolchain_path();
+                    STATE_HASH = calculate_state_hash({
+                        git_hash: GIT_HASH,
+                        build_platform: SDL_BUILD_PLATFORM,
+                        shell: SHELL,
+                        cmake_toolchain_file: CMAKE_TOOLCHAIN_FILE,
+                    });
+                    core.info("setup-sdl state = ".concat(STATE_HASH));
+                    PACKAGE_DIR = "".concat(SETUP_SDL_ROOT, "/").concat(STATE_HASH, "/package");
+                    CACHE_KEY = "setup-sdl-".concat(STATE_HASH);
+                    CACHE_PATHS = [PACKAGE_DIR];
+                    return [4 /*yield*/, cache.restoreCache(CACHE_PATHS.slice(), CACHE_KEY)];
+                case 2:
+                    found_cache_key = _a.sent();
+                    if (!!found_cache_key) return [3 /*break*/, 8];
+                    core.info("No match found in cache. Building SDL from scratch.");
+                    SOURCE_DIR = "".concat(SETUP_SDL_ROOT, "/").concat(STATE_HASH, "/source");
+                    BUILD_DIR = "".concat(SETUP_SDL_ROOT, "/").concat(STATE_HASH, "/build");
+                    return [4 /*yield*/, checkout_sdl_git_hash(GIT_HASH, SOURCE_DIR)];
+                case 3:
+                    _a.sent();
+                    USE_NINJA = core.getBooleanInput("ninja");
+                    if (!USE_NINJA) return [3 /*break*/, 5];
+                    return [4 /*yield*/, core.group("Configuring Ninja", function () { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, (0, ninja_1.configure_ninja_build_tool)(SDL_BUILD_PLATFORM)];
+                                    case 1:
+                                        _a.sent();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); })];
+                case 4:
+                    _a.sent();
+                    _a.label = 5;
+                case 5:
+                    cmake_args = [
+                        "-DCMAKE_BUILD_TYPE=".concat(CMAKE_BUILD_TYPE),
+                        "-DCMAKE_INSTALL_BINDIR=bin",
+                        "-DCMAKE_INSTALL_INCLUDEDIR=include",
+                        "-DCMAKE_INSTALL_LIBDIR=lib",
+                    ];
+                    if (CMAKE_TOOLCHAIN_FILE) {
+                        cmake_args.push("-DCMAKE_TOOLCHAIN_FILE=\"".concat(CMAKE_TOOLCHAIN_FILE, "\""));
+                    }
+                    return [4 /*yield*/, cmake_configure_build({
+                            source_dir: SOURCE_DIR,
+                            build_dir: BUILD_DIR,
+                            package_dir: PACKAGE_DIR,
+                            build_type: CMAKE_BUILD_TYPE,
+                            cmake_args: cmake_args,
+                            shell: SHELL,
+                        })];
+                case 6:
+                    _a.sent();
+                    core.info("Caching ".concat(CACHE_PATHS, "."));
+                    // Pass a copy of CACHE_PATHS since cache.saveCache modifies/modified its arguments
+                    return [4 /*yield*/, cache.saveCache(CACHE_PATHS.slice(), CACHE_KEY)];
+                case 7:
+                    // Pass a copy of CACHE_PATHS since cache.saveCache modifies/modified its arguments
+                    _a.sent();
+                    _a.label = 8;
+                case 8:
+                    SDL_VERSION = version_1.SdlVersion.detect_sdl_version_from_install_prefix(PACKAGE_DIR);
+                    core.info("SDL version is ".concat(SDL_VERSION.toString()));
+                    if (core.getBooleanInput("add-to-environment")) {
+                        (0, platform_1.export_environent_variables)(SDL_BUILD_PLATFORM, PACKAGE_DIR);
+                    }
+                    core.exportVariable("SDL".concat(SDL_VERSION.major, "_ROOT"), PACKAGE_DIR);
+                    core.setOutput("prefix", PACKAGE_DIR);
+                    core.setOutput("version", SDL_VERSION.toString());
+                    return [2 /*return*/];
             }
-            else if (requested_version.major == 3) {
-                git_branch_hash = "main";
-            }
-            else {
-                throw new util_1.SetupSdlError("Invalid -head version");
-            }
-        }
-        else {
-            const sdl_release = version_1.SdlRelease.find_release(requested_version, core.getBooleanInput("pre-release"), requested_type);
-            if (!sdl_release) {
-                throw new util_1.SetupSdlError(`Could not find a matching SDL release for ${requested_version}`);
-            }
-            git_branch_hash = sdl_release.tag;
-        }
-    }
-    const GIT_HASH = await convert_git_branch_tag_to_hash(git_branch_hash);
-    const CMAKE_TOOLCHAIN_FILE = get_cmake_toolchain_path();
-    const STATE_HASH = calculate_state_hash({
-        git_hash: GIT_HASH,
-        build_platform: SDL_BUILD_PLATFORM,
-        shell: SHELL,
-        cmake_toolchain_file: CMAKE_TOOLCHAIN_FILE,
-    });
-    core.info(`setup-sdl state = ${STATE_HASH}`);
-    const PACKAGE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/package`;
-    const CACHE_KEY = `setup-sdl-${STATE_HASH}`;
-    const CACHE_PATHS = [PACKAGE_DIR];
-    // Pass a copy of CACHE_PATHS since cache.restoreCache modifies/modified its arguments
-    const found_cache_key = await cache.restoreCache(CACHE_PATHS.slice(), CACHE_KEY);
-    if (!found_cache_key) {
-        core.info("No match found in cache. Building SDL from scratch.");
-        const SOURCE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/source`;
-        const BUILD_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/build`;
-        await checkout_sdl_git_hash(GIT_HASH, SOURCE_DIR);
-        const USE_NINJA = core.getBooleanInput("ninja");
-        if (USE_NINJA) {
-            await core.group(`Configuring Ninja`, async () => {
-                await (0, ninja_1.configure_ninja_build_tool)(SDL_BUILD_PLATFORM);
-            });
-        }
-        const cmake_args = [
-            `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`,
-            "-DCMAKE_INSTALL_BINDIR=bin",
-            "-DCMAKE_INSTALL_INCLUDEDIR=include",
-            "-DCMAKE_INSTALL_LIBDIR=lib",
-        ];
-        if (CMAKE_TOOLCHAIN_FILE) {
-            cmake_args.push(`-DCMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE}"`);
-        }
-        await cmake_configure_build({
-            source_dir: SOURCE_DIR,
-            build_dir: BUILD_DIR,
-            package_dir: PACKAGE_DIR,
-            build_type: CMAKE_BUILD_TYPE,
-            cmake_args: cmake_args,
-            shell: SHELL,
         });
-        core.info(`Caching ${CACHE_PATHS}.`);
-        // Pass a copy of CACHE_PATHS since cache.saveCache modifies/modified its arguments
-        await cache.saveCache(CACHE_PATHS.slice(), CACHE_KEY);
-    }
-    const SDL_VERSION = version_1.SdlVersion.detect_sdl_version_from_install_prefix(PACKAGE_DIR);
-    core.info(`SDL version is ${SDL_VERSION.toString()}`);
-    if (core.getBooleanInput("add-to-environment")) {
-        (0, platform_1.export_environent_variables)(SDL_BUILD_PLATFORM, PACKAGE_DIR);
-    }
-    core.exportVariable(`SDL${SDL_VERSION.major}_ROOT`, PACKAGE_DIR);
-    core.setOutput("prefix", PACKAGE_DIR);
-    core.setOutput("version", SDL_VERSION.toString());
+    });
 }
 try {
     run();
@@ -383,17 +526,53 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.configure_ninja_build_tool = exports.get_ninja_download_url = void 0;
-const fs = __importStar(__nccwpck_require__(7147));
-const path = __importStar(__nccwpck_require__(1017));
-const process = __importStar(__nccwpck_require__(7282));
-const core = __importStar(__nccwpck_require__(2186));
-const tc = __importStar(__nccwpck_require__(7784));
-const constants_1 = __nccwpck_require__(7077);
-const platform_1 = __nccwpck_require__(5527);
+var fs = __importStar(__nccwpck_require__(7147));
+var path = __importStar(__nccwpck_require__(1017));
+var process = __importStar(__nccwpck_require__(7282));
+var core = __importStar(__nccwpck_require__(2186));
+var tc = __importStar(__nccwpck_require__(7784));
+var constants_1 = __nccwpck_require__(7077);
+var platform_1 = __nccwpck_require__(5527);
 function get_ninja_download_url(platform, version) {
-    let zip_filename;
+    var zip_filename;
     switch (platform) {
         case platform_1.SdlBuildPlatform.Linux:
             zip_filename = "ninja-linux.zip";
@@ -405,24 +584,40 @@ function get_ninja_download_url(platform, version) {
             zip_filename = "ninja-win.zip";
             break;
     }
-    return `https://github.com/ninja-build/ninja/releases/download/v${version}/${zip_filename}`;
+    return "https://github.com/ninja-build/ninja/releases/download/v".concat(version, "/").concat(zip_filename);
 }
 exports.get_ninja_download_url = get_ninja_download_url;
-async function configure_ninja_build_tool(platform) {
-    const ninja_dir = `${(0, platform_1.get_platform_root_directory)(platform)}/ninja`;
-    fs.mkdirSync(ninja_dir, { recursive: true });
-    const cache_name = `sdl-${platform}`;
-    let ninja_directory = tc.find(cache_name, constants_1.NINJA_VERSION);
-    if (!ninja_directory) {
-        core.info(`Could not find ninja ${constants_1.NINJA_VERSION} in the cache.`);
-        const ninja_url = get_ninja_download_url(platform, constants_1.NINJA_VERSION);
-        core.info(`Downloading ${ninja_url}.`);
-        const ninja_zip_path = await tc.downloadTool(ninja_url);
-        core.info(`Extracting ${ninja_zip_path}.`);
-        const ninja_extract_folder = await tc.extractZip(ninja_zip_path, ninja_dir);
-        ninja_directory = await tc.cacheDir(ninja_extract_folder, cache_name, constants_1.NINJA_VERSION);
-    }
-    process.env.PATH = ninja_directory + path.delimiter + process.env.PATH;
+function configure_ninja_build_tool(platform) {
+    return __awaiter(this, void 0, void 0, function () {
+        var ninja_dir, cache_name, ninja_directory, ninja_url, ninja_zip_path, ninja_extract_folder;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    ninja_dir = "".concat((0, platform_1.get_platform_root_directory)(platform), "/ninja");
+                    fs.mkdirSync(ninja_dir, { recursive: true });
+                    cache_name = "sdl-".concat(platform);
+                    ninja_directory = tc.find(cache_name, constants_1.NINJA_VERSION);
+                    if (!!ninja_directory) return [3 /*break*/, 4];
+                    core.info("Could not find ninja ".concat(constants_1.NINJA_VERSION, " in the cache."));
+                    ninja_url = get_ninja_download_url(platform, constants_1.NINJA_VERSION);
+                    core.info("Downloading ".concat(ninja_url, "."));
+                    return [4 /*yield*/, tc.downloadTool(ninja_url)];
+                case 1:
+                    ninja_zip_path = _a.sent();
+                    core.info("Extracting ".concat(ninja_zip_path, "."));
+                    return [4 /*yield*/, tc.extractZip(ninja_zip_path, ninja_dir)];
+                case 2:
+                    ninja_extract_folder = _a.sent();
+                    return [4 /*yield*/, tc.cacheDir(ninja_extract_folder, cache_name, constants_1.NINJA_VERSION)];
+                case 3:
+                    ninja_directory = _a.sent();
+                    _a.label = 4;
+                case 4:
+                    process.env.PATH = ninja_directory + path.delimiter + process.env.PATH;
+                    return [2 /*return*/];
+            }
+        });
+    });
 }
 exports.configure_ninja_build_tool = configure_ninja_build_tool;
 
@@ -459,9 +654,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.export_environent_variables = exports.get_platform_root_directory = exports.get_sdl_build_platform = exports.SdlBuildPlatform = void 0;
-const os = __importStar(__nccwpck_require__(2037));
-const core = __importStar(__nccwpck_require__(2186));
-const util_1 = __nccwpck_require__(9731);
+var os = __importStar(__nccwpck_require__(2037));
+var core = __importStar(__nccwpck_require__(2186));
+var util_1 = __nccwpck_require__(9731);
 var SdlBuildPlatform;
 (function (SdlBuildPlatform) {
     SdlBuildPlatform["Windows"] = "Windows";
@@ -481,7 +676,7 @@ function get_sdl_build_platform() {
 }
 exports.get_sdl_build_platform = get_sdl_build_platform;
 function get_platform_root_directory(platform) {
-    const root = core.getInput("root");
+    var root = core.getInput("root");
     if (root) {
         return root;
     }
@@ -490,17 +685,17 @@ function get_platform_root_directory(platform) {
             return "C:/setupsdl";
         case SdlBuildPlatform.Macos:
         case SdlBuildPlatform.Linux:
-            return `${os.tmpdir()}/setupsdl`;
+            return "".concat(os.tmpdir(), "/setupsdl");
     }
 }
 exports.get_platform_root_directory = get_platform_root_directory;
 function export_environent_variables(platform, prefix) {
     switch (platform) {
         case SdlBuildPlatform.Windows:
-            core.addPath(`${prefix}/bin`);
+            core.addPath("".concat(prefix, "/bin"));
             break;
         case SdlBuildPlatform.Macos: {
-            let libpath = process.env.DYLD_LIBRARY_PATH;
+            var libpath = process.env.DYLD_LIBRARY_PATH;
             if (libpath) {
                 libpath = "`${prefix}`/lib:${libpath}";
             }
@@ -508,7 +703,7 @@ function export_environent_variables(platform, prefix) {
             break;
         }
         case SdlBuildPlatform.Linux: {
-            let libpath = process.env.LD_LIBRARY_PATH;
+            var libpath = process.env.LD_LIBRARY_PATH;
             if (libpath) {
                 libpath = "`${prefix}`/lib:${libpath}";
             }
@@ -523,17 +718,34 @@ exports.export_environent_variables = export_environent_variables;
 /***/ }),
 
 /***/ 9731:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SetupSdlError = void 0;
-class SetupSdlError extends Error {
-    constructor(message) {
-        super(message);
+var SetupSdlError = /** @class */ (function (_super) {
+    __extends(SetupSdlError, _super);
+    function SetupSdlError(message) {
+        return _super.call(this, message) || this;
     }
-}
+    return SetupSdlError;
+}(Error));
 exports.SetupSdlError = SetupSdlError;
 
 
@@ -569,15 +781,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parse_requested_sdl_version = exports.SdlRelease = exports.SdlReleaseType = exports.SdlVersion = void 0;
-const fs = __importStar(__nccwpck_require__(7147));
-const constants_1 = __nccwpck_require__(7077);
-const util_1 = __nccwpck_require__(9731);
-class SdlVersion {
-    constructor(version) {
+var fs = __importStar(__nccwpck_require__(7147));
+var constants_1 = __nccwpck_require__(7077);
+var util_1 = __nccwpck_require__(9731);
+var SdlVersion = /** @class */ (function () {
+    function SdlVersion(version) {
         if (typeof version == "string") {
-            const v_list = version.split(".");
+            var v_list = version.split(".");
             if (v_list.length == 0 || v_list.length > 3) {
-                throw new util_1.SetupSdlError(`Cannot convert version (${version}) to MAJOR.MINOR.PATCH`);
+                throw new util_1.SetupSdlError("Cannot convert version (".concat(version, ") to MAJOR.MINOR.PATCH"));
             }
             this.major = Number(v_list[0]);
             if (v_list.length > 0) {
@@ -599,10 +811,10 @@ class SdlVersion {
             this.patch = version.patch;
         }
         if (isNaN(this.major) || isNaN(this.minor) || isNaN(this.patch)) {
-            throw new util_1.SetupSdlError(`Cannot convert version (${version}) to MAJOR.MINOR.PATCH`);
+            throw new util_1.SetupSdlError("Cannot convert version (".concat(version, ") to MAJOR.MINOR.PATCH"));
         }
     }
-    compare(other) {
+    SdlVersion.prototype.compare = function (other) {
         if (this.major > other.major) {
             return -1;
         }
@@ -622,59 +834,60 @@ class SdlVersion {
             return 1;
         }
         return 0;
-    }
-    equals(other) {
+    };
+    SdlVersion.prototype.equals = function (other) {
         return this.compare(other) == 0;
-    }
-    toString() {
-        return `${this.major}.${this.minor}.${this.patch}`;
-    }
-    static detect_sdl_version_from_source_tree(path) {
-        const sdl3_SDL_version_h_path = `${path}/include/SDL3/SDL_version.h`;
+    };
+    SdlVersion.prototype.toString = function () {
+        return "".concat(this.major, ".").concat(this.minor, ".").concat(this.patch);
+    };
+    SdlVersion.detect_sdl_version_from_source_tree = function (path) {
+        var sdl3_SDL_version_h_path = "".concat(path, "/include/SDL3/SDL_version.h");
         if (fs.existsSync(sdl3_SDL_version_h_path)) {
             return this.extract_sdl_version_from_SDL_version_h(sdl3_SDL_version_h_path);
         }
-        const sdl2_SDL_version_h_path = `${path}/include/SDL_version.h`;
+        var sdl2_SDL_version_h_path = "".concat(path, "/include/SDL_version.h");
         if (fs.existsSync(sdl2_SDL_version_h_path)) {
             return this.extract_sdl_version_from_SDL_version_h(sdl2_SDL_version_h_path);
         }
-        throw new util_1.SetupSdlError(`Could not find a SDL_version.h in the source tree (${path})`);
-    }
-    static detect_sdl_version_from_install_prefix(path) {
-        const sdl3_SDL_version_h_path = `${path}/include/SDL3/SDL_version.h`;
+        throw new util_1.SetupSdlError("Could not find a SDL_version.h in the source tree (".concat(path, ")"));
+    };
+    SdlVersion.detect_sdl_version_from_install_prefix = function (path) {
+        var sdl3_SDL_version_h_path = "".concat(path, "/include/SDL3/SDL_version.h");
         if (fs.existsSync(sdl3_SDL_version_h_path)) {
             return this.extract_sdl_version_from_SDL_version_h(sdl3_SDL_version_h_path);
         }
-        const sdl2_SDL_version_h_path = `${path}/include/SDL2/SDL_version.h`;
+        var sdl2_SDL_version_h_path = "".concat(path, "/include/SDL2/SDL_version.h");
         if (fs.existsSync(sdl2_SDL_version_h_path)) {
             return this.extract_sdl_version_from_SDL_version_h(sdl2_SDL_version_h_path);
         }
-        throw new util_1.SetupSdlError(`Could not find a SDL_version.h in the prefix (${path})`);
-    }
-    static extract_sdl_version_from_SDL_version_h(SDL_version_h_path) {
-        const SDL_version_h = fs.readFileSync(SDL_version_h_path, "utf8");
-        const match_major = SDL_version_h.match(/#define[ \t]+SDL_MAJOR_VERSION[ \t]+([0-9]+)/);
+        throw new util_1.SetupSdlError("Could not find a SDL_version.h in the prefix (".concat(path, ")"));
+    };
+    SdlVersion.extract_sdl_version_from_SDL_version_h = function (SDL_version_h_path) {
+        var SDL_version_h = fs.readFileSync(SDL_version_h_path, "utf8");
+        var match_major = SDL_version_h.match(/#define[ \t]+SDL_MAJOR_VERSION[ \t]+([0-9]+)/);
         if (!match_major) {
-            throw new SdlVersion(`Unable to extract major SDL version from ${SDL_version_h_path}`);
+            throw new SdlVersion("Unable to extract major SDL version from ".concat(SDL_version_h_path));
         }
-        const major_version = Number(match_major[1]);
-        const match_minor = SDL_version_h.match(/#define[ \t]+SDL_MINOR_VERSION[ \t]+([0-9]+)/);
+        var major_version = Number(match_major[1]);
+        var match_minor = SDL_version_h.match(/#define[ \t]+SDL_MINOR_VERSION[ \t]+([0-9]+)/);
         if (!match_minor) {
-            throw new SdlVersion(`Unable to extract minor SDL version from ${SDL_version_h_path}`);
+            throw new SdlVersion("Unable to extract minor SDL version from ".concat(SDL_version_h_path));
         }
-        const minor_version = Number(match_minor[1]);
-        const match_patch = SDL_version_h.match(/#define[ \t]+SDL_PATCHLEVEL[ \t]+([0-9]+)/);
+        var minor_version = Number(match_minor[1]);
+        var match_patch = SDL_version_h.match(/#define[ \t]+SDL_PATCHLEVEL[ \t]+([0-9]+)/);
         if (!match_patch) {
-            throw new SdlVersion(`Unable to extract patch SDL version from ${SDL_version_h_path}`);
+            throw new SdlVersion("Unable to extract patch SDL version from ".concat(SDL_version_h_path));
         }
-        const patch_version = Number(match_patch[1]);
+        var patch_version = Number(match_patch[1]);
         return new SdlVersion({
             major: major_version,
             minor: minor_version,
             patch: patch_version,
         });
-    }
-}
+    };
+    return SdlVersion;
+}());
 exports.SdlVersion = SdlVersion;
 var SdlReleaseType;
 (function (SdlReleaseType) {
@@ -683,38 +896,40 @@ var SdlReleaseType;
     SdlReleaseType["Latest"] = "Latest";
     SdlReleaseType["Exact"] = "Exact";
 })(SdlReleaseType = exports.SdlReleaseType || (exports.SdlReleaseType = {}));
-class SdlRelease {
-    constructor(version, prerelease, tag) {
+var SdlRelease = /** @class */ (function () {
+    function SdlRelease(version, prerelease, tag) {
         this.version = version;
         this.prerelease = prerelease;
         this.tag = tag;
     }
-    static get_releases() {
-        const releases = [];
-        const R = new RegExp("(release-|prerelease-)([0-9.]+)(-RC([0-9]+))");
-        for (const tag of constants_1.SDL_TAGS) {
-            const m = tag.match(R);
+    SdlRelease.get_releases = function () {
+        var releases = [];
+        var R = new RegExp("(release-|prerelease-)?([0-9.]+)(-RC([0-9]+))?");
+        for (var _i = 0, SDL_TAGS_1 = constants_1.SDL_TAGS; _i < SDL_TAGS_1.length; _i++) {
+            var tag = SDL_TAGS_1[_i];
+            var m = tag.match(R);
             if (m == null) {
-                throw new util_1.SetupSdlError(`Invalid tag: ${tag}`);
+                throw new util_1.SetupSdlError("Invalid tag: ".concat(tag));
             }
-            let prerelease = null;
-            if (m[1] != null) {
-                prerelease = 0;
+            var prerelease = null;
+            if (m[1] != null && m[1] != "release-") {
+                prerelease = 1;
             }
             else if (m[3] != null && m[4] != null) {
-                prerelease = Number(m[4]);
+                prerelease = Number(m[4]) + 1;
             }
-            const version = m[2];
+            var version = m[2];
             releases.push(new SdlRelease(new SdlVersion(version), prerelease, tag));
         }
         releases.sort(function (release1, release2) {
-            return -release1.compare(release2);
+            return release1.compare(release2);
         });
         return releases;
-    }
-    static find_release(version, prerelease, type) {
-        const RELEASES = SdlRelease.get_releases();
-        for (const sdl_release of RELEASES) {
+    };
+    SdlRelease.find_release = function (version, prerelease, type) {
+        var RELEASES = SdlRelease.get_releases();
+        for (var _i = 0, RELEASES_1 = RELEASES; _i < RELEASES_1.length; _i++) {
+            var sdl_release = RELEASES_1[_i];
             // Skip if a pre-release has not been requested
             if (sdl_release.prerelease != null && !prerelease) {
                 continue;
@@ -731,44 +946,55 @@ class SdlRelease {
             }
         }
         return null;
-    }
-    compare(other) {
-        const cmp = this.version.compare(other.version);
+    };
+    SdlRelease.prototype.compare = function (other) {
+        var cmp = this.version.compare(other.version);
         if (cmp != 0) {
             return cmp;
         }
         if (this.prerelease != null && other.prerelease != null) {
-            return Number(this.prerelease) - Number(other.prerelease);
+            return Number(other.prerelease) - Number(this.prerelease);
         }
         if (this.prerelease == null && other.prerelease == null) {
             return 0;
         }
         if (this.prerelease != null) {
-            return -1;
+            return 1;
         }
-        return 0;
-    }
-    equals(other) {
+        return -1;
+    };
+    SdlRelease.prototype.equals = function (other) {
         return this.compare(other) == 0;
-    }
-    toString() {
-        return `<SDLRelease:version=${this.version} prerelease=${this.prerelease} tag=${this.tag}>`;
-    }
-}
+    };
+    SdlRelease.prototype.toString = function () {
+        return "<SDLRelease:version=".concat(this.version, " prerelease=").concat(this.prerelease, " tag=").concat(this.tag, ">");
+    };
+    return SdlRelease;
+}());
 exports.SdlRelease = SdlRelease;
 function parse_requested_sdl_version(version_request) {
-    const HEAD_SUFFIX = "-head";
-    const LATEST_SUFFIX = "-latest";
-    let version;
-    let version_type;
+    var ANY_SUFFIX = "-any";
+    var HEAD_SUFFIX = "-head";
+    var LATEST_SUFFIX = "-latest";
+    var version;
+    var version_type;
     version_request = version_request.toLowerCase();
     if (version_request.startsWith("sdl")) {
         version_request = version_request.substring(3);
     }
     try {
-        if (version_request.endsWith(HEAD_SUFFIX)) {
+        if (version_request.endsWith(ANY_SUFFIX)) {
+            version_type = SdlReleaseType.Any;
+            var version_str = version_request.substring(0, version_request.length - ANY_SUFFIX.length);
+            version = new SdlVersion({
+                major: Number(version_str),
+                minor: 0,
+                patch: 0,
+            });
+        }
+        else if (version_request.endsWith(HEAD_SUFFIX)) {
             version_type = SdlReleaseType.Head;
-            const version_str = version_request.substring(0, version_request.length - HEAD_SUFFIX.length);
+            var version_str = version_request.substring(0, version_request.length - HEAD_SUFFIX.length);
             version = new SdlVersion({
                 major: Number(version_str),
                 minor: 0,
@@ -777,7 +1003,7 @@ function parse_requested_sdl_version(version_request) {
         }
         else if (version_request.endsWith(LATEST_SUFFIX)) {
             version_type = SdlReleaseType.Latest;
-            const version_str = version_request.substring(0, version_request.length - LATEST_SUFFIX.length);
+            var version_str = version_request.substring(0, version_request.length - LATEST_SUFFIX.length);
             version = new SdlVersion({
                 major: Number(version_str),
                 minor: 0,
@@ -786,7 +1012,7 @@ function parse_requested_sdl_version(version_request) {
         }
         else {
             version_type = SdlReleaseType.Exact;
-            const version_str = version_request;
+            var version_str = version_request;
             version = new SdlVersion(version_str);
         }
         return { version: version, type: version_type };
@@ -8744,7 +8970,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 var uuid = __nccwpck_require__(3415);
 var util = __nccwpck_require__(3837);
-var tslib = __nccwpck_require__(2107);
+var tslib = __nccwpck_require__(4351);
 var xml2js = __nccwpck_require__(6189);
 var coreUtil = __nccwpck_require__(1333);
 var logger$1 = __nccwpck_require__(3233);
@@ -14732,383 +14958,6 @@ module.exports = function(dst, src) {
 
 /***/ }),
 
-/***/ 2107:
-/***/ ((module) => {
-
-/******************************************************************************
-Copyright (c) Microsoft Corporation.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */
-/* global global, define, System, Reflect, Promise */
-var __extends;
-var __assign;
-var __rest;
-var __decorate;
-var __param;
-var __esDecorate;
-var __runInitializers;
-var __propKey;
-var __setFunctionName;
-var __metadata;
-var __awaiter;
-var __generator;
-var __exportStar;
-var __values;
-var __read;
-var __spread;
-var __spreadArrays;
-var __spreadArray;
-var __await;
-var __asyncGenerator;
-var __asyncDelegator;
-var __asyncValues;
-var __makeTemplateObject;
-var __importStar;
-var __importDefault;
-var __classPrivateFieldGet;
-var __classPrivateFieldSet;
-var __classPrivateFieldIn;
-var __createBinding;
-(function (factory) {
-    var root = typeof global === "object" ? global : typeof self === "object" ? self : typeof this === "object" ? this : {};
-    if (typeof define === "function" && define.amd) {
-        define("tslib", ["exports"], function (exports) { factory(createExporter(root, createExporter(exports))); });
-    }
-    else if ( true && typeof module.exports === "object") {
-        factory(createExporter(root, createExporter(module.exports)));
-    }
-    else {
-        factory(createExporter(root));
-    }
-    function createExporter(exports, previous) {
-        if (exports !== root) {
-            if (typeof Object.create === "function") {
-                Object.defineProperty(exports, "__esModule", { value: true });
-            }
-            else {
-                exports.__esModule = true;
-            }
-        }
-        return function (id, v) { return exports[id] = previous ? previous(id, v) : v; };
-    }
-})
-(function (exporter) {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-
-    __extends = function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-
-    __assign = Object.assign || function (t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-        }
-        return t;
-    };
-
-    __rest = function (s, e) {
-        var t = {};
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-            t[p] = s[p];
-        if (s != null && typeof Object.getOwnPropertySymbols === "function")
-            for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-                if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                    t[p[i]] = s[p[i]];
-            }
-        return t;
-    };
-
-    __decorate = function (decorators, target, key, desc) {
-        var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-        if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-        else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-        return c > 3 && r && Object.defineProperty(target, key, r), r;
-    };
-
-    __param = function (paramIndex, decorator) {
-        return function (target, key) { decorator(target, key, paramIndex); }
-    };
-
-    __esDecorate = function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-        function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
-        var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-        var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-        var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-        var _, done = false;
-        for (var i = decorators.length - 1; i >= 0; i--) {
-            var context = {};
-            for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-            for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-            context.addInitializer = function (f) { if (done) throw new TypeError("Cannot add initializers after decoration has completed"); extraInitializers.push(accept(f || null)); };
-            var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-            if (kind === "accessor") {
-                if (result === void 0) continue;
-                if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-                if (_ = accept(result.get)) descriptor.get = _;
-                if (_ = accept(result.set)) descriptor.set = _;
-                if (_ = accept(result.init)) initializers.unshift(_);
-            }
-            else if (_ = accept(result)) {
-                if (kind === "field") initializers.unshift(_);
-                else descriptor[key] = _;
-            }
-        }
-        if (target) Object.defineProperty(target, contextIn.name, descriptor);
-        done = true;
-    };
-
-    __runInitializers = function (thisArg, initializers, value) {
-        var useValue = arguments.length > 2;
-        for (var i = 0; i < initializers.length; i++) {
-            value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-        }
-        return useValue ? value : void 0;
-    };
-
-    __propKey = function (x) {
-        return typeof x === "symbol" ? x : "".concat(x);
-    };
-
-    __setFunctionName = function (f, name, prefix) {
-        if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
-        return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
-    };
-
-    __metadata = function (metadataKey, metadataValue) {
-        if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
-    };
-
-    __awaiter = function (thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
-
-    __generator = function (thisArg, body) {
-        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-        function verb(n) { return function (v) { return step([n, v]); }; }
-        function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (g && (g = 0, op[0] && (_ = 0)), _) try {
-                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [op[0] & 2, t.value];
-                switch (op[0]) {
-                    case 0: case 1: t = op; break;
-                    case 4: _.label++; return { value: op[1], done: false };
-                    case 5: _.label++; y = op[1]; op = [0]; continue;
-                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                    default:
-                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                        if (t[2]) _.ops.pop();
-                        _.trys.pop(); continue;
-                }
-                op = body.call(thisArg, _);
-            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-        }
-    };
-
-    __exportStar = function(m, o) {
-        for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p)) __createBinding(o, m, p);
-    };
-
-    __createBinding = Object.create ? (function(o, m, k, k2) {
-        if (k2 === undefined) k2 = k;
-        var desc = Object.getOwnPropertyDescriptor(m, k);
-        if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-            desc = { enumerable: true, get: function() { return m[k]; } };
-        }
-        Object.defineProperty(o, k2, desc);
-    }) : (function(o, m, k, k2) {
-        if (k2 === undefined) k2 = k;
-        o[k2] = m[k];
-    });
-
-    __values = function (o) {
-        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-        if (m) return m.call(o);
-        if (o && typeof o.length === "number") return {
-            next: function () {
-                if (o && i >= o.length) o = void 0;
-                return { value: o && o[i++], done: !o };
-            }
-        };
-        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-    };
-
-    __read = function (o, n) {
-        var m = typeof Symbol === "function" && o[Symbol.iterator];
-        if (!m) return o;
-        var i = m.call(o), r, ar = [], e;
-        try {
-            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-        }
-        catch (error) { e = { error: error }; }
-        finally {
-            try {
-                if (r && !r.done && (m = i["return"])) m.call(i);
-            }
-            finally { if (e) throw e.error; }
-        }
-        return ar;
-    };
-
-    /** @deprecated */
-    __spread = function () {
-        for (var ar = [], i = 0; i < arguments.length; i++)
-            ar = ar.concat(__read(arguments[i]));
-        return ar;
-    };
-
-    /** @deprecated */
-    __spreadArrays = function () {
-        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-        for (var r = Array(s), k = 0, i = 0; i < il; i++)
-            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-                r[k] = a[j];
-        return r;
-    };
-
-    __spreadArray = function (to, from, pack) {
-        if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-            if (ar || !(i in from)) {
-                if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-                ar[i] = from[i];
-            }
-        }
-        return to.concat(ar || Array.prototype.slice.call(from));
-    };
-
-    __await = function (v) {
-        return this instanceof __await ? (this.v = v, this) : new __await(v);
-    };
-
-    __asyncGenerator = function (thisArg, _arguments, generator) {
-        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-        var g = generator.apply(thisArg, _arguments || []), i, q = [];
-        return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
-        function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
-        function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
-        function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);  }
-        function fulfill(value) { resume("next", value); }
-        function reject(value) { resume("throw", value); }
-        function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
-    };
-
-    __asyncDelegator = function (o) {
-        var i, p;
-        return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
-        function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: false } : f ? f(v) : v; } : f; }
-    };
-
-    __asyncValues = function (o) {
-        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-        var m = o[Symbol.asyncIterator], i;
-        return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
-        function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
-        function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
-    };
-
-    __makeTemplateObject = function (cooked, raw) {
-        if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
-        return cooked;
-    };
-
-    var __setModuleDefault = Object.create ? (function(o, v) {
-        Object.defineProperty(o, "default", { enumerable: true, value: v });
-    }) : function(o, v) {
-        o["default"] = v;
-    };
-
-    __importStar = function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-
-    __importDefault = function (mod) {
-        return (mod && mod.__esModule) ? mod : { "default": mod };
-    };
-
-    __classPrivateFieldGet = function (receiver, state, kind, f) {
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-        return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-    };
-
-    __classPrivateFieldSet = function (receiver, state, value, kind, f) {
-        if (kind === "m") throw new TypeError("Private method is not writable");
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-        return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-    };
-
-    __classPrivateFieldIn = function (state, receiver) {
-        if (receiver === null || (typeof receiver !== "object" && typeof receiver !== "function")) throw new TypeError("Cannot use 'in' operator on non-object");
-        return typeof state === "function" ? receiver === state : state.has(receiver);
-    };
-
-    exporter("__extends", __extends);
-    exporter("__assign", __assign);
-    exporter("__rest", __rest);
-    exporter("__decorate", __decorate);
-    exporter("__param", __param);
-    exporter("__esDecorate", __esDecorate);
-    exporter("__runInitializers", __runInitializers);
-    exporter("__propKey", __propKey);
-    exporter("__setFunctionName", __setFunctionName);
-    exporter("__metadata", __metadata);
-    exporter("__awaiter", __awaiter);
-    exporter("__generator", __generator);
-    exporter("__exportStar", __exportStar);
-    exporter("__createBinding", __createBinding);
-    exporter("__values", __values);
-    exporter("__read", __read);
-    exporter("__spread", __spread);
-    exporter("__spreadArrays", __spreadArrays);
-    exporter("__spreadArray", __spreadArray);
-    exporter("__await", __await);
-    exporter("__asyncGenerator", __asyncGenerator);
-    exporter("__asyncDelegator", __asyncDelegator);
-    exporter("__asyncValues", __asyncValues);
-    exporter("__makeTemplateObject", __makeTemplateObject);
-    exporter("__importStar", __importStar);
-    exporter("__importDefault", __importDefault);
-    exporter("__classPrivateFieldGet", __classPrivateFieldGet);
-    exporter("__classPrivateFieldSet", __classPrivateFieldSet);
-    exporter("__classPrivateFieldIn", __classPrivateFieldIn);
-});
-
-
-/***/ }),
-
 /***/ 3415:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -16932,7 +16781,7 @@ exports.createHttpPoller = createHttpPoller;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 
-var tslib = __nccwpck_require__(6429);
+var tslib = __nccwpck_require__(4351);
 
 // Copyright (c) Microsoft Corporation.
 /**
@@ -17032,383 +16881,6 @@ function getPageAsyncIterator(pagedResult, options = {}) {
 
 exports.getPagedAsyncIterator = getPagedAsyncIterator;
 //# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
-/***/ 6429:
-/***/ ((module) => {
-
-/******************************************************************************
-Copyright (c) Microsoft Corporation.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */
-/* global global, define, System, Reflect, Promise */
-var __extends;
-var __assign;
-var __rest;
-var __decorate;
-var __param;
-var __esDecorate;
-var __runInitializers;
-var __propKey;
-var __setFunctionName;
-var __metadata;
-var __awaiter;
-var __generator;
-var __exportStar;
-var __values;
-var __read;
-var __spread;
-var __spreadArrays;
-var __spreadArray;
-var __await;
-var __asyncGenerator;
-var __asyncDelegator;
-var __asyncValues;
-var __makeTemplateObject;
-var __importStar;
-var __importDefault;
-var __classPrivateFieldGet;
-var __classPrivateFieldSet;
-var __classPrivateFieldIn;
-var __createBinding;
-(function (factory) {
-    var root = typeof global === "object" ? global : typeof self === "object" ? self : typeof this === "object" ? this : {};
-    if (typeof define === "function" && define.amd) {
-        define("tslib", ["exports"], function (exports) { factory(createExporter(root, createExporter(exports))); });
-    }
-    else if ( true && typeof module.exports === "object") {
-        factory(createExporter(root, createExporter(module.exports)));
-    }
-    else {
-        factory(createExporter(root));
-    }
-    function createExporter(exports, previous) {
-        if (exports !== root) {
-            if (typeof Object.create === "function") {
-                Object.defineProperty(exports, "__esModule", { value: true });
-            }
-            else {
-                exports.__esModule = true;
-            }
-        }
-        return function (id, v) { return exports[id] = previous ? previous(id, v) : v; };
-    }
-})
-(function (exporter) {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-
-    __extends = function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-
-    __assign = Object.assign || function (t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-        }
-        return t;
-    };
-
-    __rest = function (s, e) {
-        var t = {};
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-            t[p] = s[p];
-        if (s != null && typeof Object.getOwnPropertySymbols === "function")
-            for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-                if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                    t[p[i]] = s[p[i]];
-            }
-        return t;
-    };
-
-    __decorate = function (decorators, target, key, desc) {
-        var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-        if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-        else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-        return c > 3 && r && Object.defineProperty(target, key, r), r;
-    };
-
-    __param = function (paramIndex, decorator) {
-        return function (target, key) { decorator(target, key, paramIndex); }
-    };
-
-    __esDecorate = function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-        function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
-        var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-        var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-        var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-        var _, done = false;
-        for (var i = decorators.length - 1; i >= 0; i--) {
-            var context = {};
-            for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-            for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-            context.addInitializer = function (f) { if (done) throw new TypeError("Cannot add initializers after decoration has completed"); extraInitializers.push(accept(f || null)); };
-            var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-            if (kind === "accessor") {
-                if (result === void 0) continue;
-                if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-                if (_ = accept(result.get)) descriptor.get = _;
-                if (_ = accept(result.set)) descriptor.set = _;
-                if (_ = accept(result.init)) initializers.unshift(_);
-            }
-            else if (_ = accept(result)) {
-                if (kind === "field") initializers.unshift(_);
-                else descriptor[key] = _;
-            }
-        }
-        if (target) Object.defineProperty(target, contextIn.name, descriptor);
-        done = true;
-    };
-
-    __runInitializers = function (thisArg, initializers, value) {
-        var useValue = arguments.length > 2;
-        for (var i = 0; i < initializers.length; i++) {
-            value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-        }
-        return useValue ? value : void 0;
-    };
-
-    __propKey = function (x) {
-        return typeof x === "symbol" ? x : "".concat(x);
-    };
-
-    __setFunctionName = function (f, name, prefix) {
-        if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
-        return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
-    };
-
-    __metadata = function (metadataKey, metadataValue) {
-        if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
-    };
-
-    __awaiter = function (thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
-
-    __generator = function (thisArg, body) {
-        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-        function verb(n) { return function (v) { return step([n, v]); }; }
-        function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (g && (g = 0, op[0] && (_ = 0)), _) try {
-                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [op[0] & 2, t.value];
-                switch (op[0]) {
-                    case 0: case 1: t = op; break;
-                    case 4: _.label++; return { value: op[1], done: false };
-                    case 5: _.label++; y = op[1]; op = [0]; continue;
-                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                    default:
-                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                        if (t[2]) _.ops.pop();
-                        _.trys.pop(); continue;
-                }
-                op = body.call(thisArg, _);
-            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-        }
-    };
-
-    __exportStar = function(m, o) {
-        for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p)) __createBinding(o, m, p);
-    };
-
-    __createBinding = Object.create ? (function(o, m, k, k2) {
-        if (k2 === undefined) k2 = k;
-        var desc = Object.getOwnPropertyDescriptor(m, k);
-        if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-            desc = { enumerable: true, get: function() { return m[k]; } };
-        }
-        Object.defineProperty(o, k2, desc);
-    }) : (function(o, m, k, k2) {
-        if (k2 === undefined) k2 = k;
-        o[k2] = m[k];
-    });
-
-    __values = function (o) {
-        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-        if (m) return m.call(o);
-        if (o && typeof o.length === "number") return {
-            next: function () {
-                if (o && i >= o.length) o = void 0;
-                return { value: o && o[i++], done: !o };
-            }
-        };
-        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-    };
-
-    __read = function (o, n) {
-        var m = typeof Symbol === "function" && o[Symbol.iterator];
-        if (!m) return o;
-        var i = m.call(o), r, ar = [], e;
-        try {
-            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-        }
-        catch (error) { e = { error: error }; }
-        finally {
-            try {
-                if (r && !r.done && (m = i["return"])) m.call(i);
-            }
-            finally { if (e) throw e.error; }
-        }
-        return ar;
-    };
-
-    /** @deprecated */
-    __spread = function () {
-        for (var ar = [], i = 0; i < arguments.length; i++)
-            ar = ar.concat(__read(arguments[i]));
-        return ar;
-    };
-
-    /** @deprecated */
-    __spreadArrays = function () {
-        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-        for (var r = Array(s), k = 0, i = 0; i < il; i++)
-            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-                r[k] = a[j];
-        return r;
-    };
-
-    __spreadArray = function (to, from, pack) {
-        if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-            if (ar || !(i in from)) {
-                if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-                ar[i] = from[i];
-            }
-        }
-        return to.concat(ar || Array.prototype.slice.call(from));
-    };
-
-    __await = function (v) {
-        return this instanceof __await ? (this.v = v, this) : new __await(v);
-    };
-
-    __asyncGenerator = function (thisArg, _arguments, generator) {
-        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-        var g = generator.apply(thisArg, _arguments || []), i, q = [];
-        return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
-        function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
-        function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
-        function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);  }
-        function fulfill(value) { resume("next", value); }
-        function reject(value) { resume("throw", value); }
-        function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
-    };
-
-    __asyncDelegator = function (o) {
-        var i, p;
-        return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
-        function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: false } : f ? f(v) : v; } : f; }
-    };
-
-    __asyncValues = function (o) {
-        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-        var m = o[Symbol.asyncIterator], i;
-        return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
-        function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
-        function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
-    };
-
-    __makeTemplateObject = function (cooked, raw) {
-        if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
-        return cooked;
-    };
-
-    var __setModuleDefault = Object.create ? (function(o, v) {
-        Object.defineProperty(o, "default", { enumerable: true, value: v });
-    }) : function(o, v) {
-        o["default"] = v;
-    };
-
-    __importStar = function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-
-    __importDefault = function (mod) {
-        return (mod && mod.__esModule) ? mod : { "default": mod };
-    };
-
-    __classPrivateFieldGet = function (receiver, state, kind, f) {
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-        return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-    };
-
-    __classPrivateFieldSet = function (receiver, state, value, kind, f) {
-        if (kind === "m") throw new TypeError("Private method is not writable");
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-        return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-    };
-
-    __classPrivateFieldIn = function (state, receiver) {
-        if (receiver === null || (typeof receiver !== "object" && typeof receiver !== "function")) throw new TypeError("Cannot use 'in' operator on non-object");
-        return typeof state === "function" ? receiver === state : state.has(receiver);
-    };
-
-    exporter("__extends", __extends);
-    exporter("__assign", __assign);
-    exporter("__rest", __rest);
-    exporter("__decorate", __decorate);
-    exporter("__param", __param);
-    exporter("__esDecorate", __esDecorate);
-    exporter("__runInitializers", __runInitializers);
-    exporter("__propKey", __propKey);
-    exporter("__setFunctionName", __setFunctionName);
-    exporter("__metadata", __metadata);
-    exporter("__awaiter", __awaiter);
-    exporter("__generator", __generator);
-    exporter("__exportStar", __exportStar);
-    exporter("__createBinding", __createBinding);
-    exporter("__values", __values);
-    exporter("__read", __read);
-    exporter("__spread", __spread);
-    exporter("__spreadArrays", __spreadArrays);
-    exporter("__spreadArray", __spreadArray);
-    exporter("__await", __await);
-    exporter("__asyncGenerator", __asyncGenerator);
-    exporter("__asyncDelegator", __asyncDelegator);
-    exporter("__asyncValues", __asyncValues);
-    exporter("__makeTemplateObject", __makeTemplateObject);
-    exporter("__importStar", __importStar);
-    exporter("__importDefault", __importDefault);
-    exporter("__classPrivateFieldGet", __classPrivateFieldGet);
-    exporter("__classPrivateFieldSet", __classPrivateFieldSet);
-    exporter("__classPrivateFieldIn", __classPrivateFieldIn);
-});
 
 
 /***/ }),
@@ -18146,7 +17618,7 @@ exports.setLogLevel = setLogLevel;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 var coreHttp = __nccwpck_require__(4607);
-var tslib = __nccwpck_require__(679);
+var tslib = __nccwpck_require__(4351);
 var coreTracing = __nccwpck_require__(4175);
 var logger$1 = __nccwpck_require__(3233);
 var abortController = __nccwpck_require__(2557);
@@ -43266,383 +42738,6 @@ exports.newPipeline = newPipeline;
 
 /***/ }),
 
-/***/ 679:
-/***/ ((module) => {
-
-/******************************************************************************
-Copyright (c) Microsoft Corporation.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */
-/* global global, define, System, Reflect, Promise */
-var __extends;
-var __assign;
-var __rest;
-var __decorate;
-var __param;
-var __esDecorate;
-var __runInitializers;
-var __propKey;
-var __setFunctionName;
-var __metadata;
-var __awaiter;
-var __generator;
-var __exportStar;
-var __values;
-var __read;
-var __spread;
-var __spreadArrays;
-var __spreadArray;
-var __await;
-var __asyncGenerator;
-var __asyncDelegator;
-var __asyncValues;
-var __makeTemplateObject;
-var __importStar;
-var __importDefault;
-var __classPrivateFieldGet;
-var __classPrivateFieldSet;
-var __classPrivateFieldIn;
-var __createBinding;
-(function (factory) {
-    var root = typeof global === "object" ? global : typeof self === "object" ? self : typeof this === "object" ? this : {};
-    if (typeof define === "function" && define.amd) {
-        define("tslib", ["exports"], function (exports) { factory(createExporter(root, createExporter(exports))); });
-    }
-    else if ( true && typeof module.exports === "object") {
-        factory(createExporter(root, createExporter(module.exports)));
-    }
-    else {
-        factory(createExporter(root));
-    }
-    function createExporter(exports, previous) {
-        if (exports !== root) {
-            if (typeof Object.create === "function") {
-                Object.defineProperty(exports, "__esModule", { value: true });
-            }
-            else {
-                exports.__esModule = true;
-            }
-        }
-        return function (id, v) { return exports[id] = previous ? previous(id, v) : v; };
-    }
-})
-(function (exporter) {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-
-    __extends = function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-
-    __assign = Object.assign || function (t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-        }
-        return t;
-    };
-
-    __rest = function (s, e) {
-        var t = {};
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-            t[p] = s[p];
-        if (s != null && typeof Object.getOwnPropertySymbols === "function")
-            for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-                if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                    t[p[i]] = s[p[i]];
-            }
-        return t;
-    };
-
-    __decorate = function (decorators, target, key, desc) {
-        var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-        if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-        else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-        return c > 3 && r && Object.defineProperty(target, key, r), r;
-    };
-
-    __param = function (paramIndex, decorator) {
-        return function (target, key) { decorator(target, key, paramIndex); }
-    };
-
-    __esDecorate = function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-        function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
-        var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-        var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-        var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-        var _, done = false;
-        for (var i = decorators.length - 1; i >= 0; i--) {
-            var context = {};
-            for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-            for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-            context.addInitializer = function (f) { if (done) throw new TypeError("Cannot add initializers after decoration has completed"); extraInitializers.push(accept(f || null)); };
-            var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-            if (kind === "accessor") {
-                if (result === void 0) continue;
-                if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-                if (_ = accept(result.get)) descriptor.get = _;
-                if (_ = accept(result.set)) descriptor.set = _;
-                if (_ = accept(result.init)) initializers.unshift(_);
-            }
-            else if (_ = accept(result)) {
-                if (kind === "field") initializers.unshift(_);
-                else descriptor[key] = _;
-            }
-        }
-        if (target) Object.defineProperty(target, contextIn.name, descriptor);
-        done = true;
-    };
-
-    __runInitializers = function (thisArg, initializers, value) {
-        var useValue = arguments.length > 2;
-        for (var i = 0; i < initializers.length; i++) {
-            value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-        }
-        return useValue ? value : void 0;
-    };
-
-    __propKey = function (x) {
-        return typeof x === "symbol" ? x : "".concat(x);
-    };
-
-    __setFunctionName = function (f, name, prefix) {
-        if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
-        return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
-    };
-
-    __metadata = function (metadataKey, metadataValue) {
-        if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
-    };
-
-    __awaiter = function (thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
-
-    __generator = function (thisArg, body) {
-        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-        function verb(n) { return function (v) { return step([n, v]); }; }
-        function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (g && (g = 0, op[0] && (_ = 0)), _) try {
-                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [op[0] & 2, t.value];
-                switch (op[0]) {
-                    case 0: case 1: t = op; break;
-                    case 4: _.label++; return { value: op[1], done: false };
-                    case 5: _.label++; y = op[1]; op = [0]; continue;
-                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                    default:
-                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                        if (t[2]) _.ops.pop();
-                        _.trys.pop(); continue;
-                }
-                op = body.call(thisArg, _);
-            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-        }
-    };
-
-    __exportStar = function(m, o) {
-        for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p)) __createBinding(o, m, p);
-    };
-
-    __createBinding = Object.create ? (function(o, m, k, k2) {
-        if (k2 === undefined) k2 = k;
-        var desc = Object.getOwnPropertyDescriptor(m, k);
-        if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-            desc = { enumerable: true, get: function() { return m[k]; } };
-        }
-        Object.defineProperty(o, k2, desc);
-    }) : (function(o, m, k, k2) {
-        if (k2 === undefined) k2 = k;
-        o[k2] = m[k];
-    });
-
-    __values = function (o) {
-        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-        if (m) return m.call(o);
-        if (o && typeof o.length === "number") return {
-            next: function () {
-                if (o && i >= o.length) o = void 0;
-                return { value: o && o[i++], done: !o };
-            }
-        };
-        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-    };
-
-    __read = function (o, n) {
-        var m = typeof Symbol === "function" && o[Symbol.iterator];
-        if (!m) return o;
-        var i = m.call(o), r, ar = [], e;
-        try {
-            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-        }
-        catch (error) { e = { error: error }; }
-        finally {
-            try {
-                if (r && !r.done && (m = i["return"])) m.call(i);
-            }
-            finally { if (e) throw e.error; }
-        }
-        return ar;
-    };
-
-    /** @deprecated */
-    __spread = function () {
-        for (var ar = [], i = 0; i < arguments.length; i++)
-            ar = ar.concat(__read(arguments[i]));
-        return ar;
-    };
-
-    /** @deprecated */
-    __spreadArrays = function () {
-        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-        for (var r = Array(s), k = 0, i = 0; i < il; i++)
-            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-                r[k] = a[j];
-        return r;
-    };
-
-    __spreadArray = function (to, from, pack) {
-        if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-            if (ar || !(i in from)) {
-                if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-                ar[i] = from[i];
-            }
-        }
-        return to.concat(ar || Array.prototype.slice.call(from));
-    };
-
-    __await = function (v) {
-        return this instanceof __await ? (this.v = v, this) : new __await(v);
-    };
-
-    __asyncGenerator = function (thisArg, _arguments, generator) {
-        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-        var g = generator.apply(thisArg, _arguments || []), i, q = [];
-        return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
-        function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
-        function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
-        function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);  }
-        function fulfill(value) { resume("next", value); }
-        function reject(value) { resume("throw", value); }
-        function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
-    };
-
-    __asyncDelegator = function (o) {
-        var i, p;
-        return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
-        function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: false } : f ? f(v) : v; } : f; }
-    };
-
-    __asyncValues = function (o) {
-        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-        var m = o[Symbol.asyncIterator], i;
-        return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
-        function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
-        function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
-    };
-
-    __makeTemplateObject = function (cooked, raw) {
-        if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
-        return cooked;
-    };
-
-    var __setModuleDefault = Object.create ? (function(o, v) {
-        Object.defineProperty(o, "default", { enumerable: true, value: v });
-    }) : function(o, v) {
-        o["default"] = v;
-    };
-
-    __importStar = function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-
-    __importDefault = function (mod) {
-        return (mod && mod.__esModule) ? mod : { "default": mod };
-    };
-
-    __classPrivateFieldGet = function (receiver, state, kind, f) {
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-        return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-    };
-
-    __classPrivateFieldSet = function (receiver, state, value, kind, f) {
-        if (kind === "m") throw new TypeError("Private method is not writable");
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-        return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-    };
-
-    __classPrivateFieldIn = function (state, receiver) {
-        if (receiver === null || (typeof receiver !== "object" && typeof receiver !== "function")) throw new TypeError("Cannot use 'in' operator on non-object");
-        return typeof state === "function" ? receiver === state : state.has(receiver);
-    };
-
-    exporter("__extends", __extends);
-    exporter("__assign", __assign);
-    exporter("__rest", __rest);
-    exporter("__decorate", __decorate);
-    exporter("__param", __param);
-    exporter("__esDecorate", __esDecorate);
-    exporter("__runInitializers", __runInitializers);
-    exporter("__propKey", __propKey);
-    exporter("__setFunctionName", __setFunctionName);
-    exporter("__metadata", __metadata);
-    exporter("__awaiter", __awaiter);
-    exporter("__generator", __generator);
-    exporter("__exportStar", __exportStar);
-    exporter("__createBinding", __createBinding);
-    exporter("__values", __values);
-    exporter("__read", __read);
-    exporter("__spread", __spread);
-    exporter("__spreadArrays", __spreadArrays);
-    exporter("__spreadArray", __spreadArray);
-    exporter("__await", __await);
-    exporter("__asyncGenerator", __asyncGenerator);
-    exporter("__asyncDelegator", __asyncDelegator);
-    exporter("__asyncValues", __asyncValues);
-    exporter("__makeTemplateObject", __makeTemplateObject);
-    exporter("__importStar", __importStar);
-    exporter("__importDefault", __importDefault);
-    exporter("__classPrivateFieldGet", __classPrivateFieldGet);
-    exporter("__classPrivateFieldSet", __classPrivateFieldSet);
-    exporter("__classPrivateFieldIn", __classPrivateFieldIn);
-});
-
-
-/***/ }),
-
 /***/ 7171:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -53756,6 +52851,383 @@ module.exports.toUnicode = function(domain_name, useSTD3) {
 };
 
 module.exports.PROCESSING_OPTIONS = PROCESSING_OPTIONS;
+
+
+/***/ }),
+
+/***/ 4351:
+/***/ ((module) => {
+
+/******************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+/* global global, define, System, Reflect, Promise */
+var __extends;
+var __assign;
+var __rest;
+var __decorate;
+var __param;
+var __esDecorate;
+var __runInitializers;
+var __propKey;
+var __setFunctionName;
+var __metadata;
+var __awaiter;
+var __generator;
+var __exportStar;
+var __values;
+var __read;
+var __spread;
+var __spreadArrays;
+var __spreadArray;
+var __await;
+var __asyncGenerator;
+var __asyncDelegator;
+var __asyncValues;
+var __makeTemplateObject;
+var __importStar;
+var __importDefault;
+var __classPrivateFieldGet;
+var __classPrivateFieldSet;
+var __classPrivateFieldIn;
+var __createBinding;
+(function (factory) {
+    var root = typeof global === "object" ? global : typeof self === "object" ? self : typeof this === "object" ? this : {};
+    if (typeof define === "function" && define.amd) {
+        define("tslib", ["exports"], function (exports) { factory(createExporter(root, createExporter(exports))); });
+    }
+    else if ( true && typeof module.exports === "object") {
+        factory(createExporter(root, createExporter(module.exports)));
+    }
+    else {
+        factory(createExporter(root));
+    }
+    function createExporter(exports, previous) {
+        if (exports !== root) {
+            if (typeof Object.create === "function") {
+                Object.defineProperty(exports, "__esModule", { value: true });
+            }
+            else {
+                exports.__esModule = true;
+            }
+        }
+        return function (id, v) { return exports[id] = previous ? previous(id, v) : v; };
+    }
+})
+(function (exporter) {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+
+    __extends = function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+
+    __assign = Object.assign || function (t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+        }
+        return t;
+    };
+
+    __rest = function (s, e) {
+        var t = {};
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+            t[p] = s[p];
+        if (s != null && typeof Object.getOwnPropertySymbols === "function")
+            for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+                if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                    t[p[i]] = s[p[i]];
+            }
+        return t;
+    };
+
+    __decorate = function (decorators, target, key, desc) {
+        var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+        if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+        else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+        return c > 3 && r && Object.defineProperty(target, key, r), r;
+    };
+
+    __param = function (paramIndex, decorator) {
+        return function (target, key) { decorator(target, key, paramIndex); }
+    };
+
+    __esDecorate = function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+        function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
+        var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+        var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+        var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+        var _, done = false;
+        for (var i = decorators.length - 1; i >= 0; i--) {
+            var context = {};
+            for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+            for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+            context.addInitializer = function (f) { if (done) throw new TypeError("Cannot add initializers after decoration has completed"); extraInitializers.push(accept(f || null)); };
+            var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+            if (kind === "accessor") {
+                if (result === void 0) continue;
+                if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+                if (_ = accept(result.get)) descriptor.get = _;
+                if (_ = accept(result.set)) descriptor.set = _;
+                if (_ = accept(result.init)) initializers.unshift(_);
+            }
+            else if (_ = accept(result)) {
+                if (kind === "field") initializers.unshift(_);
+                else descriptor[key] = _;
+            }
+        }
+        if (target) Object.defineProperty(target, contextIn.name, descriptor);
+        done = true;
+    };
+
+    __runInitializers = function (thisArg, initializers, value) {
+        var useValue = arguments.length > 2;
+        for (var i = 0; i < initializers.length; i++) {
+            value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+        }
+        return useValue ? value : void 0;
+    };
+
+    __propKey = function (x) {
+        return typeof x === "symbol" ? x : "".concat(x);
+    };
+
+    __setFunctionName = function (f, name, prefix) {
+        if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
+        return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
+    };
+
+    __metadata = function (metadataKey, metadataValue) {
+        if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+    };
+
+    __awaiter = function (thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    };
+
+    __generator = function (thisArg, body) {
+        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+        function verb(n) { return function (v) { return step([n, v]); }; }
+        function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (g && (g = 0, op[0] && (_ = 0)), _) try {
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [op[0] & 2, t.value];
+                switch (op[0]) {
+                    case 0: case 1: t = op; break;
+                    case 4: _.label++; return { value: op[1], done: false };
+                    case 5: _.label++; y = op[1]; op = [0]; continue;
+                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                    default:
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                        if (t[2]) _.ops.pop();
+                        _.trys.pop(); continue;
+                }
+                op = body.call(thisArg, _);
+            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+        }
+    };
+
+    __exportStar = function(m, o) {
+        for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p)) __createBinding(o, m, p);
+    };
+
+    __createBinding = Object.create ? (function(o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        var desc = Object.getOwnPropertyDescriptor(m, k);
+        if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+            desc = { enumerable: true, get: function() { return m[k]; } };
+        }
+        Object.defineProperty(o, k2, desc);
+    }) : (function(o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        o[k2] = m[k];
+    });
+
+    __values = function (o) {
+        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+        if (m) return m.call(o);
+        if (o && typeof o.length === "number") return {
+            next: function () {
+                if (o && i >= o.length) o = void 0;
+                return { value: o && o[i++], done: !o };
+            }
+        };
+        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+    };
+
+    __read = function (o, n) {
+        var m = typeof Symbol === "function" && o[Symbol.iterator];
+        if (!m) return o;
+        var i = m.call(o), r, ar = [], e;
+        try {
+            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+        }
+        catch (error) { e = { error: error }; }
+        finally {
+            try {
+                if (r && !r.done && (m = i["return"])) m.call(i);
+            }
+            finally { if (e) throw e.error; }
+        }
+        return ar;
+    };
+
+    /** @deprecated */
+    __spread = function () {
+        for (var ar = [], i = 0; i < arguments.length; i++)
+            ar = ar.concat(__read(arguments[i]));
+        return ar;
+    };
+
+    /** @deprecated */
+    __spreadArrays = function () {
+        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+        for (var r = Array(s), k = 0, i = 0; i < il; i++)
+            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                r[k] = a[j];
+        return r;
+    };
+
+    __spreadArray = function (to, from, pack) {
+        if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+            if (ar || !(i in from)) {
+                if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+                ar[i] = from[i];
+            }
+        }
+        return to.concat(ar || Array.prototype.slice.call(from));
+    };
+
+    __await = function (v) {
+        return this instanceof __await ? (this.v = v, this) : new __await(v);
+    };
+
+    __asyncGenerator = function (thisArg, _arguments, generator) {
+        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+        var g = generator.apply(thisArg, _arguments || []), i, q = [];
+        return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+        function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
+        function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+        function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);  }
+        function fulfill(value) { resume("next", value); }
+        function reject(value) { resume("throw", value); }
+        function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+    };
+
+    __asyncDelegator = function (o) {
+        var i, p;
+        return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
+        function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: false } : f ? f(v) : v; } : f; }
+    };
+
+    __asyncValues = function (o) {
+        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+        var m = o[Symbol.asyncIterator], i;
+        return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+        function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+        function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+    };
+
+    __makeTemplateObject = function (cooked, raw) {
+        if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+        return cooked;
+    };
+
+    var __setModuleDefault = Object.create ? (function(o, v) {
+        Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+        o["default"] = v;
+    };
+
+    __importStar = function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+
+    __importDefault = function (mod) {
+        return (mod && mod.__esModule) ? mod : { "default": mod };
+    };
+
+    __classPrivateFieldGet = function (receiver, state, kind, f) {
+        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+        return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+    };
+
+    __classPrivateFieldSet = function (receiver, state, value, kind, f) {
+        if (kind === "m") throw new TypeError("Private method is not writable");
+        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+        return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+    };
+
+    __classPrivateFieldIn = function (state, receiver) {
+        if (receiver === null || (typeof receiver !== "object" && typeof receiver !== "function")) throw new TypeError("Cannot use 'in' operator on non-object");
+        return typeof state === "function" ? receiver === state : state.has(receiver);
+    };
+
+    exporter("__extends", __extends);
+    exporter("__assign", __assign);
+    exporter("__rest", __rest);
+    exporter("__decorate", __decorate);
+    exporter("__param", __param);
+    exporter("__esDecorate", __esDecorate);
+    exporter("__runInitializers", __runInitializers);
+    exporter("__propKey", __propKey);
+    exporter("__setFunctionName", __setFunctionName);
+    exporter("__metadata", __metadata);
+    exporter("__awaiter", __awaiter);
+    exporter("__generator", __generator);
+    exporter("__exportStar", __exportStar);
+    exporter("__createBinding", __createBinding);
+    exporter("__values", __values);
+    exporter("__read", __read);
+    exporter("__spread", __spread);
+    exporter("__spreadArrays", __spreadArrays);
+    exporter("__spreadArray", __spreadArray);
+    exporter("__await", __await);
+    exporter("__asyncGenerator", __asyncGenerator);
+    exporter("__asyncDelegator", __asyncDelegator);
+    exporter("__asyncValues", __asyncValues);
+    exporter("__makeTemplateObject", __makeTemplateObject);
+    exporter("__importStar", __importStar);
+    exporter("__importDefault", __importDefault);
+    exporter("__classPrivateFieldGet", __classPrivateFieldGet);
+    exporter("__classPrivateFieldSet", __classPrivateFieldSet);
+    exporter("__classPrivateFieldIn", __classPrivateFieldIn);
+});
 
 
 /***/ }),
