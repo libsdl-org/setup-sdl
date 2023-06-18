@@ -83,8 +83,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const child_process = __importStar(__nccwpck_require__(2081));
 const crypto = __importStar(__nccwpck_require__(6113));
-const os = __importStar(__nccwpck_require__(2037));
 const fs = __importStar(__nccwpck_require__(7147));
+const os = __importStar(__nccwpck_require__(2037));
+const path = __importStar(__nccwpck_require__(1017));
 const cache = __importStar(__nccwpck_require__(7799));
 const core = __importStar(__nccwpck_require__(2186));
 const constants_1 = __nccwpck_require__(7077);
@@ -167,7 +168,12 @@ function calculate_state_hash(args) {
     for (const key of ENV_KEYS) {
         env_state.push(`${key}=${process.env[key]}`);
     }
-    const ACTION_KEYS = ["build-type", "discriminator", "ninja"];
+    const ACTION_KEYS = [
+        "build-type",
+        "cmake-toolchain-file",
+        "discriminator",
+        "ninja",
+    ];
     const inputs_state = [];
     for (const key of ACTION_KEYS) {
         const v = core.getInput(key);
@@ -178,6 +184,16 @@ function calculate_state_hash(args) {
         `build_platform=${args.build_platform}`,
         `shell=${args.shell}`,
     ];
+    if (args.cmake_toolchain_file) {
+        const toolchain_contents = fs.readFileSync(args.cmake_toolchain_file, {
+            encoding: "utf8",
+        });
+        const cmake_toolchain_file_hash = crypto
+            .createHash("sha256")
+            .update(toolchain_contents)
+            .digest("hex");
+        misc_state.push(`cmake_toolchain_file_hash=${cmake_toolchain_file_hash}`);
+    }
     const complete_state = [
         "ENVIRONMENT",
         ...env_state,
@@ -190,6 +206,20 @@ function calculate_state_hash(args) {
     core.debug(`state_string=${state_string}`);
     return crypto.createHash("sha256").update(state_string).digest("hex");
 }
+function get_cmake_toolchain_path() {
+    const in_cmake_toolchain_file = core.getInput("cmake-toolchain-file");
+    if (!in_cmake_toolchain_file) {
+        return in_cmake_toolchain_file;
+    }
+    if (fs.existsSync(in_cmake_toolchain_file)) {
+        return path.resolve(in_cmake_toolchain_file);
+    }
+    const workspace_cmake_toolchain_file = path.resolve(`${process.env.GITHUB_WORKSPACE}`, in_cmake_toolchain_file);
+    if (fs.existsSync(workspace_cmake_toolchain_file)) {
+        return workspace_cmake_toolchain_file;
+    }
+    throw new util_1.SetupSdlError(`Cannot find CMake toolchain file: ${in_cmake_toolchain_file}`);
+}
 async function run() {
     const SDL_BUILD_PLATFORM = (0, platform_1.get_sdl_build_platform)();
     core.info(`build platform=${SDL_BUILD_PLATFORM}`);
@@ -201,7 +231,6 @@ async function run() {
         shell_in = "";
     }
     const SHELL = shell_in;
-    const USE_NINJA = core.getBooleanInput("ninja");
     const REQUESTED_VERSION_TYPE = (0, version_1.parse_requested_sdl_version)(core.getInput("version"));
     const CMAKE_BUILD_TYPE = core.getInput("build-type");
     const CMAKE_BUILD_TYPES = [
@@ -239,10 +268,12 @@ async function run() {
         }
     }
     const GIT_HASH = await convert_git_branch_tag_to_hash(git_branch_hash);
+    const CMAKE_TOOLCHAIN_FILE = get_cmake_toolchain_path();
     const STATE_HASH = calculate_state_hash({
         git_hash: GIT_HASH,
         build_platform: SDL_BUILD_PLATFORM,
         shell: SHELL,
+        cmake_toolchain_file: CMAKE_TOOLCHAIN_FILE,
     });
     core.info(`setup-sdl state = ${STATE_HASH}`);
     const PACKAGE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/package`;
@@ -255,6 +286,7 @@ async function run() {
         const SOURCE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/source`;
         const BUILD_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/build`;
         await checkout_sdl_git_hash(GIT_HASH, SOURCE_DIR);
+        const USE_NINJA = core.getBooleanInput("ninja");
         if (USE_NINJA) {
             await core.group(`Configuring Ninja`, async () => {
                 await (0, ninja_1.configure_ninja_build_tool)(SDL_BUILD_PLATFORM);
@@ -266,8 +298,8 @@ async function run() {
             "-DCMAKE_INSTALL_INCLUDEDIR=include",
             "-DCMAKE_INSTALL_LIBDIR=lib",
         ];
-        if (USE_NINJA) {
-            cmake_args.push("-GNinja");
+        if (CMAKE_TOOLCHAIN_FILE) {
+            cmake_args.push(`-DCMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE}"`);
         }
         await cmake_configure_build({
             source_dir: SOURCE_DIR,
@@ -290,7 +322,16 @@ async function run() {
     core.setOutput("prefix", PACKAGE_DIR);
     core.setOutput("version", SDL_VERSION.toString());
 }
-run();
+try {
+    run();
+}
+catch (e) {
+    if (e instanceof Error) {
+        core.error(e.message);
+        core.setFailed(e.message);
+    }
+    throw e;
+}
 
 
 /***/ }),

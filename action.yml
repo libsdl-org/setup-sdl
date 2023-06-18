@@ -13,6 +13,8 @@ inputs:
     description: "CMake build type (Release/Debug/RelWithDebInfo/MinSizeRel)"
     default: "Release"
     required: true
+  cmake-toolchain-file:
+    description: "Path of a CMake toolchain file"
   ninja:
     description: "Use Ninja make files"
     default: "true"
