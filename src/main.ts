@@ -235,15 +235,7 @@ async function run() {
   });
   core.info(`setup-sdl state = ${STATE_HASH}`);
 
-  const SOURCE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/source`;
-  const BUILD_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/build`;
   const PACKAGE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/package`;
-
-  await checkout_sdl_git_hash(GIT_HASH, SOURCE_DIR);
-
-  const SDL_VERSION =
-    SdlVersion.detect_sdl_version_from_source_tree(SOURCE_DIR);
-  core.info(`SDL version is ${SDL_VERSION.toString()}`);
 
   const CACHE_KEY = `setup-sdl-${STATE_HASH}`;
   const CACHE_PATHS = [PACKAGE_DIR];
@@ -255,6 +247,11 @@ async function run() {
 
   if (!found_cache_key) {
     core.info("No match found in cache. Building SDL from scratch.");
+
+    const SOURCE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/source`;
+    const BUILD_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/build`;
+
+    await checkout_sdl_git_hash(GIT_HASH, SOURCE_DIR);
 
     if (USE_NINJA) {
       await core.group(`Configuring Ninja`, async () => {
@@ -280,6 +277,10 @@ async function run() {
     // Pass a copy of CACHE_PATHS since cache.saveCache modifies/modified its arguments
     await cache.saveCache(CACHE_PATHS.slice(), CACHE_KEY);
   }
+
+  const SDL_VERSION =
+    SdlVersion.detect_sdl_version_from_install_prefix(PACKAGE_DIR);
+  core.info(`SDL version is ${SDL_VERSION.toString()}`);
 
   core.exportVariable(`SDL${SDL_VERSION.major}_ROOT`, PACKAGE_DIR);
   core.setOutput("prefix", PACKAGE_DIR);

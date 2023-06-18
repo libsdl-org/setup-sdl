@@ -74,25 +74,48 @@ export class SdlVersion {
   }
 
   static detect_sdl_version_from_source_tree(path: string): SdlVersion {
-    let SDL_version_h_path: string | null = null;
-
-    if (SDL_version_h_path == null) {
-      const sdl3_SDL_version_h_path = `${path}/include/SDL3/SDL_version.h`;
-      if (fs.existsSync(sdl3_SDL_version_h_path)) {
-        SDL_version_h_path = sdl3_SDL_version_h_path;
-      }
+    const sdl3_SDL_version_h_path = `${path}/include/SDL3/SDL_version.h`;
+    if (fs.existsSync(sdl3_SDL_version_h_path)) {
+      return this.extract_sdl_version_from_SDL_version_h(
+        sdl3_SDL_version_h_path
+      );
     }
 
-    if (SDL_version_h_path == null) {
-      const sdl3_SDL_version_h_path = `${path}/include/SDL_version.h`;
-      if (fs.existsSync(sdl3_SDL_version_h_path)) {
-        SDL_version_h_path = sdl3_SDL_version_h_path;
-      }
-    }
-    if (SDL_version_h_path == null) {
-      throw new SetupSdlError("Could not determine version of SDL source tree");
+    const sdl2_SDL_version_h_path = `${path}/include/SDL_version.h`;
+    if (fs.existsSync(sdl2_SDL_version_h_path)) {
+      return this.extract_sdl_version_from_SDL_version_h(
+        sdl2_SDL_version_h_path
+      );
     }
 
+    throw new SetupSdlError(
+      `Could not find a SDL_version.h in the source tree (${path})`
+    );
+  }
+
+  static detect_sdl_version_from_install_prefix(path: string): SdlVersion {
+    const sdl3_SDL_version_h_path = `${path}/include/SDL3/SDL_version.h`;
+    if (fs.existsSync(sdl3_SDL_version_h_path)) {
+      return this.extract_sdl_version_from_SDL_version_h(
+        sdl3_SDL_version_h_path
+      );
+    }
+
+    const sdl2_SDL_version_h_path = `${path}/include/SDL2/SDL_version.h`;
+    if (fs.existsSync(sdl2_SDL_version_h_path)) {
+      return this.extract_sdl_version_from_SDL_version_h(
+        sdl2_SDL_version_h_path
+      );
+    }
+
+    throw new SetupSdlError(
+      `Could not find a SDL_version.h in the prefix (${path})`
+    );
+  }
+
+  static extract_sdl_version_from_SDL_version_h(
+    SDL_version_h_path: string
+  ): SdlVersion {
     const SDL_version_h = fs.readFileSync(SDL_version_h_path, "utf8");
 
     const match_major = SDL_version_h.match(

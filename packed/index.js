@@ -244,18 +244,16 @@ async function run() {
         shell: SHELL,
     });
     core.info(`setup-sdl state = ${STATE_HASH}`);
-    const SOURCE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/source`;
-    const BUILD_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/build`;
     const PACKAGE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/package`;
-    await checkout_sdl_git_hash(GIT_HASH, SOURCE_DIR);
-    const SDL_VERSION = version_1.SdlVersion.detect_sdl_version_from_source_tree(SOURCE_DIR);
-    core.info(`SDL version is ${SDL_VERSION.toString()}`);
     const CACHE_KEY = `setup-sdl-${STATE_HASH}`;
     const CACHE_PATHS = [PACKAGE_DIR];
     // Pass a copy of CACHE_PATHS since cache.restoreCache modifies/modified its arguments
     const found_cache_key = await cache.restoreCache(CACHE_PATHS.slice(), CACHE_KEY);
     if (!found_cache_key) {
         core.info("No match found in cache. Building SDL from scratch.");
+        const SOURCE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/source`;
+        const BUILD_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/build`;
+        await checkout_sdl_git_hash(GIT_HASH, SOURCE_DIR);
         if (USE_NINJA) {
             await core.group(`Configuring Ninja`, async () => {
                 await (0, ninja_1.configure_ninja_build_tool)(SDL_BUILD_PLATFORM);
@@ -277,6 +275,8 @@ async function run() {
         // Pass a copy of CACHE_PATHS since cache.saveCache modifies/modified its arguments
         await cache.saveCache(CACHE_PATHS.slice(), CACHE_KEY);
     }
+    const SDL_VERSION = version_1.SdlVersion.detect_sdl_version_from_install_prefix(PACKAGE_DIR);
+    core.info(`SDL version is ${SDL_VERSION.toString()}`);
     core.exportVariable(`SDL${SDL_VERSION.major}_ROOT`, PACKAGE_DIR);
     core.setOutput("prefix", PACKAGE_DIR);
     core.setOutput("version", SDL_VERSION.toString());
@@ -537,22 +537,28 @@ class SdlVersion {
         return `${this.major}.${this.minor}.${this.patch}`;
     }
     static detect_sdl_version_from_source_tree(path) {
-        let SDL_version_h_path = null;
-        if (SDL_version_h_path == null) {
-            const sdl3_SDL_version_h_path = `${path}/include/SDL3/SDL_version.h`;
-            if (fs.existsSync(sdl3_SDL_version_h_path)) {
-                SDL_version_h_path = sdl3_SDL_version_h_path;
-            }
+        const sdl3_SDL_version_h_path = `${path}/include/SDL3/SDL_version.h`;
+        if (fs.existsSync(sdl3_SDL_version_h_path)) {
+            return this.extract_sdl_version_from_SDL_version_h(sdl3_SDL_version_h_path);
         }
-        if (SDL_version_h_path == null) {
-            const sdl3_SDL_version_h_path = `${path}/include/SDL_version.h`;
-            if (fs.existsSync(sdl3_SDL_version_h_path)) {
-                SDL_version_h_path = sdl3_SDL_version_h_path;
-            }
+        const sdl2_SDL_version_h_path = `${path}/include/SDL_version.h`;
+        if (fs.existsSync(sdl2_SDL_version_h_path)) {
+            return this.extract_sdl_version_from_SDL_version_h(sdl2_SDL_version_h_path);
         }
-        if (SDL_version_h_path == null) {
-            throw new util_1.SetupSdlError("Could not determine version of SDL source tree");
+        throw new util_1.SetupSdlError(`Could not find a SDL_version.h in the source tree (${path})`);
+    }
+    static detect_sdl_version_from_install_prefix(path) {
+        const sdl3_SDL_version_h_path = `${path}/include/SDL3/SDL_version.h`;
+        if (fs.existsSync(sdl3_SDL_version_h_path)) {
+            return this.extract_sdl_version_from_SDL_version_h(sdl3_SDL_version_h_path);
         }
+        const sdl2_SDL_version_h_path = `${path}/include/SDL2/SDL_version.h`;
+        if (fs.existsSync(sdl2_SDL_version_h_path)) {
+            return this.extract_sdl_version_from_SDL_version_h(sdl2_SDL_version_h_path);
+        }
+        throw new util_1.SetupSdlError(`Could not find a SDL_version.h in the prefix (${path})`);
+    }
+    static extract_sdl_version_from_SDL_version_h(SDL_version_h_path) {
         const SDL_version_h = fs.readFileSync(SDL_version_h_path, "utf8");
         const match_major = SDL_version_h.match(/#define[ \t]+SDL_MAJOR_VERSION[ \t]+([0-9]+)/);
         if (!match_major) {
