@@ -36,3 +36,30 @@ export function get_platform_root_directory(
       return `${os.tmpdir()}/setupsdl`;
   }
 }
+
+export function export_environent_variables(
+  platform: SdlBuildPlatform,
+  prefix: string
+) {
+  switch (platform) {
+    case SdlBuildPlatform.Windows:
+      core.addPath(`${prefix}/bin`);
+      break;
+    case SdlBuildPlatform.Macos: {
+      let libpath = process.env.DYLD_LIBRARY_PATH;
+      if (libpath) {
+        libpath = "`${prefix}`/lib:${libpath}";
+      }
+      core.exportVariable("DYLD_LIBRARY_PATH", libpath);
+      break;
+    }
+    case SdlBuildPlatform.Linux: {
+      let libpath = process.env.LD_LIBRARY_PATH;
+      if (libpath) {
+        libpath = "`${prefix}`/lib:${libpath}";
+      }
+      core.exportVariable("LD_LIBRARY_PATH", libpath);
+      break;
+    }
+  }
+}

@@ -16,13 +16,13 @@ inputs:
   ninja:
     description: "Use Ninja make files"
     default: "true"
-    required: true
   shell:
     description: "Run commands as $shell \"commands\""
-    required: true
   discriminator:
     description: "Unique string to avoid fetching a mismatched SDL from cache"
-    required: true
+  add-to-environment:
+    description: "Add path of the SDL (shared) library to PATH/LD_LIBRARY_PATH/DYLD_LIBRARY_PATH"
+    default: "false"
 outputs:
   prefix:
     description: "Actual root of the SDL package"

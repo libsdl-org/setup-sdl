@@ -134,7 +134,8 @@ function execute_child_process(command, shell) {
     child_process.execSync(final_command, { stdio: "inherit" });
 }
 async function cmake_configure_build(args) {
-    const configure_command = `cmake -S "${args.source_dir}" -B "${args.build_dir}" ${args.cmake_args}`;
+    const cmake_args = args.cmake_args.join(" ");
+    const configure_command = `cmake -S "${args.source_dir}" -B "${args.build_dir}" ${cmake_args}`;
     const build_command = `cmake --build "${args.build_dir}" --config ${args.build_type}`;
     const install_command = `cmake --install "${args.build_dir}" --prefix ${args.package_dir} --config ${args.build_type}`;
     await core.group(`Configuring SDL (CMake)`, async () => {
@@ -259,9 +260,14 @@ async function run() {
                 await (0, ninja_1.configure_ninja_build_tool)(SDL_BUILD_PLATFORM);
             });
         }
-        let cmake_args = `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`;
+        const cmake_args = [
+            `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`,
+            "-DCMAKE_INSTALL_BINDIR=bin",
+            "-DCMAKE_INSTALL_INCLUDEDIR=include",
+            "-DCMAKE_INSTALL_LIBDIR=lib",
+        ];
         if (USE_NINJA) {
-            cmake_args += " -GNinja";
+            cmake_args.push("-GNinja");
         }
         await cmake_configure_build({
             source_dir: SOURCE_DIR,
@@ -277,6 +283,9 @@ async function run() {
     }
     const SDL_VERSION = version_1.SdlVersion.detect_sdl_version_from_install_prefix(PACKAGE_DIR);
     core.info(`SDL version is ${SDL_VERSION.toString()}`);
+    if (core.getBooleanInput("add-to-environment")) {
+        (0, platform_1.export_environent_variables)(SDL_BUILD_PLATFORM, PACKAGE_DIR);
+    }
     core.exportVariable(`SDL${SDL_VERSION.major}_ROOT`, PACKAGE_DIR);
     core.setOutput("prefix", PACKAGE_DIR);
     core.setOutput("version", SDL_VERSION.toString());
@@ -389,7 +398,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.get_platform_root_directory = exports.get_sdl_build_platform = exports.SdlBuildPlatform = void 0;
+exports.export_environent_variables = exports.get_platform_root_directory = exports.get_sdl_build_platform = exports.SdlBuildPlatform = void 0;
 const os = __importStar(__nccwpck_require__(2037));
 const core = __importStar(__nccwpck_require__(2186));
 const util_1 = __nccwpck_require__(9731);
@@ -425,6 +434,30 @@ function get_platform_root_directory(platform) {
     }
 }
 exports.get_platform_root_directory = get_platform_root_directory;
+function export_environent_variables(platform, prefix) {
+    switch (platform) {
+        case SdlBuildPlatform.Windows:
+            core.addPath(`${prefix}/bin`);
+            break;
+        case SdlBuildPlatform.Macos: {
+            let libpath = process.env.DYLD_LIBRARY_PATH;
+            if (libpath) {
+                libpath = "`${prefix}`/lib:${libpath}";
+            }
+            core.exportVariable("DYLD_LIBRARY_PATH", libpath);
+            break;
+        }
+        case SdlBuildPlatform.Linux: {
+            let libpath = process.env.LD_LIBRARY_PATH;
+            if (libpath) {
+                libpath = "`${prefix}`/lib:${libpath}";
+            }
+            core.exportVariable("LD_LIBRARY_PATH", libpath);
+            break;
+        }
+    }
+}
+exports.export_environent_variables = export_environent_variables;
 
 
 /***/ }),

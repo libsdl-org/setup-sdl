@@ -18,6 +18,7 @@ import {
 } from "./version";
 
 import {
+  export_environent_variables,
   get_sdl_build_platform,
   get_platform_root_directory,
   SdlBuildPlatform,
@@ -92,10 +93,12 @@ async function cmake_configure_build(args: {
   build_dir: string;
   package_dir: string;
   build_type: string;
-  cmake_args: string;
+  cmake_args: string[];
   shell: string;
 }) {
-  const configure_command = `cmake -S "${args.source_dir}" -B "${args.build_dir}" ${args.cmake_args}`;
+  const cmake_args = args.cmake_args.join(" ");
+
+  const configure_command = `cmake -S "${args.source_dir}" -B "${args.build_dir}" ${cmake_args}`;
   const build_command = `cmake --build "${args.build_dir}" --config ${args.build_type}`;
   const install_command = `cmake --install "${args.build_dir}" --prefix ${args.package_dir} --config ${args.build_type}`;
 
@@ -259,9 +262,14 @@ async function run() {
       });
     }
 
-    let cmake_args = `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`;
+    const cmake_args = [
+      `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`,
+      "-DCMAKE_INSTALL_BINDIR=bin",
+      "-DCMAKE_INSTALL_INCLUDEDIR=include",
+      "-DCMAKE_INSTALL_LIBDIR=lib",
+    ];
     if (USE_NINJA) {
-      cmake_args += " -GNinja";
+      cmake_args.push("-GNinja");
     }
 
     await cmake_configure_build({
@@ -281,6 +289,10 @@ async function run() {
   const SDL_VERSION =
     SdlVersion.detect_sdl_version_from_install_prefix(PACKAGE_DIR);
   core.info(`SDL version is ${SDL_VERSION.toString()}`);
+
+  if (core.getBooleanInput("add-to-environment")) {
+    export_environent_variables(SDL_BUILD_PLATFORM, PACKAGE_DIR);
+  }
 
   core.exportVariable(`SDL${SDL_VERSION.major}_ROOT`, PACKAGE_DIR);
   core.setOutput("prefix", PACKAGE_DIR);
