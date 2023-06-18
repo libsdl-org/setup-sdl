@@ -219,7 +219,7 @@ async function run() {
 
   const CACHE_KEY = `setup-sdl-${STATE_HASH}`;
   const CACHE_PATHS = [PACKAGE_DIR];
-  const found_cache_key = await cache.restoreCache(CACHE_PATHS, CACHE_KEY, []);
+  const found_cache_key = await cache.restoreCache(CACHE_PATHS, CACHE_KEY);
 
   if (!found_cache_key) {
     core.info("No match found in cache. Building SDL from scratch.");
