@@ -118,7 +118,7 @@ function calculate_state_hash(args: {
   git_hash: string;
   build_platform: SdlBuildPlatform;
   shell: string;
-  cmake_toolchain_file: string;
+  cmake_toolchain_file: string | undefined;
 }) {
   const ENV_KEYS = [
     "AR",
@@ -132,6 +132,7 @@ function calculate_state_hash(args: {
     "LIB",
     "LIBPATH",
     "CMAKE_PREFIX_PATH",
+    "CMAKE_TOOLCHAIN_FILE",
     "PKG_CONFIG_PATH",
   ];
   const env_state: string[] = [];
@@ -184,24 +185,49 @@ function calculate_state_hash(args: {
   return crypto.createHash("sha256").update(state_string).digest("hex");
 }
 
-function get_cmake_toolchain_path(): string {
-  const in_cmake_toolchain_file = core.getInput("cmake-toolchain-file");
-  if (!in_cmake_toolchain_file) {
-    return in_cmake_toolchain_file;
+function resolve_workspace_path(in_path: string): string | undefined {
+  if (!in_path) {
+    return undefined;
   }
-  if (fs.existsSync(in_cmake_toolchain_file)) {
-    return path.resolve(in_cmake_toolchain_file);
+  if (fs.existsSync(in_path)) {
+    return path.resolve(in_path);
   }
-  const workspace_cmake_toolchain_file = path.resolve(
+  const workspace_path = path.resolve(
     `${process.env.GITHUB_WORKSPACE}`,
-    in_cmake_toolchain_file
+    in_path
   );
-  if (fs.existsSync(workspace_cmake_toolchain_file)) {
-    return workspace_cmake_toolchain_file;
+  if (fs.existsSync(workspace_path)) {
+    return workspace_path;
   }
-  throw new SetupSdlError(
-    `Cannot find CMake toolchain file: ${in_cmake_toolchain_file}`
-  );
+  return undefined;
+}
+
+function get_cmake_toolchain_path(): string | undefined {
+  const in_cmake_toolchain_file = core.getInput("cmake-toolchain-file");
+  if (in_cmake_toolchain_file) {
+    const resolved_cmake_toolchain_file = resolve_workspace_path(
+      in_cmake_toolchain_file
+    );
+    if (!resolved_cmake_toolchain_file) {
+      throw new SetupSdlError(
+        `Cannot find CMake toolchain file: ${in_cmake_toolchain_file}`
+      );
+    }
+    return resolved_cmake_toolchain_file;
+  }
+  const env_cmake_toolchain_file = process.env.CMAKE_TOOLCHAIN_FILE;
+  if (env_cmake_toolchain_file) {
+    const resolved_cmake_toolchain_file = resolve_workspace_path(
+      env_cmake_toolchain_file
+    );
+    if (!resolved_cmake_toolchain_file) {
+      throw new SetupSdlError(
+        `Cannot find CMake toolchain file: ${env_cmake_toolchain_file}`
+      );
+    }
+    return resolved_cmake_toolchain_file;
+  }
+  return undefined;
 }
 
 async function run() {

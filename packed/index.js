@@ -162,6 +162,7 @@ function calculate_state_hash(args) {
         "LIB",
         "LIBPATH",
         "CMAKE_PREFIX_PATH",
+        "CMAKE_TOOLCHAIN_FILE",
         "PKG_CONFIG_PATH",
     ];
     const env_state = [];
@@ -206,19 +207,37 @@ function calculate_state_hash(args) {
     core.debug(`state_string=${state_string}`);
     return crypto.createHash("sha256").update(state_string).digest("hex");
 }
+function resolve_workspace_path(in_path) {
+    if (!in_path) {
+        return undefined;
+    }
+    if (fs.existsSync(in_path)) {
+        return path.resolve(in_path);
+    }
+    const workspace_path = path.resolve(`${process.env.GITHUB_WORKSPACE}`, in_path);
+    if (fs.existsSync(workspace_path)) {
+        return workspace_path;
+    }
+    return undefined;
+}
 function get_cmake_toolchain_path() {
     const in_cmake_toolchain_file = core.getInput("cmake-toolchain-file");
-    if (!in_cmake_toolchain_file) {
-        return in_cmake_toolchain_file;
+    if (in_cmake_toolchain_file) {
+        const resolved_cmake_toolchain_file = resolve_workspace_path(in_cmake_toolchain_file);
+        if (!resolved_cmake_toolchain_file) {
+            throw new util_1.SetupSdlError(`Cannot find CMake toolchain file: ${in_cmake_toolchain_file}`);
+        }
+        return resolved_cmake_toolchain_file;
     }
-    if (fs.existsSync(in_cmake_toolchain_file)) {
-        return path.resolve(in_cmake_toolchain_file);
+    const env_cmake_toolchain_file = process.env.CMAKE_TOOLCHAIN_FILE;
+    if (env_cmake_toolchain_file) {
+        const resolved_cmake_toolchain_file = resolve_workspace_path(env_cmake_toolchain_file);
+        if (!resolved_cmake_toolchain_file) {
+            throw new util_1.SetupSdlError(`Cannot find CMake toolchain file: ${env_cmake_toolchain_file}`);
+        }
+        return resolved_cmake_toolchain_file;
     }
-    const workspace_cmake_toolchain_file = path.resolve(`${process.env.GITHUB_WORKSPACE}`, in_cmake_toolchain_file);
-    if (fs.existsSync(workspace_cmake_toolchain_file)) {
-        return workspace_cmake_toolchain_file;
-    }
-    throw new util_1.SetupSdlError(`Cannot find CMake toolchain file: ${in_cmake_toolchain_file}`);
+    return undefined;
 }
 async function run() {
     const SDL_BUILD_PLATFORM = (0, platform_1.get_sdl_build_platform)();
