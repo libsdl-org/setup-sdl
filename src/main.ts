@@ -337,6 +337,9 @@ async function run() {
     if (CMAKE_TOOLCHAIN_FILE) {
       cmake_args.push(`-DCMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE}"`);
     }
+    if (USE_NINJA) {
+      cmake_args.push("-GNinja");
+    }
 
     await cmake_configure_build({
       source_dir: SOURCE_DIR,
