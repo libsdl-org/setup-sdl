@@ -354,7 +354,7 @@ function get_cmake_toolchain_path() {
 }
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, found_cache_key, SOURCE_DIR, BUILD_DIR, USE_NINJA, cmake_args, SDL_VERSION;
+        var SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, SOURCE_DIR, BUILD_DIR, USE_NINJA, cmake_args, SDL_VERSION;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -414,15 +414,31 @@ function run() {
                         shell: SHELL,
                         cmake_toolchain_file: CMAKE_TOOLCHAIN_FILE,
                     });
-                    core.info("setup-sdl state = ".concat(STATE_HASH));
                     PACKAGE_DIR = "".concat(SETUP_SDL_ROOT, "/").concat(STATE_HASH, "/package");
                     CACHE_KEY = "setup-sdl-".concat(STATE_HASH);
                     CACHE_PATHS = [PACKAGE_DIR];
-                    return [4 /*yield*/, cache.restoreCache(CACHE_PATHS.slice(), CACHE_KEY)];
+                    return [4 /*yield*/, core.group("Looking up a SDL build in the cache", function () { return __awaiter(_this, void 0, void 0, function () {
+                            var found_cache_key;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        core.info("setup-sdl state = ".concat(STATE_HASH));
+                                        return [4 /*yield*/, cache.restoreCache(CACHE_PATHS.slice(), CACHE_KEY)];
+                                    case 1:
+                                        found_cache_key = _a.sent();
+                                        if (found_cache_key) {
+                                            core.info("SDL found in the chache: key = ".concat(found_cache_key));
+                                        }
+                                        else {
+                                            core.info("No match found in cache. Building SDL from scratch.");
+                                        }
+                                        return [2 /*return*/, !!found_cache_key];
+                                }
+                            });
+                        }); })];
                 case 2:
-                    found_cache_key = _a.sent();
-                    if (!!found_cache_key) return [3 /*break*/, 8];
-                    core.info("No match found in cache. Building SDL from scratch.");
+                    sdl_from_cache = _a.sent();
+                    if (!!sdl_from_cache) return [3 /*break*/, 8];
                     SOURCE_DIR = "".concat(SETUP_SDL_ROOT, "/").concat(STATE_HASH, "/source");
                     BUILD_DIR = "".concat(SETUP_SDL_ROOT, "/").concat(STATE_HASH, "/build");
                     return [4 /*yield*/, checkout_sdl_git_hash(GIT_HASH, SOURCE_DIR)];
@@ -466,11 +482,21 @@ function run() {
                         })];
                 case 6:
                     _a.sent();
-                    core.info("Caching ".concat(CACHE_PATHS, "."));
-                    // Pass a copy of CACHE_PATHS since cache.saveCache modifies/modified its arguments
-                    return [4 /*yield*/, cache.saveCache(CACHE_PATHS.slice(), CACHE_KEY)];
+                    return [4 /*yield*/, core.group("Storing SDL in the cache", function () { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        core.info("Caching ".concat(CACHE_PATHS, "."));
+                                        // Pass a copy of CACHE_PATHS since cache.saveCache modifies/modified its arguments
+                                        return [4 /*yield*/, cache.saveCache(CACHE_PATHS.slice(), CACHE_KEY)];
+                                    case 1:
+                                        // Pass a copy of CACHE_PATHS since cache.saveCache modifies/modified its arguments
+                                        _a.sent();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); })];
                 case 7:
-                    // Pass a copy of CACHE_PATHS since cache.saveCache modifies/modified its arguments
                     _a.sent();
                     _a.label = 8;
                 case 8:

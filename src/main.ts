@@ -301,21 +301,33 @@ async function run() {
     shell: SHELL,
     cmake_toolchain_file: CMAKE_TOOLCHAIN_FILE,
   });
-  core.info(`setup-sdl state = ${STATE_HASH}`);
 
   const PACKAGE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/package`;
 
   const CACHE_KEY = `setup-sdl-${STATE_HASH}`;
   const CACHE_PATHS = [PACKAGE_DIR];
-  // Pass a copy of CACHE_PATHS since cache.restoreCache modifies/modified its arguments
-  const found_cache_key = await cache.restoreCache(
-    CACHE_PATHS.slice(),
-    CACHE_KEY
+
+  const sdl_from_cache = await core.group(
+    `Looking up a SDL build in the cache`,
+    async () => {
+      core.info(`setup-sdl state = ${STATE_HASH}`);
+
+      // Pass a copy of CACHE_PATHS since cache.restoreCache modifies/modified its arguments
+      const found_cache_key = await cache.restoreCache(
+        CACHE_PATHS.slice(),
+        CACHE_KEY
+      );
+      if (found_cache_key) {
+        core.info(`SDL found in the chache: key = ${found_cache_key}`);
+      } else {
+        core.info("No match found in cache. Building SDL from scratch.");
+      }
+
+      return !!found_cache_key;
+    }
   );
 
-  if (!found_cache_key) {
-    core.info("No match found in cache. Building SDL from scratch.");
-
+  if (!sdl_from_cache) {
     const SOURCE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/source`;
     const BUILD_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/build`;
 
@@ -350,9 +362,11 @@ async function run() {
       shell: SHELL,
     });
 
-    core.info(`Caching ${CACHE_PATHS}.`);
-    // Pass a copy of CACHE_PATHS since cache.saveCache modifies/modified its arguments
-    await cache.saveCache(CACHE_PATHS.slice(), CACHE_KEY);
+    await core.group("Storing SDL in the cache", async () => {
+      core.info(`Caching ${CACHE_PATHS}.`);
+      // Pass a copy of CACHE_PATHS since cache.saveCache modifies/modified its arguments
+      await cache.saveCache(CACHE_PATHS.slice(), CACHE_KEY);
+    });
   }
 
   const SDL_VERSION =
