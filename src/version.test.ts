@@ -103,7 +103,6 @@ describe("test finding a release", () => {
   });
 
   test(`test finding latest non-prerelease 2 release`, () => {
-    console.log(SdlRelease.get_releases());
     const v = new SdlVersion({ major: 2, minor: 0, patch: 0 });
     const rel = SdlRelease.find_release(v, false, SdlReleaseType.Latest);
     expect(rel).not.toBeNull();

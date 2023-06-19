@@ -570,6 +570,7 @@ exports.configure_ninja_build_tool = exports.get_ninja_download_url = void 0;
 var fs = __importStar(__nccwpck_require__(7147));
 var path = __importStar(__nccwpck_require__(1017));
 var process = __importStar(__nccwpck_require__(7282));
+var cache = __importStar(__nccwpck_require__(7799));
 var core = __importStar(__nccwpck_require__(2186));
 var tc = __importStar(__nccwpck_require__(7784));
 var constants_1 = __nccwpck_require__(7077);
@@ -592,30 +593,33 @@ function get_ninja_download_url(platform, version) {
 exports.get_ninja_download_url = get_ninja_download_url;
 function configure_ninja_build_tool(platform) {
     return __awaiter(this, void 0, void 0, function () {
-        var ninja_dir, cache_name, ninja_directory, ninja_url, ninja_zip_path, ninja_extract_folder;
+        var ninja_directory, CACHE_KEY, CACHE_PATHS, found_cache_key, ninja_url, ninja_zip_path;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    ninja_dir = "".concat((0, platform_1.get_platform_root_directory)(platform), "/ninja");
-                    fs.mkdirSync(ninja_dir, { recursive: true });
-                    cache_name = "sdl-".concat(platform);
-                    ninja_directory = tc.find(cache_name, constants_1.NINJA_VERSION);
-                    if (!!ninja_directory) return [3 /*break*/, 4];
-                    core.info("Could not find ninja ".concat(constants_1.NINJA_VERSION, " in the cache."));
+                    ninja_directory = "".concat((0, platform_1.get_platform_root_directory)(platform), "/ninja");
+                    fs.mkdirSync(ninja_directory, { recursive: true });
+                    CACHE_KEY = "ninja-".concat(platform, "-").concat(constants_1.NINJA_VERSION);
+                    CACHE_PATHS = [ninja_directory];
+                    return [4 /*yield*/, cache.restoreCache(CACHE_PATHS.slice(), CACHE_KEY, ["ninja-{platform}"])];
+                case 1:
+                    found_cache_key = _a.sent();
+                    if (!!found_cache_key) return [3 /*break*/, 5];
+                    core.info("Could not find ninja in the cache.");
                     ninja_url = get_ninja_download_url(platform, constants_1.NINJA_VERSION);
                     core.info("Downloading ".concat(ninja_url, "."));
                     return [4 /*yield*/, tc.downloadTool(ninja_url)];
-                case 1:
+                case 2:
                     ninja_zip_path = _a.sent();
                     core.info("Extracting ".concat(ninja_zip_path, "."));
-                    return [4 /*yield*/, tc.extractZip(ninja_zip_path, ninja_dir)];
-                case 2:
-                    ninja_extract_folder = _a.sent();
-                    return [4 /*yield*/, tc.cacheDir(ninja_extract_folder, cache_name, constants_1.NINJA_VERSION)];
+                    return [4 /*yield*/, tc.extractZip(ninja_zip_path, ninja_directory)];
                 case 3:
-                    ninja_directory = _a.sent();
-                    _a.label = 4;
+                    _a.sent();
+                    return [4 /*yield*/, cache.saveCache(CACHE_PATHS.slice(), CACHE_KEY)];
                 case 4:
+                    _a.sent();
+                    _a.label = 5;
+                case 5:
                     process.env.PATH = ninja_directory + path.delimiter + process.env.PATH;
                     return [2 /*return*/];
             }
