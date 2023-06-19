@@ -94,22 +94,53 @@ async function cmake_configure_build(args: {
   build_dir: string;
   package_dir: string;
   build_type: string;
-  cmake_args: string[];
+  cmake_configure_args: string[];
   shell: string;
+  verbose: boolean;
 }) {
-  const cmake_args = args.cmake_args.join(" ");
+  const configure_args = [
+    "cmake",
+    "-S",
+    args.source_dir,
+    "-B",
+    args.build_dir,
+    ...args.cmake_configure_args,
+  ];
+  if (core.isDebug()) {
+    configure_args.push("--trace-expand");
+  }
 
-  const configure_command = `cmake -S "${args.source_dir}" -B "${args.build_dir}" ${cmake_args}`;
-  const build_command = `cmake --build "${args.build_dir}" --config ${args.build_type}`;
-  const install_command = `cmake --install "${args.build_dir}" --prefix ${args.package_dir} --config ${args.build_type}`;
+  const build_args = [
+    "cmake",
+    "--build",
+    args.build_dir,
+    "--config",
+    args.build_type,
+  ];
+  if (args.verbose) {
+    build_args.push("--verbose");
+  }
+
+  const install_args = [
+    "cmake",
+    "--install",
+    args.build_dir,
+    "--prefix",
+    args.package_dir,
+    "--config",
+    args.build_type,
+  ];
 
   await core.group(`Configuring SDL (CMake)`, async () => {
+    const configure_command = configure_args.join(" ");
     execute_child_process(configure_command, args.shell);
   });
   await core.group(`Building SDL (CMake)`, async () => {
+    const build_command = build_args.join(" ");
     execute_child_process(build_command, args.shell);
   });
   await core.group(`Installing SDL (CMake)`, async () => {
+    const install_command = install_args.join(" ");
     execute_child_process(install_command, args.shell);
   });
 }
@@ -340,17 +371,19 @@ async function run() {
       });
     }
 
-    const cmake_args = [
+    const cmake_configure_args = [
       `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`,
       "-DCMAKE_INSTALL_BINDIR=bin",
       "-DCMAKE_INSTALL_INCLUDEDIR=include",
       "-DCMAKE_INSTALL_LIBDIR=lib",
     ];
     if (CMAKE_TOOLCHAIN_FILE) {
-      cmake_args.push(`-DCMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE}"`);
+      cmake_configure_args.push(
+        `-DCMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE}"`
+      );
     }
     if (USE_NINJA) {
-      cmake_args.push("-GNinja");
+      cmake_configure_args.push("-GNinja");
     }
 
     await cmake_configure_build({
@@ -358,7 +391,8 @@ async function run() {
       build_dir: BUILD_DIR,
       package_dir: PACKAGE_DIR,
       build_type: CMAKE_BUILD_TYPE,
-      cmake_args: cmake_args,
+      cmake_configure_args: cmake_configure_args,
+      verbose: core.getBooleanInput("verbose"),
       shell: SHELL,
     });
 

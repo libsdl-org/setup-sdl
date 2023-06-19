@@ -25,6 +25,9 @@ inputs:
   add-to-environment:
     description: "Add path of the SDL (shared) library to PATH/LD_LIBRARY_PATH/DYLD_LIBRARY_PATH"
     default: "false"
+  verbose:
+    description: "Do a verbose build"
+    default: "false"
 outputs:
   prefix:
     description: "Actual root of the SDL package"

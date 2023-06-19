@@ -223,17 +223,44 @@ function execute_child_process(command, shell) {
 }
 function cmake_configure_build(args) {
     return __awaiter(this, void 0, void 0, function () {
-        var cmake_args, configure_command, build_command, install_command;
+        var configure_args, build_args, install_args;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    cmake_args = args.cmake_args.join(" ");
-                    configure_command = "cmake -S \"".concat(args.source_dir, "\" -B \"").concat(args.build_dir, "\" ").concat(cmake_args);
-                    build_command = "cmake --build \"".concat(args.build_dir, "\" --config ").concat(args.build_type);
-                    install_command = "cmake --install \"".concat(args.build_dir, "\" --prefix ").concat(args.package_dir, " --config ").concat(args.build_type);
+                    configure_args = __spreadArray([
+                        "cmake",
+                        "-S",
+                        args.source_dir,
+                        "-B",
+                        args.build_dir
+                    ], args.cmake_configure_args, true);
+                    if (core.isDebug()) {
+                        configure_args.push("--trace-expand");
+                    }
+                    build_args = [
+                        "cmake",
+                        "--build",
+                        args.build_dir,
+                        "--config",
+                        args.build_type,
+                    ];
+                    if (args.verbose) {
+                        build_args.push("--verbose");
+                    }
+                    install_args = [
+                        "cmake",
+                        "--install",
+                        args.build_dir,
+                        "--prefix",
+                        args.package_dir,
+                        "--config",
+                        args.build_type,
+                    ];
                     return [4 /*yield*/, core.group("Configuring SDL (CMake)", function () { return __awaiter(_this, void 0, void 0, function () {
+                            var configure_command;
                             return __generator(this, function (_a) {
+                                configure_command = configure_args.join(" ");
                                 execute_child_process(configure_command, args.shell);
                                 return [2 /*return*/];
                             });
@@ -241,7 +268,9 @@ function cmake_configure_build(args) {
                 case 1:
                     _a.sent();
                     return [4 /*yield*/, core.group("Building SDL (CMake)", function () { return __awaiter(_this, void 0, void 0, function () {
+                            var build_command;
                             return __generator(this, function (_a) {
+                                build_command = build_args.join(" ");
                                 execute_child_process(build_command, args.shell);
                                 return [2 /*return*/];
                             });
@@ -249,7 +278,9 @@ function cmake_configure_build(args) {
                 case 2:
                     _a.sent();
                     return [4 /*yield*/, core.group("Installing SDL (CMake)", function () { return __awaiter(_this, void 0, void 0, function () {
+                            var install_command;
                             return __generator(this, function (_a) {
+                                install_command = install_args.join(" ");
                                 execute_child_process(install_command, args.shell);
                                 return [2 /*return*/];
                             });
@@ -354,7 +385,7 @@ function get_cmake_toolchain_path() {
 }
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, SOURCE_DIR, BUILD_DIR, USE_NINJA, cmake_args, SDL_VERSION;
+        var SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, SOURCE_DIR, BUILD_DIR, USE_NINJA, cmake_configure_args, SDL_VERSION;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -460,24 +491,25 @@ function run() {
                     _a.sent();
                     _a.label = 5;
                 case 5:
-                    cmake_args = [
+                    cmake_configure_args = [
                         "-DCMAKE_BUILD_TYPE=".concat(CMAKE_BUILD_TYPE),
                         "-DCMAKE_INSTALL_BINDIR=bin",
                         "-DCMAKE_INSTALL_INCLUDEDIR=include",
                         "-DCMAKE_INSTALL_LIBDIR=lib",
                     ];
                     if (CMAKE_TOOLCHAIN_FILE) {
-                        cmake_args.push("-DCMAKE_TOOLCHAIN_FILE=\"".concat(CMAKE_TOOLCHAIN_FILE, "\""));
+                        cmake_configure_args.push("-DCMAKE_TOOLCHAIN_FILE=\"".concat(CMAKE_TOOLCHAIN_FILE, "\""));
                     }
                     if (USE_NINJA) {
-                        cmake_args.push("-GNinja");
+                        cmake_configure_args.push("-GNinja");
                     }
                     return [4 /*yield*/, cmake_configure_build({
                             source_dir: SOURCE_DIR,
                             build_dir: BUILD_DIR,
                             package_dir: PACKAGE_DIR,
                             build_type: CMAKE_BUILD_TYPE,
-                            cmake_args: cmake_args,
+                            cmake_configure_args: cmake_configure_args,
+                            verbose: core.getBooleanInput("verbose"),
                             shell: SHELL,
                         })];
                 case 6:
