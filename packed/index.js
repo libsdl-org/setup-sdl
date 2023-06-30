@@ -268,6 +268,7 @@ function calculate_state_hash(args) {
         "LIBPATH",
         "CMAKE_PREFIX_PATH",
         "CMAKE_TOOLCHAIN_FILE",
+        "MSYSTEM",
         "PKG_CONFIG_PATH",
     ];
     var env_state = [];
