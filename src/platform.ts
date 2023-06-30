@@ -46,17 +46,17 @@ export function export_environent_variables(
       core.addPath(`${prefix}/bin`);
       break;
     case SdlBuildPlatform.Macos: {
-      let libpath = process.env.DYLD_LIBRARY_PATH;
-      if (libpath) {
-        libpath = "`${prefix}`/lib:${libpath}";
+      let libpath = `${prefix}/lib`;
+      if (process.env.DYLD_LIBRARY_PATH) {
+        libpath += `:${process.env.DYLD_LIBRARY_PATH}`;
       }
       core.exportVariable("DYLD_LIBRARY_PATH", libpath);
       break;
     }
     case SdlBuildPlatform.Linux: {
-      let libpath = process.env.LD_LIBRARY_PATH;
-      if (libpath) {
-        libpath = "`${prefix}`/lib:${libpath}";
+      let libpath = `${prefix}/lib`;
+      if (process.env.LD_LIBRARY_PATH) {
+        libpath += `:${process.env.LD_LIBRARY_PATH}`;
       }
       core.exportVariable("LD_LIBRARY_PATH", libpath);
       break;
