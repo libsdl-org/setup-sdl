@@ -354,7 +354,7 @@ async function run() {
         CACHE_KEY
       );
       if (found_cache_key) {
-        core.info(`SDL found in the chache: key = ${found_cache_key}`);
+        core.info(`SDL found in the cache: key = ${found_cache_key}`);
       } else {
         core.info("No match found in cache. Building SDL from scratch.");
       }

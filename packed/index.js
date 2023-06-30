@@ -424,7 +424,7 @@ function run() {
                                     case 1:
                                         found_cache_key = _a.sent();
                                         if (found_cache_key) {
-                                            core.info("SDL found in the chache: key = ".concat(found_cache_key));
+                                            core.info("SDL found in the cache: key = ".concat(found_cache_key));
                                         }
                                         else {
                                             core.info("No match found in cache. Building SDL from scratch.");
