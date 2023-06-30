@@ -12,7 +12,8 @@ import { configure_ninja_build_tool } from "./ninja";
 import { SetupSdlError } from "./util";
 
 import {
-  SdlRelease,
+  GitHubRelease,
+  SdlReleaseDb,
   SdlReleaseType,
   SdlVersion,
   parse_requested_sdl_version,
@@ -306,7 +307,9 @@ async function run() {
         throw new SetupSdlError("Invalid -head version");
       }
     } else {
-      const sdl_release = SdlRelease.find_release(
+      const github_releases = GitHubRelease.fetch_all("libsdl-org/SDL");
+      const release_db = SdlReleaseDb.create(github_releases);
+      const sdl_release = release_db.find(
         requested_version,
         core.getBooleanInput("pre-release"),
         requested_type

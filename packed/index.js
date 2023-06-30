@@ -7,47 +7,9 @@
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SDL_TAGS = exports.SDL_GIT_URL = exports.NINJA_VERSION = void 0;
+exports.SDL_GIT_URL = exports.NINJA_VERSION = void 0;
 exports.NINJA_VERSION = "1.11.1";
 exports.SDL_GIT_URL = "https://github.com/libsdl-org/SDL.git";
-exports.SDL_TAGS = [
-    "2.0.22-RC1",
-    "2.0.22-RC2",
-    "2.0.22-RC3",
-    "release-2.0.0",
-    "release-2.0.1",
-    "release-2.0.2",
-    "release-2.0.3",
-    "release-2.0.4",
-    "release-2.0.5",
-    "release-2.0.6",
-    "release-2.0.7",
-    "release-2.0.8",
-    "release-2.0.9",
-    "release-2.0.10",
-    "release-2.0.12",
-    "release-2.0.14",
-    "release-2.0.16",
-    "release-2.0.18",
-    "release-2.0.20",
-    "release-2.0.22",
-    "prerelease-2.23.1",
-    "prerelease-2.23.2",
-    "release-2.24.0",
-    "release-2.24.1",
-    "release-2.24.2",
-    "prerelease-2.25.1",
-    "release-2.26.0",
-    "release-2.26.1",
-    "release-2.26.2",
-    "release-2.26.3",
-    "release-2.26.4",
-    "release-2.26.5",
-    "prerelease-2.27.1",
-    // Add SDL2 releases here
-    "prerelease-3.0.0",
-    // Add SDL3 releases here
-];
 
 
 /***/ }),
@@ -385,7 +347,7 @@ function get_cmake_toolchain_path() {
 }
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, SOURCE_DIR, BUILD_DIR, USE_NINJA, cmake_configure_args, SDL_VERSION;
+        var SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, github_releases, release_db, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, SOURCE_DIR, BUILD_DIR, USE_NINJA, cmake_configure_args, SDL_VERSION;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -428,7 +390,9 @@ function run() {
                             }
                         }
                         else {
-                            sdl_release = version_1.SdlRelease.find_release(requested_version, core.getBooleanInput("pre-release"), requested_type);
+                            github_releases = version_1.GitHubRelease.fetch_all("libsdl-org/SDL");
+                            release_db = version_1.SdlReleaseDb.create(github_releases);
+                            sdl_release = release_db.find(requested_version, core.getBooleanInput("pre-release"), requested_type);
                             if (!sdl_release) {
                                 throw new util_1.SetupSdlError("Could not find a matching SDL release for ".concat(requested_version));
                             }
@@ -845,10 +809,30 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parse_requested_sdl_version = exports.SdlRelease = exports.SdlReleaseType = exports.SdlVersion = void 0;
+exports.parse_requested_sdl_version = exports.SdlRelease = exports.SdlReleaseDb = exports.SdlReleaseType = exports.SdlVersion = exports.GitHubRelease = void 0;
+var child_process = __importStar(__nccwpck_require__(2081));
 var fs = __importStar(__nccwpck_require__(7147));
-var constants_1 = __nccwpck_require__(7077);
 var util_1 = __nccwpck_require__(9731);
+var GitHubRelease = /** @class */ (function () {
+    function GitHubRelease(name, prerelease, tag, time) {
+        this.name = name;
+        this.prerelease = prerelease;
+        this.tag = tag;
+        this.time = time;
+    }
+    GitHubRelease.fetch_all = function (repo) {
+        var buffer = child_process.execSync("gh release list -R ".concat(repo, " -L 1000"));
+        return GitHubRelease.from_gh_output(buffer.toString());
+    };
+    GitHubRelease.from_gh_output = function (text) {
+        return text.trim().split("\n").map(function (line_str) {
+            var line_parts = line_str.split("\t");
+            return new GitHubRelease(line_parts[0], line_parts[1].toLowerCase() == "pre-release", line_parts[2], Date.parse(line_parts[3]));
+        });
+    };
+    return GitHubRelease;
+}());
+exports.GitHubRelease = GitHubRelease;
 var SdlVersion = /** @class */ (function () {
     function SdlVersion(version) {
         if (typeof version == "string") {
@@ -961,20 +945,36 @@ var SdlReleaseType;
     SdlReleaseType["Latest"] = "Latest";
     SdlReleaseType["Exact"] = "Exact";
 })(SdlReleaseType = exports.SdlReleaseType || (exports.SdlReleaseType = {}));
-var SdlRelease = /** @class */ (function () {
-    function SdlRelease(version, prerelease, tag) {
-        this.version = version;
-        this.prerelease = prerelease;
-        this.tag = tag;
+var SdlReleaseDb = /** @class */ (function () {
+    function SdlReleaseDb(releases) {
+        this.releases = releases;
     }
-    SdlRelease.get_releases = function () {
-        var releases = [];
+    SdlReleaseDb.prototype.find = function (version, prerelease, type) {
+        for (var _i = 0, _a = this.releases; _i < _a.length; _i++) {
+            var release = _a[_i];
+            // Skip if a pre-release has not been requested
+            if (release.prerelease != null && !prerelease) {
+                continue;
+            }
+            if (type == SdlReleaseType.Exact) {
+                if (release.version.equals(version)) {
+                    return release;
+                }
+            }
+            if (type == SdlReleaseType.Latest || type == SdlReleaseType.Any) {
+                if (release.version.major == version.major) {
+                    return release;
+                }
+            }
+        }
+        return null;
+    };
+    SdlReleaseDb.create = function (github_releases) {
         var R = new RegExp("(release-|prerelease-)?([0-9.]+)(-RC([0-9]+))?");
-        for (var _i = 0, SDL_TAGS_1 = constants_1.SDL_TAGS; _i < SDL_TAGS_1.length; _i++) {
-            var tag = SDL_TAGS_1[_i];
-            var m = tag.match(R);
+        var releases = github_releases.map(function (gh_release) {
+            var m = gh_release.tag.match(R);
             if (m == null) {
-                throw new util_1.SetupSdlError("Invalid tag: ".concat(tag));
+                throw new util_1.SetupSdlError("Invalid tag: ".concat(gh_release.tag));
             }
             var prerelease = null;
             if (m[1] != null && m[1] != "release-") {
@@ -984,34 +984,22 @@ var SdlRelease = /** @class */ (function () {
                 prerelease = Number(m[4]) + 1;
             }
             var version = m[2];
-            releases.push(new SdlRelease(new SdlVersion(version), prerelease, tag));
-        }
+            return new SdlRelease(new SdlVersion(version), prerelease, gh_release.tag);
+        });
         releases.sort(function (release1, release2) {
             return release1.compare(release2);
         });
-        return releases;
+        return new SdlReleaseDb(releases);
     };
-    SdlRelease.find_release = function (version, prerelease, type) {
-        var RELEASES = SdlRelease.get_releases();
-        for (var _i = 0, RELEASES_1 = RELEASES; _i < RELEASES_1.length; _i++) {
-            var sdl_release = RELEASES_1[_i];
-            // Skip if a pre-release has not been requested
-            if (sdl_release.prerelease != null && !prerelease) {
-                continue;
-            }
-            if (type == SdlReleaseType.Exact) {
-                if (sdl_release.version.equals(version)) {
-                    return sdl_release;
-                }
-            }
-            if (type == SdlReleaseType.Latest || type == SdlReleaseType.Any) {
-                if (sdl_release.version.major == version.major) {
-                    return sdl_release;
-                }
-            }
-        }
-        return null;
-    };
+    return SdlReleaseDb;
+}());
+exports.SdlReleaseDb = SdlReleaseDb;
+var SdlRelease = /** @class */ (function () {
+    function SdlRelease(version, prerelease, tag) {
+        this.version = version;
+        this.prerelease = prerelease;
+        this.tag = tag;
+    }
     SdlRelease.prototype.compare = function (other) {
         var cmp = this.version.compare(other.version);
         if (cmp != 0) {

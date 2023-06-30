@@ -1,7 +1,37 @@
+import * as child_process from "child_process";
 import * as fs from "fs";
 
-import { SDL_TAGS } from "./constants";
 import { SetupSdlError } from "./util";
+
+export class GitHubRelease {
+  name: string;
+  prerelease: boolean;
+  tag: string;
+  time: number;
+  constructor(name: string, prerelease: boolean, tag: string, time: number) {
+    this.name = name;
+    this.prerelease = prerelease;
+    this.tag = tag;
+    this.time = time;
+  }
+
+  static fetch_all(repo: string): GitHubRelease[] {
+    const buffer = child_process.execSync(`gh release list -R ${repo} -L 1000`);
+    return GitHubRelease.from_gh_output(buffer.toString());
+  }
+
+  static from_gh_output(text: string): GitHubRelease[] {
+    return text.trim().split("\n").map(line_str => {
+      const line_parts = line_str.split("\t");
+      return new GitHubRelease(
+        line_parts[0],
+        line_parts[1].toLowerCase() == "pre-release",
+        line_parts[2],
+        Date.parse(line_parts[3]),
+      );
+    });
+  }
+}
 
 export class SdlVersion {
   major: number;
@@ -163,6 +193,62 @@ export enum SdlReleaseType {
   Exact = "Exact",
 }
 
+export class SdlReleaseDb {
+  releases: SdlRelease[];
+
+  constructor(releases: SdlRelease[]) {
+    this.releases = releases;
+  }
+
+  find(
+    version: SdlVersion,
+    prerelease: boolean,
+    type: SdlReleaseType
+  ): SdlRelease | null {
+    for (const release of this.releases) {
+      // Skip if a pre-release has not been requested
+      if (release.prerelease != null && !prerelease) {
+        continue;
+      }
+      if (type == SdlReleaseType.Exact) {
+        if (release.version.equals(version)) {
+          return release;
+        }
+      }
+      if (type == SdlReleaseType.Latest || type == SdlReleaseType.Any) {
+        if (release.version.major == version.major) {
+          return release;
+        }
+      }
+    }
+    return null;
+  }
+
+  static create(github_releases: GitHubRelease[]): SdlReleaseDb {
+
+    const R = new RegExp("(release-|prerelease-)?([0-9.]+)(-RC([0-9]+))?");
+    const releases = github_releases.map(gh_release => {
+      const m = gh_release.tag.match(R);
+      if (m == null) {
+        throw new SetupSdlError(`Invalid tag: ${gh_release.tag}`);
+      }
+      let prerelease: number | null = null;
+      if (m[1] != null && m[1] != "release-") {
+        prerelease = 1;
+      } else if (m[3] != null && m[4] != null) {
+        prerelease = Number(m[4]) + 1;
+      }
+      const version = m[2];
+      return new SdlRelease(new SdlVersion(version), prerelease, gh_release.tag);
+    });
+    releases.sort((release1, release2) => {
+      return release1.compare(release2);
+    });
+
+    return new SdlReleaseDb(releases);
+  }
+}
+
 export class SdlRelease {
   version: SdlVersion;
   prerelease: number | null;
@@ -172,55 +258,6 @@ export class SdlRelease {
     this.version = version;
     this.prerelease = prerelease;
     this.tag = tag;
-  }
-
-  static get_releases(): SdlRelease[] {
-    const releases: SdlRelease[] = [];
-    const R = new RegExp("(release-|prerelease-)?([0-9.]+)(-RC([0-9]+))?");
-
-    for (const tag of SDL_TAGS) {
-      const m = tag.match(R);
-      if (m == null) {
-        throw new SetupSdlError(`Invalid tag: ${tag}`);
-      }
-      let prerelease: number | null = null;
-      if (m[1] != null && m[1] != "release-") {
-        prerelease = 1;
-      } else if (m[3] != null && m[4] != null) {
-        prerelease = Number(m[4]) + 1;
-      }
-      const version = m[2];
-      releases.push(new SdlRelease(new SdlVersion(version), prerelease, tag));
-    }
-    releases.sort(function (release1, release2) {
-      return release1.compare(release2);
-    });
-    return releases;
-  }
-
-  static find_release(
-    version: SdlVersion,
-    prerelease: boolean,
-    type: SdlReleaseType
-  ): SdlRelease | null {
-    const RELEASES: SdlRelease[] = SdlRelease.get_releases();
-    for (const sdl_release of RELEASES) {
-      // Skip if a pre-release has not been requested
-      if (sdl_release.prerelease != null && !prerelease) {
-        continue;
-      }
-      if (type == SdlReleaseType.Exact) {
-        if (sdl_release.version.equals(version)) {
-          return sdl_release;
-        }
-      }
-      if (type == SdlReleaseType.Latest || type == SdlReleaseType.Any) {
-        if (sdl_release.version.major == version.major) {
-          return sdl_release;
-        }
-      }
-    }
-    return null;
   }
 
   compare(other: SdlRelease): number {
