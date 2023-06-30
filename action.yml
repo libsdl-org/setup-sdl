@@ -11,7 +11,7 @@ inputs:
     required: true
   build-type:
     description: "CMake build type (Release/Debug/RelWithDebInfo/MinSizeRel)"
-    default: "Release"
+    default: "Debug"
     required: true
   sdl-test:
     description: "Build and install SDL_test library"
