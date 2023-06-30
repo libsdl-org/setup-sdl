@@ -177,6 +177,7 @@ function calculate_state_hash(args: {
     "cmake-toolchain-file",
     "discriminator",
     "ninja",
+    "sdl-test",
   ];
   const inputs_state: string[] = [];
   for (const key of ACTION_KEYS) {
@@ -362,6 +363,8 @@ async function run() {
   );
 
   if (!sdl_from_cache) {
+    const BUILD_SDL_TEST = core.getBooleanInput("sdl-test");
+
     const SOURCE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/source`;
     const BUILD_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/build`;
 
@@ -375,6 +378,7 @@ async function run() {
     }
 
     const cmake_configure_args = [
+      `-DSDL_TEST=${BUILD_SDL_TEST}`,
       `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`,
       "-DCMAKE_INSTALL_BINDIR=bin",
       "-DCMAKE_INSTALL_INCLUDEDIR=include",
@@ -419,14 +423,18 @@ async function run() {
   if (pkg_config_path) {
     pkg_config_path += path.delimiter;
   } else {
-    pkg_config_path = ""
+    pkg_config_path = "";
   }
-  pkg_config_path += path.join(PACKAGE_DIR, "lib", "pkgconfig").replace("\\", "/");
+  pkg_config_path += path
+    .join(PACKAGE_DIR, "lib", "pkgconfig")
+    .replace("\\", "/");
   core.exportVariable("PKG_CONFIG_PATH", pkg_config_path);
 
   // Set SDL2_CONFIG environment variable
   if (SDL_VERSION.major == 2) {
-    const sdl2_config = path.join(PACKAGE_DIR, "bin", "sdl2-config").replace("\\", "/");
+    const sdl2_config = path
+      .join(PACKAGE_DIR, "bin", "sdl2-config")
+      .replace("\\", "/");
     core.exportVariable(`SDL2_CONFIG`, sdl2_config);
   }
 

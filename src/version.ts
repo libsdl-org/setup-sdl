@@ -21,15 +21,18 @@ export class GitHubRelease {
   }
 
   static from_gh_output(text: string): GitHubRelease[] {
-    return text.trim().split("\n").map(line_str => {
-      const line_parts = line_str.split("\t");
-      return new GitHubRelease(
-        line_parts[0],
-        line_parts[1].toLowerCase() == "pre-release",
-        line_parts[2],
-        Date.parse(line_parts[3]),
-      );
-    });
+    return text
+      .trim()
+      .split("\n")
+      .map((line_str) => {
+        const line_parts = line_str.split("\t");
+        return new GitHubRelease(
+          line_parts[0],
+          line_parts[1].toLowerCase() == "pre-release",
+          line_parts[2],
+          Date.parse(line_parts[3])
+        );
+      });
   }
 }
 
@@ -225,9 +228,8 @@ export class SdlReleaseDb {
   }
 
   static create(github_releases: GitHubRelease[]): SdlReleaseDb {
-
     const R = new RegExp("(release-|prerelease-)?([0-9.]+)(-RC([0-9]+))?");
-    const releases = github_releases.map(gh_release => {
+    const releases = github_releases.map((gh_release) => {
       const m = gh_release.tag.match(R);
       if (m == null) {
         throw new SetupSdlError(`Invalid tag: ${gh_release.tag}`);
@@ -239,7 +241,11 @@ export class SdlReleaseDb {
         prerelease = Number(m[4]) + 1;
       }
       const version = m[2];
-      return new SdlRelease(new SdlVersion(version), prerelease, gh_release.tag);
+      return new SdlRelease(
+        new SdlVersion(version),
+        prerelease,
+        gh_release.tag
+      );
     });
     releases.sort((release1, release2) => {
       return release1.compare(release2);

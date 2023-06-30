@@ -13,6 +13,9 @@ inputs:
     description: "CMake build type (Release/Debug/RelWithDebInfo/MinSizeRel)"
     default: "Release"
     required: true
+  sdl-test:
+    description: "Build and install SDL_test library"
+    default: "false"
   cmake-toolchain-file:
     description: "Path of a CMake toolchain file"
   ninja:

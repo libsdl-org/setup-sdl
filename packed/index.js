@@ -280,6 +280,7 @@ function calculate_state_hash(args) {
         "cmake-toolchain-file",
         "discriminator",
         "ninja",
+        "sdl-test",
     ];
     var inputs_state = [];
     for (var _a = 0, ACTION_KEYS_1 = ACTION_KEYS; _a < ACTION_KEYS_1.length; _a++) {
@@ -347,7 +348,7 @@ function get_cmake_toolchain_path() {
 }
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, github_releases, release_db, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, SOURCE_DIR, BUILD_DIR, USE_NINJA, cmake_configure_args, SDL_VERSION, pkg_config_path, sdl2_config;
+        var SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, github_releases, release_db, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, BUILD_SDL_TEST, SOURCE_DIR, BUILD_DIR, USE_NINJA, cmake_configure_args, SDL_VERSION, pkg_config_path, sdl2_config;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -434,6 +435,7 @@ function run() {
                 case 2:
                     sdl_from_cache = _a.sent();
                     if (!!sdl_from_cache) return [3 /*break*/, 8];
+                    BUILD_SDL_TEST = core.getBooleanInput("sdl-test");
                     SOURCE_DIR = "".concat(SETUP_SDL_ROOT, "/").concat(STATE_HASH, "/source");
                     BUILD_DIR = "".concat(SETUP_SDL_ROOT, "/").concat(STATE_HASH, "/build");
                     return [4 /*yield*/, checkout_sdl_git_hash(GIT_HASH, SOURCE_DIR)];
@@ -456,6 +458,7 @@ function run() {
                     _a.label = 5;
                 case 5:
                     cmake_configure_args = [
+                        "-DSDL_TEST=".concat(BUILD_SDL_TEST),
                         "-DCMAKE_BUILD_TYPE=".concat(CMAKE_BUILD_TYPE),
                         "-DCMAKE_INSTALL_BINDIR=bin",
                         "-DCMAKE_INSTALL_INCLUDEDIR=include",
@@ -508,11 +511,15 @@ function run() {
                     else {
                         pkg_config_path = "";
                     }
-                    pkg_config_path += path.join(PACKAGE_DIR, "lib", "pkgconfig").replace("\\", "/");
+                    pkg_config_path += path
+                        .join(PACKAGE_DIR, "lib", "pkgconfig")
+                        .replace("\\", "/");
                     core.exportVariable("PKG_CONFIG_PATH", pkg_config_path);
                     // Set SDL2_CONFIG environment variable
                     if (SDL_VERSION.major == 2) {
-                        sdl2_config = path.join(PACKAGE_DIR, "bin", "sdl2-config").replace("\\", "/");
+                        sdl2_config = path
+                            .join(PACKAGE_DIR, "bin", "sdl2-config")
+                            .replace("\\", "/");
                         core.exportVariable("SDL2_CONFIG", sdl2_config);
                     }
                     core.exportVariable("SDL".concat(SDL_VERSION.major, "_ROOT"), PACKAGE_DIR);
@@ -839,7 +846,10 @@ var GitHubRelease = /** @class */ (function () {
         return GitHubRelease.from_gh_output(buffer.toString());
     };
     GitHubRelease.from_gh_output = function (text) {
-        return text.trim().split("\n").map(function (line_str) {
+        return text
+            .trim()
+            .split("\n")
+            .map(function (line_str) {
             var line_parts = line_str.split("\t");
             return new GitHubRelease(line_parts[0], line_parts[1].toLowerCase() == "pre-release", line_parts[2], Date.parse(line_parts[3]));
         });
