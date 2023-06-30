@@ -425,16 +425,12 @@ async function run() {
   } else {
     pkg_config_path = "";
   }
-  pkg_config_path += path
-    .join(PACKAGE_DIR, "lib", "pkgconfig")
-    .replace("\\", "/");
+  pkg_config_path += [PACKAGE_DIR, "lib", "pkgconfig"].join("/");
   core.exportVariable("PKG_CONFIG_PATH", pkg_config_path);
 
   // Set SDL2_CONFIG environment variable
   if (SDL_VERSION.major == 2) {
-    const sdl2_config = path
-      .join(PACKAGE_DIR, "bin", "sdl2-config")
-      .replace("\\", "/");
+    const sdl2_config = [PACKAGE_DIR, "bin", "sdl2-config"].join("/");
     core.exportVariable(`SDL2_CONFIG`, sdl2_config);
   }
 

@@ -2,7 +2,6 @@ import {
   GitHubRelease,
   parse_requested_sdl_version,
   SdlVersion,
-  SdlRelease,
   SdlReleaseDb,
   SdlReleaseType,
 } from "./version";
