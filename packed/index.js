@@ -347,7 +347,7 @@ function get_cmake_toolchain_path() {
 }
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, github_releases, release_db, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, SOURCE_DIR, BUILD_DIR, USE_NINJA, cmake_configure_args, SDL_VERSION;
+        var SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, github_releases, release_db, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, SOURCE_DIR, BUILD_DIR, USE_NINJA, cmake_configure_args, SDL_VERSION, pkg_config_path, sdl2_config;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -500,6 +500,20 @@ function run() {
                     core.info("SDL version is ".concat(SDL_VERSION.toString()));
                     if (core.getBooleanInput("add-to-environment")) {
                         (0, platform_1.export_environent_variables)(SDL_BUILD_PLATFORM, PACKAGE_DIR);
+                    }
+                    pkg_config_path = process.env.PKG_CONFIG_PATH;
+                    if (pkg_config_path) {
+                        pkg_config_path += path.delimiter;
+                    }
+                    else {
+                        pkg_config_path = "";
+                    }
+                    pkg_config_path += path.join(PACKAGE_DIR, "lib", "pkgconfig").replace("\\", "/");
+                    core.exportVariable("PKG_CONFIG_PATH", pkg_config_path);
+                    // Set SDL2_CONFIG environment variable
+                    if (SDL_VERSION.major == 2) {
+                        sdl2_config = path.join(PACKAGE_DIR, "bin", "sdl2-config").replace("\\", "/");
+                        core.exportVariable("SDL2_CONFIG", sdl2_config);
                     }
                     core.exportVariable("SDL".concat(SDL_VERSION.major, "_ROOT"), PACKAGE_DIR);
                     core.setOutput("prefix", PACKAGE_DIR);

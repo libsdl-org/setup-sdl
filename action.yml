@@ -1,5 +1,5 @@
 name: "Setup SDL"
-description: "Set up SDL and add the path of SDL2.dll to the PATH."
+description: "Set up SDL"
 inputs:
   version:
     description: "Minimum required version of SDL (2.x.y, 2-any, 2-latest, 2-head, 3-head), or git hash"

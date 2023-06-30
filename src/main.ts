@@ -414,6 +414,22 @@ async function run() {
     export_environent_variables(SDL_BUILD_PLATFORM, PACKAGE_DIR);
   }
 
+  // Append <prefix>/lib/pkgconfig to PKG_CONFIG_PATH
+  let pkg_config_path = process.env.PKG_CONFIG_PATH;
+  if (pkg_config_path) {
+    pkg_config_path += path.delimiter;
+  } else {
+    pkg_config_path = ""
+  }
+  pkg_config_path += path.join(PACKAGE_DIR, "lib", "pkgconfig").replace("\\", "/");
+  core.exportVariable("PKG_CONFIG_PATH", pkg_config_path);
+
+  // Set SDL2_CONFIG environment variable
+  if (SDL_VERSION.major == 2) {
+    const sdl2_config = path.join(PACKAGE_DIR, "bin", "sdl2-config").replace("\\", "/");
+    core.exportVariable(`SDL2_CONFIG`, sdl2_config);
+  }
+
   core.exportVariable(`SDL${SDL_VERSION.major}_ROOT`, PACKAGE_DIR);
   core.setOutput("prefix", PACKAGE_DIR);
   core.setOutput("version", SDL_VERSION.toString());
