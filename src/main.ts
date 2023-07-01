@@ -8,7 +8,6 @@ import * as cache from "@actions/cache";
 import * as core from "@actions/core";
 
 import { SDL_GIT_URL } from "./constants";
-import { configure_ninja_build_tool } from "./ninja";
 import { SetupSdlError } from "./util";
 
 import {
@@ -176,8 +175,8 @@ function calculate_state_hash(args: {
   const ACTION_KEYS = [
     "build-type",
     "cmake-toolchain-file",
+    "cmake-generator",
     "discriminator",
-    "ninja",
     "sdl-test",
   ];
   const inputs_state: string[] = [];
@@ -371,13 +370,6 @@ async function run() {
 
     await checkout_sdl_git_hash(GIT_HASH, SOURCE_DIR);
 
-    const USE_NINJA = core.getBooleanInput("ninja");
-    if (USE_NINJA) {
-      await core.group(`Configuring Ninja`, async () => {
-        await configure_ninja_build_tool(SDL_BUILD_PLATFORM);
-      });
-    }
-
     const cmake_configure_args = [
       `-DSDL_TEST=${BUILD_SDL_TEST}`,
       `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`,
@@ -390,8 +382,10 @@ async function run() {
         `-DCMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE}"`
       );
     }
-    if (USE_NINJA) {
-      cmake_configure_args.push("-GNinja");
+
+    const CMAKE_GENERATOR = core.getInput("cmake-generator");
+    if (CMAKE_GENERATOR && CMAKE_GENERATOR.length > 0) {
+      cmake_configure_args.push('-G "${CMAKE_GENERATOR}"');
     }
 
     await cmake_configure_build({
