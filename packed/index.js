@@ -453,7 +453,7 @@ function run() {
                     }
                     CMAKE_GENERATOR = core.getInput("cmake-generator");
                     if (CMAKE_GENERATOR && CMAKE_GENERATOR.length > 0) {
-                        cmake_configure_args.push('-G "${CMAKE_GENERATOR}"');
+                        cmake_configure_args.push("-G \"".concat(CMAKE_GENERATOR, "\""));
                     }
                     return [4 /*yield*/, cmake_configure_build({
                             source_dir: SOURCE_DIR,
