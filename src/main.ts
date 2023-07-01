@@ -264,7 +264,7 @@ function get_cmake_toolchain_path(): string | undefined {
 }
 
 async function run() {
-  const GITHUB_TOKEN = core.getInput("github-token");
+  const GITHUB_TOKEN = core.getInput("token");
   if (GITHUB_TOKEN && GITHUB_TOKEN.length > 0) {
     process.env.GH_TOKEN = GITHUB_TOKEN;
     process.env.GITHUB_TOKEN = GITHUB_TOKEN;

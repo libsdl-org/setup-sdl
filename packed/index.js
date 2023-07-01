@@ -353,7 +353,7 @@ function run() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    GITHUB_TOKEN = core.getInput("github-token");
+                    GITHUB_TOKEN = core.getInput("token");
                     if (GITHUB_TOKEN && GITHUB_TOKEN.length > 0) {
                         process.env.GH_TOKEN = GITHUB_TOKEN;
                         process.env.GITHUB_TOKEN = GITHUB_TOKEN;

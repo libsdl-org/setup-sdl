@@ -30,8 +30,9 @@ inputs:
   verbose:
     description: "Do a verbose build"
     default: "false"
-  github-token:
+  token:
     description: "A GitHub API token. Not required when version is 2-head, 3-head, or a git hash."
+    default: ${{ github.token }}
 outputs:
   prefix:
     description: "Actual root of the SDL package"
