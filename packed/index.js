@@ -14,6 +14,191 @@ exports.SDL_GIT_URL = "https://github.com/libsdl-org/SDL.git";
 
 /***/ }),
 
+/***/ 3262:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.detect_package_manager = exports.create_package_manager = exports.package_manager_type_from_string = exports.PackageManagerType = void 0;
+var child_process = __importStar(__nccwpck_require__(2081));
+var core = __importStar(__nccwpck_require__(2186));
+var util_1 = __nccwpck_require__(9731);
+var PackageManagerType;
+(function (PackageManagerType) {
+    PackageManagerType["Apk"] = "apk";
+    PackageManagerType["AptGet"] = "apt-get";
+    PackageManagerType["Dnf"] = "dnf";
+    PackageManagerType["Pacman"] = "pacman";
+})(PackageManagerType = exports.PackageManagerType || (exports.PackageManagerType = {}));
+function package_manager_type_from_string(text) {
+    switch (text.trim().toLowerCase()) {
+        case "apk":
+        case "alpine":
+            return PackageManagerType.Apk;
+        case "aptget":
+        case "apt-get":
+        case "ubuntu":
+        case "debian":
+            return PackageManagerType.AptGet;
+        case "dnf":
+        case "fedora":
+        case "rhel":
+            return PackageManagerType.Dnf;
+        case "pacman":
+        case "arch":
+            return PackageManagerType.Pacman;
+    }
+    throw new util_1.SetupSdlError("Unknown package manager \"".concat(text, "\""));
+}
+exports.package_manager_type_from_string = package_manager_type_from_string;
+var PackageManager = /** @class */ (function () {
+    function PackageManager(type) {
+        this.type = type;
+    }
+    return PackageManager;
+}());
+function echo_and_execute_process(command) {
+    core.info("Executing \"".concat(command, "\""));
+    child_process.execSync(command, { stdio: "inherit" });
+}
+var AptGetPackageManager = /** @class */ (function (_super) {
+    __extends(AptGetPackageManager, _super);
+    function AptGetPackageManager() {
+        return _super.call(this, PackageManagerType.AptGet) || this;
+    }
+    AptGetPackageManager.prototype.update = function () {
+        var COMMAND = "sudo apt-get update -y";
+        echo_and_execute_process(COMMAND);
+    };
+    AptGetPackageManager.prototype.install = function (packages) {
+        var COMMAND = "sudo apt-get install -y ".concat(packages.join(" "));
+        echo_and_execute_process(COMMAND);
+    };
+    return AptGetPackageManager;
+}(PackageManager));
+var DnfPackageManager = /** @class */ (function (_super) {
+    __extends(DnfPackageManager, _super);
+    function DnfPackageManager() {
+        return _super.call(this, PackageManagerType.Dnf) || this;
+    }
+    DnfPackageManager.prototype.update = function () {
+        // Not needed
+    };
+    DnfPackageManager.prototype.install = function (packages) {
+        var COMMAND = "sudo dnf install -y ".concat(packages.join(" "));
+        echo_and_execute_process(COMMAND);
+    };
+    return DnfPackageManager;
+}(PackageManager));
+var ApkPackageManager = /** @class */ (function (_super) {
+    __extends(ApkPackageManager, _super);
+    function ApkPackageManager() {
+        return _super.call(this, PackageManagerType.Apk) || this;
+    }
+    ApkPackageManager.prototype.update = function () {
+        // Not needed
+    };
+    ApkPackageManager.prototype.install = function (packages) {
+        var COMMAND = "sudo apk add ".concat(packages.join(" "));
+        echo_and_execute_process(COMMAND);
+    };
+    return ApkPackageManager;
+}(PackageManager));
+var PacmanPackageManager = /** @class */ (function (_super) {
+    __extends(PacmanPackageManager, _super);
+    function PacmanPackageManager() {
+        return _super.call(this, PackageManagerType.Pacman) || this;
+    }
+    PacmanPackageManager.prototype.update = function () {
+        // Not needed
+    };
+    PacmanPackageManager.prototype.install = function (packages) {
+        var COMMAND = "sudo pacman -S".concat(packages.join(" "));
+        echo_and_execute_process(COMMAND);
+    };
+    return PacmanPackageManager;
+}(PackageManager));
+function create_package_manager(type) {
+    switch (type) {
+        case PackageManagerType.AptGet:
+            return new AptGetPackageManager();
+        case PackageManagerType.Apk:
+            return new ApkPackageManager();
+        case PackageManagerType.Pacman:
+            return new PacmanPackageManager();
+        case PackageManagerType.Dnf:
+            return new DnfPackageManager();
+    }
+}
+exports.create_package_manager = create_package_manager;
+function command_exists(name) {
+    try {
+        child_process.execSync("command -v ".concat(name));
+        return true;
+    }
+    catch (e) {
+        return false;
+    }
+}
+function detect_package_manager() {
+    if (command_exists("apt-get")) {
+        return PackageManagerType.AptGet;
+    }
+    else if (command_exists("apk")) {
+        return PackageManagerType.Apk;
+    }
+    else if (command_exists("pacman")) {
+        return PackageManagerType.Pacman;
+    }
+    else if (command_exists("dnf")) {
+        return PackageManagerType.Dnf;
+    }
+    return undefined;
+}
+exports.detect_package_manager = detect_package_manager;
+
+
+/***/ }),
+
 /***/ 9538:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -87,6 +272,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var child_process = __importStar(__nccwpck_require__(2081));
 var crypto = __importStar(__nccwpck_require__(6113));
@@ -97,6 +283,7 @@ var cache = __importStar(__nccwpck_require__(7799));
 var core = __importStar(__nccwpck_require__(2186));
 var constants_1 = __nccwpck_require__(7077);
 var util_1 = __nccwpck_require__(9731);
+var linuxpm = __importStar(__nccwpck_require__(3262));
 var version_1 = __nccwpck_require__(6970);
 var platform_1 = __nccwpck_require__(5527);
 function convert_git_branch_tag_to_hash(branch_tag) {
@@ -127,13 +314,8 @@ function convert_git_branch_tag_to_hash(branch_tag) {
     });
 }
 function echo_command_and_execute(command, directory) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            core.info("Executing \"".concat(command));
-            child_process.execSync(command, { stdio: "inherit", cwd: directory });
-            return [2 /*return*/];
-        });
-    });
+    core.info("Executing \"".concat(command));
+    child_process.execSync(command, { stdio: "inherit", cwd: directory });
 }
 function checkout_sdl_git_hash(branch_tag_hash, directory) {
     return __awaiter(this, void 0, void 0, function () {
@@ -144,21 +326,11 @@ function checkout_sdl_git_hash(branch_tag_hash, directory) {
                     fs.mkdirSync(directory, { recursive: true });
                     return [4 /*yield*/, core.group("Checking out ".concat(branch_tag_hash, " into ").concat(directory), function () { return __awaiter(_this, void 0, void 0, function () {
                             return __generator(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0: return [4 /*yield*/, echo_command_and_execute("git init", directory)];
-                                    case 1:
-                                        _a.sent();
-                                        return [4 /*yield*/, echo_command_and_execute("git remote add SDL ".concat(constants_1.SDL_GIT_URL), directory)];
-                                    case 2:
-                                        _a.sent();
-                                        return [4 /*yield*/, echo_command_and_execute("git fetch --depth 1 SDL ".concat(branch_tag_hash), directory)];
-                                    case 3:
-                                        _a.sent();
-                                        return [4 /*yield*/, echo_command_and_execute("git checkout FETCH_HEAD", directory)];
-                                    case 4:
-                                        _a.sent();
-                                        return [2 /*return*/];
-                                }
+                                echo_command_and_execute("git init", directory);
+                                echo_command_and_execute("git remote add SDL ".concat(constants_1.SDL_GIT_URL), directory);
+                                echo_command_and_execute("git fetch --depth 1 SDL ".concat(branch_tag_hash), directory);
+                                echo_command_and_execute("git checkout FETCH_HEAD", directory);
+                                return [2 /*return*/];
                             });
                         }); })];
                 case 1:
@@ -194,7 +366,8 @@ function cmake_configure_build(args) {
                         "-S",
                         args.source_dir,
                         "-B",
-                        args.build_dir
+                        args.build_dir,
+                        '-DSDL_VENDOR_INFO="libsdl-org/setup-sdl"'
                     ], args.cmake_configure_args, true);
                     if (core.isDebug()) {
                         configure_args.push("--trace-expand");
@@ -293,6 +466,9 @@ function calculate_state_hash(args) {
         "build_platform=".concat(args.build_platform),
         "shell=".concat(args.shell),
     ];
+    if (args.package_manager) {
+        misc_state.push("package_manager=".concat(args.package_manager));
+    }
     if (args.cmake_toolchain_file) {
         var toolchain_contents = fs.readFileSync(args.cmake_toolchain_file, {
             encoding: "utf8",
@@ -346,9 +522,123 @@ function get_cmake_toolchain_path() {
     }
     return undefined;
 }
+var SDL_LINUX_DEPENDENCIES = (_a = {},
+    _a[linuxpm.PackageManagerType.AptGet] = {
+        required: [
+            "libasound2-dev",
+            "libpulse-dev",
+            "libaudio-dev",
+            "libjack-dev",
+            "libsndio-dev",
+            "libsamplerate0-dev",
+            "libx11-dev",
+            "libxext-dev",
+            "libxrandr-dev",
+            "libxcursor-dev",
+            "libxfixes-dev",
+            "libxi-dev",
+            "libxss-dev",
+            "libwayland-dev",
+            "libxkbcommon-dev",
+            "libdrm-dev",
+            "libgbm-dev",
+            "libgl1-mesa-dev",
+            "libgles2-mesa-dev",
+            "libegl1-mesa-dev",
+            "libdbus-1-dev",
+            "libibus-1.0-dev",
+            "libudev-dev",
+            "fcitx-libs-dev",
+        ],
+        optional: [
+            "libpipewire-0.3-dev" /* Ubuntu 22.04 */,
+            "libdecor-0-dev" /* Ubuntu 22.04 */,
+        ],
+    },
+    _a[linuxpm.PackageManagerType.Dnf] = {
+        required: [
+            "alsa-lib-devel",
+            "dbus-devel",
+            "ibus-devel",
+            "libX11-devel",
+            "libXau-devel",
+            "libXScrnSaver-devel",
+            "libXcursor-devel",
+            "libXext-devel",
+            "libXfixes-devel",
+            "libXi-devel",
+            "libXrandr-devel",
+            "libxkbcommon-devel",
+            "libdecor-devel",
+            "libglvnd-devel",
+            "pipewire-devel",
+            "pipewire-jack-audio-connection-kit-devel.x86_64",
+            "pulseaudio-libs-devel",
+            "wayland-devel",
+        ],
+        optional: [],
+    },
+    _a[linuxpm.PackageManagerType.Apk] = undefined,
+    _a[linuxpm.PackageManagerType.Pacman] = undefined,
+    _a);
+function parse_linux_package_manager(input, build_platform) {
+    if (build_platform != platform_1.SdlBuildPlatform.Linux) {
+        return undefined;
+    }
+    if (!input) {
+        return undefined;
+    }
+    input = input.trim().toLowerCase();
+    if (input.length == 0) {
+        return undefined;
+    }
+    if (input == "false") {
+        return undefined;
+    }
+    else if (input == "true") {
+        return linuxpm.detect_package_manager();
+    }
+    else {
+        return linuxpm.package_manager_type_from_string(input);
+    }
+}
+function install_linux_dependencies(package_manager_type) {
+    return __awaiter(this, void 0, void 0, function () {
+        var package_manager, packages;
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    package_manager = linuxpm.create_package_manager(package_manager_type);
+                    packages = SDL_LINUX_DEPENDENCIES[package_manager_type];
+                    if (!packages) {
+                        throw new util_1.SetupSdlError("Don't know what packages to install for ".concat(package_manager_type, ". Please create a pr."));
+                    }
+                    return [4 /*yield*/, core.group("Installing SDL dependencies using ".concat(package_manager_type), function () { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                package_manager.update();
+                                package_manager.install(packages.required);
+                                packages.optional.forEach(function (optional_package) {
+                                    try {
+                                        package_manager.install([optional_package]);
+                                    }
+                                    catch (e) {
+                                        /* intentionally left blank */
+                                    }
+                                });
+                                return [2 /*return*/];
+                            });
+                        }); })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var GITHUB_TOKEN, SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, github_releases, release_db, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, BUILD_SDL_TEST, SOURCE_DIR, BUILD_DIR, cmake_configure_args, CMAKE_GENERATOR, SDL_VERSION, pkg_config_path, sdl2_config;
+        var GITHUB_TOKEN, SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, github_releases, release_db, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, PACKAGE_MANAGER_TYPE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, BUILD_SDL_TEST, SOURCE_DIR, BUILD_DIR, cmake_configure_args, CMAKE_GENERATOR, SDL_VERSION, pkg_config_path, sdl2_config;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -359,9 +649,9 @@ function run() {
                         process.env.GITHUB_TOKEN = GITHUB_TOKEN;
                     }
                     SDL_BUILD_PLATFORM = (0, platform_1.get_sdl_build_platform)();
-                    core.info("build platform=".concat(SDL_BUILD_PLATFORM));
+                    core.info("build platform = ".concat(SDL_BUILD_PLATFORM));
                     SETUP_SDL_ROOT = (0, platform_1.get_platform_root_directory)(SDL_BUILD_PLATFORM);
-                    core.info("root=".concat(SETUP_SDL_ROOT));
+                    core.info("root = ".concat(SETUP_SDL_ROOT));
                     IGNORED_SHELLS = ["bash", "pwsh", "sh", "cmd", "pwsh", "powershell"];
                     shell_in = core.getInput("shell");
                     if (IGNORED_SHELLS.indexOf(shell_in) >= 0) {
@@ -409,11 +699,13 @@ function run() {
                 case 1:
                     GIT_HASH = _a.sent();
                     CMAKE_TOOLCHAIN_FILE = get_cmake_toolchain_path();
+                    PACKAGE_MANAGER_TYPE = parse_linux_package_manager(core.getInput("install-linux-dependencies"), SDL_BUILD_PLATFORM);
                     STATE_HASH = calculate_state_hash({
                         git_hash: GIT_HASH,
                         build_platform: SDL_BUILD_PLATFORM,
                         shell: SHELL,
                         cmake_toolchain_file: CMAKE_TOOLCHAIN_FILE,
+                        package_manager: PACKAGE_MANAGER_TYPE,
                     });
                     PACKAGE_DIR = "".concat(SETUP_SDL_ROOT, "/").concat(STATE_HASH, "/package");
                     CACHE_KEY = "setup-sdl-".concat(STATE_HASH);
@@ -439,6 +731,9 @@ function run() {
                         }); })];
                 case 2:
                     sdl_from_cache = _a.sent();
+                    if (PACKAGE_MANAGER_TYPE) {
+                        install_linux_dependencies(PACKAGE_MANAGER_TYPE);
+                    }
                     if (!!sdl_from_cache) return [3 /*break*/, 6];
                     BUILD_SDL_TEST = core.getBooleanInput("sdl-test");
                     SOURCE_DIR = "".concat(SETUP_SDL_ROOT, "/").concat(STATE_HASH, "/source");

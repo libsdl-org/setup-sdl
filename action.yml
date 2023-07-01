@@ -20,6 +20,8 @@ inputs:
     description: "Path of a CMake toolchain file"
   cmake-generator:
     description: "CMake generator"
+  install-linux-dependencies:
+    description: "Install Linux dependencies"
   shell:
     description: "Run commands as $shell \"commands\""
   discriminator:

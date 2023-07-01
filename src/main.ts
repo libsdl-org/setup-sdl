@@ -9,6 +9,7 @@ import * as core from "@actions/core";
 
 import { SDL_GIT_URL } from "./constants";
 import { SetupSdlError } from "./util";
+import * as linuxpm from "./linuxpm";
 
 import {
   GitHubRelease,
@@ -45,7 +46,7 @@ async function convert_git_branch_tag_to_hash(
   return git_hash;
 }
 
-async function echo_command_and_execute(command: string, directory: string) {
+function echo_command_and_execute(command: string, directory: string) {
   core.info(`Executing "${command}`);
   child_process.execSync(command, { stdio: "inherit", cwd: directory });
 }
@@ -58,16 +59,13 @@ async function checkout_sdl_git_hash(
   await core.group(
     `Checking out ${branch_tag_hash} into ${directory}`,
     async () => {
-      await echo_command_and_execute(`git init`, directory);
-      await echo_command_and_execute(
-        `git remote add SDL ${SDL_GIT_URL}`,
-        directory
-      );
-      await echo_command_and_execute(
+      echo_command_and_execute(`git init`, directory);
+      echo_command_and_execute(`git remote add SDL ${SDL_GIT_URL}`, directory);
+      echo_command_and_execute(
         `git fetch --depth 1 SDL ${branch_tag_hash}`,
         directory
       );
-      await echo_command_and_execute(`git checkout FETCH_HEAD`, directory);
+      echo_command_and_execute(`git checkout FETCH_HEAD`, directory);
     }
   );
 }
@@ -104,6 +102,7 @@ async function cmake_configure_build(args: {
     args.source_dir,
     "-B",
     args.build_dir,
+    '-DSDL_VENDOR_INFO="libsdl-org/setup-sdl"',
     ...args.cmake_configure_args,
   ];
   if (core.isDebug()) {
@@ -150,6 +149,7 @@ function calculate_state_hash(args: {
   build_platform: SdlBuildPlatform;
   shell: string;
   cmake_toolchain_file: string | undefined;
+  package_manager: linuxpm.PackageManagerType | undefined;
 }) {
   const ENV_KEYS = [
     "AR",
@@ -190,6 +190,10 @@ function calculate_state_hash(args: {
     `build_platform=${args.build_platform}`,
     `shell=${args.shell}`,
   ];
+
+  if (args.package_manager) {
+    misc_state.push(`package_manager=${args.package_manager}`);
+  }
 
   if (args.cmake_toolchain_file) {
     const toolchain_contents = fs.readFileSync(args.cmake_toolchain_file, {
@@ -263,6 +267,119 @@ function get_cmake_toolchain_path(): string | undefined {
   return undefined;
 }
 
+const SDL_LINUX_DEPENDENCIES: {
+  [key in linuxpm.PackageManagerType]:
+    | { required: string[]; optional: string[] }
+    | undefined;
+} = {
+  [linuxpm.PackageManagerType.AptGet]: {
+    required: [
+      "libasound2-dev",
+      "libpulse-dev",
+      "libaudio-dev",
+      "libjack-dev",
+      "libsndio-dev",
+      "libsamplerate0-dev",
+      "libx11-dev",
+      "libxext-dev",
+      "libxrandr-dev",
+      "libxcursor-dev",
+      "libxfixes-dev",
+      "libxi-dev",
+      "libxss-dev",
+      "libwayland-dev",
+      "libxkbcommon-dev",
+      "libdrm-dev",
+      "libgbm-dev",
+      "libgl1-mesa-dev",
+      "libgles2-mesa-dev",
+      "libegl1-mesa-dev",
+      "libdbus-1-dev",
+      "libibus-1.0-dev",
+      "libudev-dev",
+      "fcitx-libs-dev",
+    ],
+    optional: [
+      "libpipewire-0.3-dev" /* Ubuntu 22.04 */,
+      "libdecor-0-dev" /* Ubuntu 22.04 */,
+    ],
+  },
+  [linuxpm.PackageManagerType.Dnf]: {
+    required: [
+      "alsa-lib-devel",
+      "dbus-devel",
+      "ibus-devel",
+      "libX11-devel",
+      "libXau-devel",
+      "libXScrnSaver-devel",
+      "libXcursor-devel",
+      "libXext-devel",
+      "libXfixes-devel",
+      "libXi-devel",
+      "libXrandr-devel",
+      "libxkbcommon-devel",
+      "libdecor-devel",
+      "libglvnd-devel",
+      "pipewire-devel",
+      "pipewire-jack-audio-connection-kit-devel.x86_64",
+      "pulseaudio-libs-devel",
+      "wayland-devel",
+    ],
+    optional: [],
+  },
+  [linuxpm.PackageManagerType.Apk]: undefined, // FIXME
+  [linuxpm.PackageManagerType.Pacman]: undefined, // FIXME
+};
+
+function parse_linux_package_manager(
+  input: string | undefined,
+  build_platform: SdlBuildPlatform
+): linuxpm.PackageManagerType | undefined {
+  if (build_platform != SdlBuildPlatform.Linux) {
+    return undefined;
+  }
+  if (!input) {
+    return undefined;
+  }
+  input = input.trim().toLowerCase();
+  if (input.length == 0) {
+    return undefined;
+  }
+  if (input == "false") {
+    return undefined;
+  } else if (input == "true") {
+    return linuxpm.detect_package_manager();
+  } else {
+    return linuxpm.package_manager_type_from_string(input);
+  }
+}
+
+async function install_linux_dependencies(
+  package_manager_type: linuxpm.PackageManagerType
+) {
+  const package_manager = linuxpm.create_package_manager(package_manager_type);
+  const packages = SDL_LINUX_DEPENDENCIES[package_manager_type];
+  if (!packages) {
+    throw new SetupSdlError(
+      `Don't know what packages to install for ${package_manager_type}. Please create a pr.`
+    );
+  }
+  await core.group(
+    `Installing SDL dependencies using ${package_manager_type}`,
+    async () => {
+      package_manager.update();
+      package_manager.install(packages.required);
+      packages.optional.forEach((optional_package) => {
+        try {
+          package_manager.install([optional_package]);
+        } catch (e) {
+          /* intentionally left blank */
+        }
+      });
+    }
+  );
+}
+
 async function run() {
   const GITHUB_TOKEN = core.getInput("token");
   if (GITHUB_TOKEN && GITHUB_TOKEN.length > 0) {
@@ -271,10 +388,10 @@ async function run() {
   }
 
   const SDL_BUILD_PLATFORM = get_sdl_build_platform();
-  core.info(`build platform=${SDL_BUILD_PLATFORM}`);
+  core.info(`build platform = ${SDL_BUILD_PLATFORM}`);
 
   const SETUP_SDL_ROOT = get_platform_root_directory(SDL_BUILD_PLATFORM);
-  core.info(`root=${SETUP_SDL_ROOT}`);
+  core.info(`root = ${SETUP_SDL_ROOT}`);
 
   const IGNORED_SHELLS = ["bash", "pwsh", "sh", "cmd", "pwsh", "powershell"];
   let shell_in = core.getInput("shell");
@@ -336,11 +453,17 @@ async function run() {
 
   const CMAKE_TOOLCHAIN_FILE = get_cmake_toolchain_path();
 
+  const PACKAGE_MANAGER_TYPE = parse_linux_package_manager(
+    core.getInput("install-linux-dependencies"),
+    SDL_BUILD_PLATFORM
+  );
+
   const STATE_HASH = calculate_state_hash({
     git_hash: GIT_HASH,
     build_platform: SDL_BUILD_PLATFORM,
     shell: SHELL,
     cmake_toolchain_file: CMAKE_TOOLCHAIN_FILE,
+    package_manager: PACKAGE_MANAGER_TYPE,
   });
 
   const PACKAGE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/package`;
@@ -367,6 +490,10 @@ async function run() {
       return !!found_cache_key;
     }
   );
+
+  if (PACKAGE_MANAGER_TYPE) {
+    install_linux_dependencies(PACKAGE_MANAGER_TYPE);
+  }
 
   if (!sdl_from_cache) {
     const BUILD_SDL_TEST = core.getBooleanInput("sdl-test");
