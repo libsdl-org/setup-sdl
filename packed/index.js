@@ -348,11 +348,16 @@ function get_cmake_toolchain_path() {
 }
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, github_releases, release_db, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, BUILD_SDL_TEST, SOURCE_DIR, BUILD_DIR, cmake_configure_args, CMAKE_GENERATOR, SDL_VERSION, pkg_config_path, sdl2_config;
+        var GITHUB_TOKEN, SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, github_releases, release_db, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, BUILD_SDL_TEST, SOURCE_DIR, BUILD_DIR, cmake_configure_args, CMAKE_GENERATOR, SDL_VERSION, pkg_config_path, sdl2_config;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    GITHUB_TOKEN = core.getInput("github-token");
+                    if (GITHUB_TOKEN && GITHUB_TOKEN.length > 0) {
+                        process.env.GH_TOKEN = GITHUB_TOKEN;
+                        process.env.GITHUB_TOKEN = GITHUB_TOKEN;
+                    }
                     SDL_BUILD_PLATFORM = (0, platform_1.get_sdl_build_platform)();
                     core.info("build platform=".concat(SDL_BUILD_PLATFORM));
                     SETUP_SDL_ROOT = (0, platform_1.get_platform_root_directory)(SDL_BUILD_PLATFORM);

@@ -264,6 +264,12 @@ function get_cmake_toolchain_path(): string | undefined {
 }
 
 async function run() {
+  const GITHUB_TOKEN = core.getInput("github-token");
+  if (GITHUB_TOKEN && GITHUB_TOKEN.length > 0) {
+    process.env.GH_TOKEN = GITHUB_TOKEN;
+    process.env.GITHUB_TOKEN = GITHUB_TOKEN;
+  }
+
   const SDL_BUILD_PLATFORM = get_sdl_build_platform();
   core.info(`build platform=${SDL_BUILD_PLATFORM}`);
 
