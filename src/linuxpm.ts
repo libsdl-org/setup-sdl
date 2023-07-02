@@ -35,16 +35,19 @@ export function package_manager_type_from_string(
 
 abstract class PackageManager {
   type: PackageManagerType;
+  sudo: boolean;
   protected constructor(type: PackageManagerType) {
     this.type = type;
+    this.sudo = command_exists("sudo");
   }
   abstract update(): void;
   abstract install(packages: string[]): void;
-}
 
-function echo_and_execute_process(command: string) {
-  core.info(`Executing "${command}"`);
-  child_process.execSync(command, { stdio: "inherit" });
+  maybe_sudo_execute(command: string) {
+    command = (this.sudo ? " sudo " : "") + command;
+    core.info(`Executing "${command}"`);
+    child_process.execSync(command, { stdio: "inherit" });
+  }
 }
 
 class AptGetPackageManager extends PackageManager {
@@ -53,13 +56,11 @@ class AptGetPackageManager extends PackageManager {
   }
 
   update() {
-    const COMMAND = "sudo apt-get update -y";
-    echo_and_execute_process(COMMAND);
+    this.maybe_sudo_execute("apt-get update -y");
   }
 
   install(packages: string[]) {
-    const COMMAND = `sudo apt-get install -y ${packages.join(" ")}`;
-    echo_and_execute_process(COMMAND);
+    this.maybe_sudo_execute(`apt-get install -y ${packages.join(" ")}`);
   }
 }
 
@@ -73,8 +74,7 @@ class DnfPackageManager extends PackageManager {
   }
 
   install(packages: string[]) {
-    const COMMAND = `sudo dnf install -y ${packages.join(" ")}`;
-    echo_and_execute_process(COMMAND);
+    this.maybe_sudo_execute(`dnf install -y ${packages.join(" ")}`);
   }
 }
 
@@ -88,8 +88,7 @@ class ApkPackageManager extends PackageManager {
   }
 
   install(packages: string[]) {
-    const COMMAND = `sudo apk add ${packages.join(" ")}`;
-    echo_and_execute_process(COMMAND);
+    this.maybe_sudo_execute(`apk add ${packages.join(" ")}`);
   }
 }
 
@@ -103,8 +102,7 @@ class PacmanPackageManager extends PackageManager {
   }
 
   install(packages: string[]) {
-    const COMMAND = `sudo pacman -S${packages.join(" ")}`;
-    echo_and_execute_process(COMMAND);
+    this.maybe_sudo_execute(`pacman -S${packages.join(" ")}`);
   }
 }
 

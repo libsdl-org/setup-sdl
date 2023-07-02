@@ -6,8 +6,10 @@ import * as path from "path";
 
 import * as cache from "@actions/cache";
 import * as core from "@actions/core";
+import { Octokit } from "@octokit/rest";
+import AdmZip = require("adm-zip");
 
-import { SDL_GIT_URL } from "./constants";
+import { SDL_GIT_REPO } from "./constants";
 import { SetupSdlError } from "./util";
 import * as linuxpm from "./linuxpm";
 
@@ -26,46 +28,97 @@ import {
   SdlBuildPlatform,
 } from "./platform";
 
-async function convert_git_branch_tag_to_hash(
-  branch_tag: string
-): Promise<string> {
-  const git_hash = await core.group(
-    `Calculating git hash of ${branch_tag}`,
+async function convert_git_branch_tag_to_hash(args: {
+  branch_or_hash: string;
+  octokit: Octokit;
+}): Promise<string> {
+  return await core.group(
+    `Calculating git hash of ${args.branch_or_hash}`,
     async () => {
-      const command = `git ls-remote ${SDL_GIT_URL} ${branch_tag}`;
-      core.info(`Executing "${command}"`);
-      const output = child_process.execSync(command, {
-        stdio: "pipe",
-        encoding: "utf8",
-      });
-      const git_hash = output.split("\t")[0];
-      core.info(`git hash = ${git_hash}`);
-      return git_hash;
+      try {
+        core.debug(`Look for a branch named "${args.branch_or_hash}"...`);
+        const response = await args.octokit.rest.repos.getBranch({
+          owner: SDL_GIT_REPO.owner,
+          repo: SDL_GIT_REPO.repo,
+          branch: args.branch_or_hash,
+        });
+        core.debug("It was a branch.");
+        const sha = response.data.commit.sha;
+        core.info(`git hash = ${sha}`);
+        return sha;
+      } catch (e) {
+        core.debug("It was not a branch.");
+      }
+      try {
+        core.debug(`Look for a commit named "${args.branch_or_hash}"...`);
+        const response = await args.octokit.rest.repos.getCommit({
+          owner: SDL_GIT_REPO.owner,
+          repo: SDL_GIT_REPO.repo,
+          ref: args.branch_or_hash,
+        });
+        core.debug("It was a commit.");
+        return response.data.sha;
+      } catch (e) {
+        core.debug("It was not a commit.");
+      }
+      throw new SetupSdlError(
+        `Unable to convert ${args.branch_or_hash} into a git hash.`
+      );
     }
   );
-  return git_hash;
 }
 
-function echo_command_and_execute(command: string, directory: string) {
-  core.info(`Executing "${command}`);
-  child_process.execSync(command, { stdio: "inherit", cwd: directory });
-}
-
-async function checkout_sdl_git_hash(
-  branch_tag_hash: string,
-  directory: string
-) {
-  fs.mkdirSync(directory, { recursive: true });
+async function download_sdl_git_hash(args: {
+  git_hash: string;
+  directory: string;
+  octokit: Octokit;
+}) {
+  fs.mkdirSync(args.directory, { recursive: true });
   await core.group(
-    `Checking out ${branch_tag_hash} into ${directory}`,
+    `Downloading and extracting ${args.git_hash} into ${args.directory}`,
     async () => {
-      echo_command_and_execute(`git init`, directory);
-      echo_command_and_execute(`git remote add SDL ${SDL_GIT_URL}`, directory);
-      echo_command_and_execute(
-        `git fetch --depth 1 SDL ${branch_tag_hash}`,
-        directory
-      );
-      echo_command_and_execute(`git checkout FETCH_HEAD`, directory);
+      core.info("Downloading git zip archive...");
+      const response = await args.octokit.rest.repos.downloadZipballArchive({
+        owner: SDL_GIT_REPO.owner,
+        repo: SDL_GIT_REPO.repo,
+        ref: args.git_hash,
+      });
+      core.info("Writing zip archive to disk...");
+      const ARCHIVE_PATH = path.join(args.directory, "archive.zip");
+      fs.writeFileSync(ARCHIVE_PATH, Buffer.from(response.data as ArrayBuffer));
+      core.info("Extracting zip archive...");
+
+      const admzip = new AdmZip(ARCHIVE_PATH);
+      admzip.getEntries().forEach((entry) => {
+        if (entry.isDirectory) {
+          /* Ignore directories */
+        } else {
+          const pos_first_slash = entry.entryName.indexOf("/");
+          const pos_last_slash = entry.entryName.lastIndexOf("/");
+          const targetPath = path.join(
+            args.directory,
+            entry.entryName.slice(pos_first_slash + 1, pos_last_slash)
+          );
+          const maintainEntryPath = true;
+          const overwrite = false;
+          const keepOriginalPermission = false;
+          const outFileName = entry.entryName.slice(pos_last_slash + 1);
+          core.debug(
+            `Extracting ${outFileName} to ${path.join(
+              targetPath,
+              outFileName
+            )}...`
+          );
+          admzip.extractEntryTo(
+            entry,
+            targetPath,
+            maintainEntryPath,
+            overwrite,
+            keepOriginalPermission,
+            outFileName
+          );
+        }
+      });
     }
   );
 }
@@ -274,6 +327,9 @@ const SDL_LINUX_DEPENDENCIES: {
 } = {
   [linuxpm.PackageManagerType.AptGet]: {
     required: [
+      "cmake",
+      "make",
+      "ninja-build",
       "libasound2-dev",
       "libpulse-dev",
       "libaudio-dev",
@@ -306,6 +362,9 @@ const SDL_LINUX_DEPENDENCIES: {
   },
   [linuxpm.PackageManagerType.Dnf]: {
     required: [
+      "cmake",
+      "make",
+      "ninja-build",
       "alsa-lib-devel",
       "dbus-devel",
       "ibus-devel",
@@ -382,10 +441,10 @@ async function install_linux_dependencies(
 
 async function run() {
   const GITHUB_TOKEN = core.getInput("token");
-  if (GITHUB_TOKEN && GITHUB_TOKEN.length > 0) {
-    process.env.GH_TOKEN = GITHUB_TOKEN;
-    process.env.GITHUB_TOKEN = GITHUB_TOKEN;
-  }
+  process.env.GH_TOKEN = GITHUB_TOKEN;
+  process.env.GITHUB_TOKEN = GITHUB_TOKEN;
+
+  const OCTOKIT = new Octokit({ auth: GITHUB_TOKEN });
 
   const SDL_BUILD_PLATFORM = get_sdl_build_platform();
   core.info(`build platform = ${SDL_BUILD_PLATFORM}`);
@@ -447,9 +506,10 @@ async function run() {
     }
   }
 
-  const GIT_HASH: string = await convert_git_branch_tag_to_hash(
-    git_branch_hash
-  );
+  const GIT_HASH: string = await convert_git_branch_tag_to_hash({
+    branch_or_hash: git_branch_hash,
+    octokit: OCTOKIT,
+  });
 
   const CMAKE_TOOLCHAIN_FILE = get_cmake_toolchain_path();
 
@@ -491,17 +551,21 @@ async function run() {
     }
   );
 
-  if (PACKAGE_MANAGER_TYPE) {
-    install_linux_dependencies(PACKAGE_MANAGER_TYPE);
-  }
-
   if (!sdl_from_cache) {
     const BUILD_SDL_TEST = core.getBooleanInput("sdl-test");
 
     const SOURCE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/source`;
     const BUILD_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/build`;
 
-    await checkout_sdl_git_hash(GIT_HASH, SOURCE_DIR);
+    await download_sdl_git_hash({
+      git_hash: GIT_HASH,
+      directory: SOURCE_DIR,
+      octokit: OCTOKIT,
+    });
+
+    if (PACKAGE_MANAGER_TYPE) {
+      install_linux_dependencies(PACKAGE_MANAGER_TYPE);
+    }
 
     const cmake_configure_args = [
       `-DSDL_TEST=${BUILD_SDL_TEST}`,
