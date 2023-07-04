@@ -156,6 +156,7 @@ async function cmake_configure_build(args: {
     "-B",
     args.build_dir,
     '-DSDL_VENDOR_INFO="libsdl-org/setup-sdl"',
+    "-DSDL_CMAKE_DEBUG_POSTFIX=",
     ...args.cmake_configure_args,
     `-DCMAKE_INSTALL_PREFIX=${args.package_dir}`,
   ];
