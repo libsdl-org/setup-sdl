@@ -410,14 +410,16 @@ function cmake_configure_build(args) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    configure_args = __spreadArray([
+                    configure_args = __spreadArray(__spreadArray([
                         "cmake",
                         "-S",
                         args.source_dir,
                         "-B",
                         args.build_dir,
                         '-DSDL_VENDOR_INFO="libsdl-org/setup-sdl"'
-                    ], args.cmake_configure_args, true);
+                    ], args.cmake_configure_args, true), [
+                        "-DCMAKE_INSTALL_PREFIX=".concat(args.package_dir),
+                    ], false);
                     if (core.isDebug()) {
                         configure_args.push("--trace-expand");
                     }
@@ -435,8 +437,6 @@ function cmake_configure_build(args) {
                         "cmake",
                         "--install",
                         args.build_dir,
-                        "--prefix",
-                        args.package_dir,
                         "--config",
                         args.build_type,
                     ];

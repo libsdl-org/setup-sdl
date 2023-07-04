@@ -157,6 +157,7 @@ async function cmake_configure_build(args: {
     args.build_dir,
     '-DSDL_VENDOR_INFO="libsdl-org/setup-sdl"',
     ...args.cmake_configure_args,
+    `-DCMAKE_INSTALL_PREFIX=${args.package_dir}`,
   ];
   if (core.isDebug()) {
     configure_args.push("--trace-expand");
@@ -177,8 +178,6 @@ async function cmake_configure_build(args: {
     "cmake",
     "--install",
     args.build_dir,
-    "--prefix",
-    args.package_dir,
     "--config",
     args.build_type,
   ];
