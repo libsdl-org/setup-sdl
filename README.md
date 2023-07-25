@@ -44,4 +44,4 @@ Using the `version` option, a SDL release can be used or the latest git tag:
 
 ## Options
 
-See [actions.yml] for an overview of all options, and its defaults.
+See [action.yml](action.yml) for an overview of all options, and its defaults.
