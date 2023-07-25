@@ -147,7 +147,6 @@ async function cmake_configure_build(args: {
   build_type: string;
   cmake_configure_args: string[];
   shell: string;
-  verbose: boolean;
 }) {
   const configure_args = [
     "cmake",
@@ -170,10 +169,8 @@ async function cmake_configure_build(args: {
     args.build_dir,
     "--config",
     args.build_type,
+    "--verbose",
   ];
-  if (args.verbose) {
-    build_args.push("--verbose");
-  }
 
   const install_args = [
     "cmake",
@@ -591,7 +588,6 @@ async function run() {
       package_dir: PACKAGE_DIR,
       build_type: CMAKE_BUILD_TYPE,
       cmake_configure_args: cmake_configure_args,
-      verbose: core.getBooleanInput("verbose"),
       shell: SHELL,
     });
 

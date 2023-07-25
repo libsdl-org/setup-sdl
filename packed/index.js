@@ -430,10 +430,8 @@ function cmake_configure_build(args) {
                         args.build_dir,
                         "--config",
                         args.build_type,
+                        "--verbose",
                     ];
-                    if (args.verbose) {
-                        build_args.push("--verbose");
-                    }
                     install_args = [
                         "cmake",
                         "--install",
@@ -823,7 +821,6 @@ function run() {
                             package_dir: PACKAGE_DIR,
                             build_type: CMAKE_BUILD_TYPE,
                             cmake_configure_args: cmake_configure_args,
-                            verbose: core.getBooleanInput("verbose"),
                             shell: SHELL,
                         })];
                 case 4:
