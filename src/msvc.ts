@@ -71,12 +71,12 @@ function vsversion_to_year(vsversion: string): string {
 
 function findWithVswhere(
   pattern: string,
-  version_pattern: string,
+  version_pattern: string
 ): string | null {
   try {
     const installationPath = child_process
       .execSync(
-        `vswhere -products * ${version_pattern} -prerelease -property installationPath`,
+        `vswhere -products * ${version_pattern} -prerelease -property installationPath`
       )
       .toString()
       .trim();
@@ -100,7 +100,7 @@ function findVcvarsall(vsversion: string): string {
   // If vswhere is available, ask it about the location of the latest Visual Studio.
   let path = findWithVswhere(
     "VC\\Auxiliary\\Build\\vcvarsall.bat",
-    version_pattern,
+    version_pattern
   );
   if (path && fs.existsSync(path)) {
     core.info(`Found with vswhere: ${path}`);
@@ -158,7 +158,7 @@ function setupMSVCDevCmd(
   toolset: boolean,
   uwp: boolean,
   spectre: boolean,
-  vsversion: string,
+  vsversion: string
 ) {
   if (process.platform != "win32") {
     core.info("This is not a Windows virtual environment, bye!");
@@ -224,7 +224,7 @@ function setupMSVCDevCmd(
   });
   if (error_messages.length > 0) {
     throw new Error(
-      "invalid parameters" + "\r\n" + error_messages.join("\r\n"),
+      "invalid parameters" + "\r\n" + error_messages.join("\r\n")
     );
   }
 
@@ -285,7 +285,7 @@ export function setup_vc_environment() {
     toolset,
     uwp,
     spectre,
-    vsversion,
+    vsversion
   );
 
   for (const key in msvc_env_vars) {
