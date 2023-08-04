@@ -22,7 +22,7 @@ export function get_sdl_build_platform(): SdlBuildPlatform {
 }
 
 export function get_platform_root_directory(
-  platform: SdlBuildPlatform
+  platform: SdlBuildPlatform,
 ): string {
   const root: null | string = core.getInput("root");
   if (root) {
@@ -39,7 +39,7 @@ export function get_platform_root_directory(
 
 export function export_environent_variables(
   platform: SdlBuildPlatform,
-  prefix: string
+  prefix: string,
 ) {
   switch (platform) {
     case SdlBuildPlatform.Windows:

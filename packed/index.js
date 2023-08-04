@@ -68,7 +68,7 @@ var PackageManagerType;
     PackageManagerType["AptGet"] = "apt-get";
     PackageManagerType["Dnf"] = "dnf";
     PackageManagerType["Pacman"] = "pacman";
-})(PackageManagerType = exports.PackageManagerType || (exports.PackageManagerType = {}));
+})(PackageManagerType || (exports.PackageManagerType = PackageManagerType = {}));
 function package_manager_type_from_string(text) {
     switch (text.trim().toLowerCase()) {
         case "apk":
@@ -922,7 +922,7 @@ var SdlBuildPlatform;
     SdlBuildPlatform["Windows"] = "Windows";
     SdlBuildPlatform["Linux"] = "Linux";
     SdlBuildPlatform["Macos"] = "MacOS";
-})(SdlBuildPlatform = exports.SdlBuildPlatform || (exports.SdlBuildPlatform = {}));
+})(SdlBuildPlatform || (exports.SdlBuildPlatform = SdlBuildPlatform = {}));
 function get_sdl_build_platform() {
     switch (os.platform()) {
         case "linux":
@@ -1178,7 +1178,7 @@ var SdlReleaseType;
     SdlReleaseType["Head"] = "Head";
     SdlReleaseType["Latest"] = "Latest";
     SdlReleaseType["Exact"] = "Exact";
-})(SdlReleaseType = exports.SdlReleaseType || (exports.SdlReleaseType = {}));
+})(SdlReleaseType || (exports.SdlReleaseType = SdlReleaseType = {}));
 var SdlReleaseDb = /** @class */ (function () {
     function SdlReleaseDb(releases) {
         this.releases = releases;
@@ -8044,12 +8044,14 @@ exports.AbortSignal = AbortSignal;
 /***/ }),
 
 /***/ 9645:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+var coreUtil = __nccwpck_require__(1333);
 
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
@@ -8058,6 +8060,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
  * the underlying key value.
  */
 class AzureKeyCredential {
+    /**
+     * The value of the key to be used in authentication
+     */
+    get key() {
+        return this._key;
+    }
     /**
      * Create an instance of an AzureKeyCredential for use
      * with a service client.
@@ -8069,12 +8077,6 @@ class AzureKeyCredential {
             throw new Error("key must be a non-empty string");
         }
         this._key = key;
-    }
-    /**
-     * The value of the key to be used in authentication
-     */
-    get key() {
-        return this._key;
     }
     /**
      * Change the value of the key.
@@ -8090,50 +8092,23 @@ class AzureKeyCredential {
 }
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
-/**
- * Helper TypeGuard that checks if something is defined or not.
- * @param thing - Anything
- * @internal
- */
-function isDefined(thing) {
-    return typeof thing !== "undefined" && thing !== null;
-}
-/**
- * Helper TypeGuard that checks if the input is an object with the specified properties.
- * Note: The properties may be inherited.
- * @param thing - Anything.
- * @param properties - The name of the properties that should appear in the object.
- * @internal
- */
-function isObjectWithProperties(thing, properties) {
-    if (!isDefined(thing) || typeof thing !== "object") {
-        return false;
-    }
-    for (const property of properties) {
-        if (!objectHasProperty(thing, property)) {
-            return false;
-        }
-    }
-    return true;
-}
-/**
- * Helper TypeGuard that checks if the input is an object with the specified property.
- * Note: The property may be inherited.
- * @param thing - Any object.
- * @param property - The name of the property that should appear in the object.
- * @internal
- */
-function objectHasProperty(thing, property) {
-    return typeof thing === "object" && property in thing;
-}
-
-// Copyright (c) Microsoft Corporation.
 /**
  * A static name/key-based credential that supports updating
  * the underlying name and key values.
  */
 class AzureNamedKeyCredential {
+    /**
+     * The value of the key to be used in authentication.
+     */
+    get key() {
+        return this._key;
+    }
+    /**
+     * The value of the name to be used in authentication.
+     */
+    get name() {
+        return this._name;
+    }
     /**
      * Create an instance of an AzureNamedKeyCredential for use
      * with a service client.
@@ -8147,18 +8122,6 @@ class AzureNamedKeyCredential {
         }
         this._name = name;
         this._key = key;
-    }
-    /**
-     * The value of the key to be used in authentication.
-     */
-    get key() {
-        return this._key;
-    }
-    /**
-     * The value of the name to be used in authentication.
-     */
-    get name() {
-        return this._name;
     }
     /**
      * Change the value of the key.
@@ -8183,7 +8146,7 @@ class AzureNamedKeyCredential {
  * @param credential - The assumed NamedKeyCredential to be tested.
  */
 function isNamedKeyCredential(credential) {
-    return (isObjectWithProperties(credential, ["name", "key"]) &&
+    return (coreUtil.isObjectWithProperties(credential, ["name", "key"]) &&
         typeof credential.key === "string" &&
         typeof credential.name === "string");
 }
@@ -8195,6 +8158,12 @@ function isNamedKeyCredential(credential) {
  */
 class AzureSASCredential {
     /**
+     * The value of the shared access signature to be used in authentication
+     */
+    get signature() {
+        return this._signature;
+    }
+    /**
      * Create an instance of an AzureSASCredential for use
      * with a service client.
      *
@@ -8205,12 +8174,6 @@ class AzureSASCredential {
             throw new Error("shared access signature must be a non-empty string");
         }
         this._signature = signature;
-    }
-    /**
-     * The value of the shared access signature to be used in authentication
-     */
-    get signature() {
-        return this._signature;
     }
     /**
      * Change the value of the signature.
@@ -8233,7 +8196,7 @@ class AzureSASCredential {
  * @param credential - The assumed SASCredential to be tested.
  */
 function isSASCredential(credential) {
-    return (isObjectWithProperties(credential, ["signature"]) && typeof credential.signature === "string");
+    return (coreUtil.isObjectWithProperties(credential, ["signature"]) && typeof credential.signature === "string");
 }
 
 // Copyright (c) Microsoft Corporation.
@@ -16437,14 +16400,6 @@ var abortController = __nccwpck_require__(2557);
 var crypto = __nccwpck_require__(6113);
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
-var _a$1;
-/**
- * A constant that indicates whether the environment the code is running is Node.JS.
- */
-const isNode = typeof process !== "undefined" && Boolean(process.version) && Boolean((_a$1 = process.versions) === null || _a$1 === void 0 ? void 0 : _a$1.node);
-
-// Copyright (c) Microsoft Corporation.
 /**
  * Creates an abortable promise.
  * @param buildPromise - A function that takes the resolve and reject functions as parameters.
@@ -16670,9 +16625,9 @@ function generateUUID() {
 
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-var _a;
+var _a$1;
 // NOTE: This is a workaround until we can use `globalThis.crypto.randomUUID` in Node.js 19+.
-let uuidFunction = typeof ((_a = globalThis === null || globalThis === void 0 ? void 0 : globalThis.crypto) === null || _a === void 0 ? void 0 : _a.randomUUID) === "function"
+let uuidFunction = typeof ((_a$1 = globalThis === null || globalThis === void 0 ? void 0 : globalThis.crypto) === null || _a$1 === void 0 ? void 0 : _a$1.randomUUID) === "function"
     ? globalThis.crypto.randomUUID.bind(globalThis.crypto)
     : crypto.randomUUID;
 // Not defined in earlier versions of Node.js 14
@@ -16688,19 +16643,139 @@ function randomUUID() {
     return uuidFunction();
 }
 
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+var _a, _b, _c, _d;
+/**
+ * A constant that indicates whether the environment the code is running is a Web Browser.
+ */
+// eslint-disable-next-line @azure/azure-sdk/ts-no-window
+const isBrowser = typeof window !== "undefined" && typeof window.document !== "undefined";
+/**
+ * A constant that indicates whether the environment the code is running is a Web Worker.
+ */
+const isWebWorker = typeof self === "object" &&
+    typeof (self === null || self === void 0 ? void 0 : self.importScripts) === "function" &&
+    (((_a = self.constructor) === null || _a === void 0 ? void 0 : _a.name) === "DedicatedWorkerGlobalScope" ||
+        ((_b = self.constructor) === null || _b === void 0 ? void 0 : _b.name) === "ServiceWorkerGlobalScope" ||
+        ((_c = self.constructor) === null || _c === void 0 ? void 0 : _c.name) === "SharedWorkerGlobalScope");
+/**
+ * A constant that indicates whether the environment the code is running is Node.JS.
+ */
+const isNode = typeof process !== "undefined" && Boolean(process.version) && Boolean((_d = process.versions) === null || _d === void 0 ? void 0 : _d.node);
+/**
+ * A constant that indicates whether the environment the code is running is Deno.
+ */
+const isDeno = typeof Deno !== "undefined" &&
+    typeof Deno.version !== "undefined" &&
+    typeof Deno.version.deno !== "undefined";
+/**
+ * A constant that indicates whether the environment the code is running is Bun.sh.
+ */
+const isBun = typeof Bun !== "undefined" && typeof Bun.version !== "undefined";
+/**
+ * A constant that indicates whether the environment the code is running is in React-Native.
+ */
+// https://github.com/facebook/react-native/blob/main/packages/react-native/Libraries/Core/setUpNavigator.js
+const isReactNative = typeof navigator !== "undefined" && (navigator === null || navigator === void 0 ? void 0 : navigator.product) === "ReactNative";
+
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+/**
+ * The helper that transforms bytes with specific character encoding into string
+ * @param bytes - the uint8array bytes
+ * @param format - the format we use to encode the byte
+ * @returns a string of the encoded string
+ */
+function uint8ArrayToString(bytes, format) {
+    switch (format) {
+        case "utf-8":
+            return uint8ArrayToUtf8String(bytes);
+        case "base64":
+            return uint8ArrayToBase64(bytes);
+        case "base64url":
+            return uint8ArrayToBase64Url(bytes);
+    }
+}
+/**
+ * The helper that transforms string to specific character encoded bytes array.
+ * @param value - the string to be converted
+ * @param format - the format we use to decode the value
+ * @returns a uint8array
+ */
+function stringToUint8Array(value, format) {
+    switch (format) {
+        case "utf-8":
+            return utf8StringToUint8Array(value);
+        case "base64":
+            return base64ToUint8Array(value);
+        case "base64url":
+            return base64UrlToUint8Array(value);
+    }
+}
+/**
+ * Decodes a Uint8Array into a Base64 string.
+ * @internal
+ */
+function uint8ArrayToBase64(bytes) {
+    return Buffer.from(bytes).toString("base64");
+}
+/**
+ * Decodes a Uint8Array into a Base64Url string.
+ * @internal
+ */
+function uint8ArrayToBase64Url(bytes) {
+    return Buffer.from(bytes).toString("base64url");
+}
+/**
+ * Decodes a Uint8Array into a javascript string.
+ * @internal
+ */
+function uint8ArrayToUtf8String(bytes) {
+    return Buffer.from(bytes).toString("utf-8");
+}
+/**
+ * Encodes a JavaScript string into a Uint8Array.
+ * @internal
+ */
+function utf8StringToUint8Array(value) {
+    return Buffer.from(value);
+}
+/**
+ * Encodes a Base64 string into a Uint8Array.
+ * @internal
+ */
+function base64ToUint8Array(value) {
+    return Buffer.from(value, "base64");
+}
+/**
+ * Encodes a Base64Url string into a Uint8Array.
+ * @internal
+ */
+function base64UrlToUint8Array(value) {
+    return Buffer.from(value, "base64url");
+}
+
 exports.computeSha256Hash = computeSha256Hash;
 exports.computeSha256Hmac = computeSha256Hmac;
 exports.createAbortablePromise = createAbortablePromise;
 exports.delay = delay;
 exports.getErrorMessage = getErrorMessage;
 exports.getRandomIntegerInclusive = getRandomIntegerInclusive;
+exports.isBrowser = isBrowser;
+exports.isBun = isBun;
 exports.isDefined = isDefined;
+exports.isDeno = isDeno;
 exports.isError = isError;
 exports.isNode = isNode;
 exports.isObject = isObject;
 exports.isObjectWithProperties = isObjectWithProperties;
+exports.isReactNative = isReactNative;
+exports.isWebWorker = isWebWorker;
 exports.objectHasProperty = objectHasProperty;
 exports.randomUUID = randomUUID;
+exports.stringToUint8Array = stringToUint8Array;
+exports.uint8ArrayToString = uint8ArrayToString;
 //# sourceMappingURL=index.js.map
 
 
@@ -42168,10 +42243,13 @@ var import_graphql = __nccwpck_require__(8467);
 var import_auth_token = __nccwpck_require__(334);
 
 // pkg/dist-src/version.js
-var VERSION = "4.2.4";
+var VERSION = "5.0.0";
 
 // pkg/dist-src/index.js
 var Octokit = class {
+  static {
+    this.VERSION = VERSION;
+  }
   static defaults(defaults) {
     const OctokitWithDefaults = class extends this {
       constructor(...args) {
@@ -42194,6 +42272,9 @@ var Octokit = class {
     };
     return OctokitWithDefaults;
   }
+  static {
+    this.plugins = [];
+  }
   /**
    * Attach a plugin (or many) to your Octokit instance.
    *
@@ -42201,12 +42282,14 @@ var Octokit = class {
    * const API = Octokit.plugin(plugin1, plugin2, plugin3, ...)
    */
   static plugin(...newPlugins) {
-    var _a;
     const currentPlugins = this.plugins;
-    const NewOctokit = (_a = class extends this {
-    }, _a.plugins = currentPlugins.concat(
-      newPlugins.filter((plugin) => !currentPlugins.includes(plugin))
-    ), _a);
+    const NewOctokit = class extends this {
+      static {
+        this.plugins = currentPlugins.concat(
+          newPlugins.filter((plugin) => !currentPlugins.includes(plugin))
+        );
+      }
+    };
     return NewOctokit;
   }
   constructor(options = {}) {
@@ -42287,8 +42370,6 @@ var Octokit = class {
     });
   }
 };
-Octokit.VERSION = VERSION;
-Octokit.plugins = [];
 // Annotate the CommonJS export names for ESM import in node:
 0 && (0);
 
@@ -42324,6 +42405,26 @@ __export(dist_src_exports, {
   endpoint: () => endpoint
 });
 module.exports = __toCommonJS(dist_src_exports);
+
+// pkg/dist-src/defaults.js
+var import_universal_user_agent = __nccwpck_require__(5030);
+
+// pkg/dist-src/version.js
+var VERSION = "9.0.0";
+
+// pkg/dist-src/defaults.js
+var userAgent = `octokit-endpoint.js/${VERSION} ${(0, import_universal_user_agent.getUserAgent)()}`;
+var DEFAULTS = {
+  method: "GET",
+  baseUrl: "https://api.github.com",
+  headers: {
+    accept: "application/vnd.github.v3+json",
+    "user-agent": userAgent
+  },
+  mediaType: {
+    format: ""
+  }
+};
 
 // pkg/dist-src/util/lowercase-keys.js
 function lowercaseKeys(object) {
@@ -42375,12 +42476,14 @@ function merge(defaults, route, options) {
   removeUndefinedProperties(options);
   removeUndefinedProperties(options.headers);
   const mergedOptions = mergeDeep(defaults || {}, options);
-  if (defaults && defaults.mediaType.previews.length) {
-    mergedOptions.mediaType.previews = defaults.mediaType.previews.filter((preview) => !mergedOptions.mediaType.previews.includes(preview)).concat(mergedOptions.mediaType.previews);
+  if (options.url === "/graphql") {
+    if (defaults && defaults.mediaType.previews?.length) {
+      mergedOptions.mediaType.previews = defaults.mediaType.previews.filter(
+        (preview) => !mergedOptions.mediaType.previews.includes(preview)
+      ).concat(mergedOptions.mediaType.previews);
+    }
+    mergedOptions.mediaType.previews = (mergedOptions.mediaType.previews || []).map((preview) => preview.replace(/-preview/, ""));
   }
-  mergedOptions.mediaType.previews = mergedOptions.mediaType.previews.map(
-    (preview) => preview.replace(/-preview/, "")
-  );
   return mergedOptions;
 }
 
@@ -42572,18 +42675,20 @@ function parse(options) {
   if (!isBinaryRequest) {
     if (options.mediaType.format) {
       headers.accept = headers.accept.split(/,/).map(
-        (preview) => preview.replace(
+        (format) => format.replace(
           /application\/vnd(\.\w+)(\.v3)?(\.\w+)?(\+json)?$/,
           `application/vnd$1$2.${options.mediaType.format}`
         )
       ).join(",");
     }
-    if (options.mediaType.previews.length) {
-      const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
-      headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
-        const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
-        return `application/vnd.github.${preview}-preview${format}`;
-      }).join(",");
+    if (url.endsWith("/graphql")) {
+      if (options.mediaType.previews?.length) {
+        const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
+        headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
+          const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
+          return `application/vnd.github.${preview}-preview${format}`;
+        }).join(",");
+      }
     }
   }
   if (["GET", "HEAD"].includes(method)) {
@@ -42627,27 +42732,6 @@ function withDefaults(oldDefaults, newDefaults) {
   });
 }
 
-// pkg/dist-src/defaults.js
-var import_universal_user_agent = __nccwpck_require__(5030);
-
-// pkg/dist-src/version.js
-var VERSION = "7.0.6";
-
-// pkg/dist-src/defaults.js
-var userAgent = `octokit-endpoint.js/${VERSION} ${(0, import_universal_user_agent.getUserAgent)()}`;
-var DEFAULTS = {
-  method: "GET",
-  baseUrl: "https://api.github.com",
-  headers: {
-    accept: "application/vnd.github.v3+json",
-    "user-agent": userAgent
-  },
-  mediaType: {
-    format: "",
-    previews: []
-  }
-};
-
 // pkg/dist-src/index.js
 var endpoint = withDefaults(null, DEFAULTS);
 // Annotate the CommonJS export names for ESM import in node:
@@ -42687,11 +42771,17 @@ __export(dist_src_exports, {
   withCustomRequest: () => withCustomRequest
 });
 module.exports = __toCommonJS(dist_src_exports);
-var import_request = __nccwpck_require__(6234);
+var import_request3 = __nccwpck_require__(6234);
 var import_universal_user_agent = __nccwpck_require__(5030);
 
 // pkg/dist-src/version.js
-var VERSION = "5.0.6";
+var VERSION = "7.0.1";
+
+// pkg/dist-src/with-defaults.js
+var import_request2 = __nccwpck_require__(6234);
+
+// pkg/dist-src/graphql.js
+var import_request = __nccwpck_require__(6234);
 
 // pkg/dist-src/error.js
 function _buildMessageForResponseErrors(data) {
@@ -42736,7 +42826,9 @@ function graphql(request2, query, options) {
       if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key))
         continue;
       return Promise.reject(
-        new Error(`[@octokit/graphql] "${key}" cannot be used as variable name`)
+        new Error(
+          `[@octokit/graphql] "${key}" cannot be used as variable name`
+        )
       );
     }
   }
@@ -42787,7 +42879,7 @@ function withDefaults(request2, newDefaults) {
 }
 
 // pkg/dist-src/index.js
-var graphql2 = withDefaults(import_request.request, {
+var graphql2 = withDefaults(import_request3.request, {
   headers: {
     "user-agent": `octokit-graphql.js/${VERSION} ${(0, import_universal_user_agent.getUserAgent)()}`
   },
@@ -42840,7 +42932,7 @@ __export(dist_src_exports, {
 module.exports = __toCommonJS(dist_src_exports);
 
 // pkg/dist-src/version.js
-var VERSION = "6.1.2";
+var VERSION = "8.0.0";
 
 // pkg/dist-src/normalize-paginated-list-response.js
 function normalizePaginatedListResponse(response) {
@@ -43007,6 +43099,7 @@ var paginatingEndpoints = [
   "GET /orgs/{org}/projects",
   "GET /orgs/{org}/public_members",
   "GET /orgs/{org}/repos",
+  "GET /orgs/{org}/rulesets",
   "GET /orgs/{org}/secret-scanning/alerts",
   "GET /orgs/{org}/teams",
   "GET /orgs/{org}/teams/{team_slug}/discussions",
@@ -43096,6 +43189,8 @@ var paginatingEndpoints = [
   "GET /repos/{owner}/{repo}/releases",
   "GET /repos/{owner}/{repo}/releases/{release_id}/assets",
   "GET /repos/{owner}/{repo}/releases/{release_id}/reactions",
+  "GET /repos/{owner}/{repo}/rules/branches/{branch}",
+  "GET /repos/{owner}/{repo}/rulesets",
   "GET /repos/{owner}/{repo}/secret-scanning/alerts",
   "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations",
   "GET /repos/{owner}/{repo}/security-advisories",
@@ -43196,39 +43291,61 @@ paginateRest.VERSION = VERSION;
 /***/ }),
 
 /***/ 8883:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((module) => {
 
 "use strict";
 
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-Object.defineProperty(exports, "__esModule", ({ value: true }));
+// pkg/dist-src/index.js
+var dist_src_exports = {};
+__export(dist_src_exports, {
+  requestLog: () => requestLog
+});
+module.exports = __toCommonJS(dist_src_exports);
 
-const VERSION = "1.0.4";
+// pkg/dist-src/version.js
+var VERSION = "4.0.0";
 
-/**
- * @param octokit Octokit instance
- * @param options Options passed to Octokit constructor
- */
-
+// pkg/dist-src/index.js
 function requestLog(octokit) {
   octokit.hook.wrap("request", (request, options) => {
     octokit.log.debug("request", options);
     const start = Date.now();
     const requestOptions = octokit.request.endpoint.parse(options);
     const path = requestOptions.url.replace(options.baseUrl, "");
-    return request(options).then(response => {
-      octokit.log.info(`${requestOptions.method} ${path} - ${response.status} in ${Date.now() - start}ms`);
+    return request(options).then((response) => {
+      octokit.log.info(
+        `${requestOptions.method} ${path} - ${response.status} in ${Date.now() - start}ms`
+      );
       return response;
-    }).catch(error => {
-      octokit.log.info(`${requestOptions.method} ${path} - ${error.status} in ${Date.now() - start}ms`);
+    }).catch((error) => {
+      octokit.log.info(
+        `${requestOptions.method} ${path} - ${error.status} in ${Date.now() - start}ms`
+      );
       throw error;
     });
   });
 }
 requestLog.VERSION = VERSION;
-
-exports.requestLog = requestLog;
-//# sourceMappingURL=index.js.map
+// Annotate the CommonJS export names for ESM import in node:
+0 && (0);
 
 
 /***/ }),
@@ -43265,7 +43382,7 @@ __export(dist_src_exports, {
 module.exports = __toCommonJS(dist_src_exports);
 
 // pkg/dist-src/version.js
-var VERSION = "7.2.3";
+var VERSION = "9.0.0";
 
 // pkg/dist-src/generated/endpoints.js
 var Endpoints = {
@@ -45252,79 +45369,6 @@ legacyRestEndpointMethods.VERSION = VERSION;
 /***/ }),
 
 /***/ 537:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var deprecation = __nccwpck_require__(8932);
-var once = _interopDefault(__nccwpck_require__(1223));
-
-const logOnceCode = once(deprecation => console.warn(deprecation));
-const logOnceHeaders = once(deprecation => console.warn(deprecation));
-/**
- * Error with extra properties to help with debugging
- */
-class RequestError extends Error {
-  constructor(message, statusCode, options) {
-    super(message);
-    // Maintains proper stack trace (only available on V8)
-    /* istanbul ignore next */
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, this.constructor);
-    }
-    this.name = "HttpError";
-    this.status = statusCode;
-    let headers;
-    if ("headers" in options && typeof options.headers !== "undefined") {
-      headers = options.headers;
-    }
-    if ("response" in options) {
-      this.response = options.response;
-      headers = options.response.headers;
-    }
-    // redact request credentials without mutating original request options
-    const requestCopy = Object.assign({}, options.request);
-    if (options.request.headers.authorization) {
-      requestCopy.headers = Object.assign({}, options.request.headers, {
-        authorization: options.request.headers.authorization.replace(/ .*$/, " [REDACTED]")
-      });
-    }
-    requestCopy.url = requestCopy.url
-    // client_id & client_secret can be passed as URL query parameters to increase rate limit
-    // see https://developer.github.com/v3/#increasing-the-unauthenticated-rate-limit-for-oauth-applications
-    .replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]")
-    // OAuth tokens can be passed as URL query parameters, although it is not recommended
-    // see https://developer.github.com/v3/#oauth2-token-sent-in-a-header
-    .replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
-    this.request = requestCopy;
-    // deprecations
-    Object.defineProperty(this, "code", {
-      get() {
-        logOnceCode(new deprecation.Deprecation("[@octokit/request-error] `error.code` is deprecated, use `error.status`."));
-        return statusCode;
-      }
-    });
-    Object.defineProperty(this, "headers", {
-      get() {
-        logOnceHeaders(new deprecation.Deprecation("[@octokit/request-error] `error.headers` is deprecated, use `error.response.headers`."));
-        return headers || {};
-      }
-    });
-  }
-}
-
-exports.RequestError = RequestError;
-//# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
-/***/ 6234:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -45360,6 +45404,94 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // pkg/dist-src/index.js
 var dist_src_exports = {};
 __export(dist_src_exports, {
+  RequestError: () => RequestError
+});
+module.exports = __toCommonJS(dist_src_exports);
+var import_deprecation = __nccwpck_require__(8932);
+var import_once = __toESM(__nccwpck_require__(1223));
+var logOnceCode = (0, import_once.default)((deprecation) => console.warn(deprecation));
+var logOnceHeaders = (0, import_once.default)((deprecation) => console.warn(deprecation));
+var RequestError = class extends Error {
+  constructor(message, statusCode, options) {
+    super(message);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
+    this.name = "HttpError";
+    this.status = statusCode;
+    let headers;
+    if ("headers" in options && typeof options.headers !== "undefined") {
+      headers = options.headers;
+    }
+    if ("response" in options) {
+      this.response = options.response;
+      headers = options.response.headers;
+    }
+    const requestCopy = Object.assign({}, options.request);
+    if (options.request.headers.authorization) {
+      requestCopy.headers = Object.assign({}, options.request.headers, {
+        authorization: options.request.headers.authorization.replace(
+          / .*$/,
+          " [REDACTED]"
+        )
+      });
+    }
+    requestCopy.url = requestCopy.url.replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]").replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
+    this.request = requestCopy;
+    Object.defineProperty(this, "code", {
+      get() {
+        logOnceCode(
+          new import_deprecation.Deprecation(
+            "[@octokit/request-error] `error.code` is deprecated, use `error.status`."
+          )
+        );
+        return statusCode;
+      }
+    });
+    Object.defineProperty(this, "headers", {
+      get() {
+        logOnceHeaders(
+          new import_deprecation.Deprecation(
+            "[@octokit/request-error] `error.headers` is deprecated, use `error.response.headers`."
+          )
+        );
+        return headers || {};
+      }
+    });
+  }
+};
+// Annotate the CommonJS export names for ESM import in node:
+0 && (0);
+
+
+/***/ }),
+
+/***/ 6234:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// pkg/dist-src/index.js
+var dist_src_exports = {};
+__export(dist_src_exports, {
   request: () => request
 });
 module.exports = __toCommonJS(dist_src_exports);
@@ -45367,11 +45499,10 @@ var import_endpoint = __nccwpck_require__(9440);
 var import_universal_user_agent = __nccwpck_require__(5030);
 
 // pkg/dist-src/version.js
-var VERSION = "6.2.8";
+var VERSION = "8.1.1";
 
 // pkg/dist-src/fetch-wrapper.js
 var import_is_plain_object = __nccwpck_require__(3287);
-var import_node_fetch = __toESM(__nccwpck_require__(467));
 var import_request_error = __nccwpck_require__(537);
 
 // pkg/dist-src/get-buffer-response.js
@@ -45381,32 +45512,33 @@ function getBufferResponse(response) {
 
 // pkg/dist-src/fetch-wrapper.js
 function fetchWrapper(requestOptions) {
+  var _a, _b, _c;
   const log = requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
+  const parseSuccessResponseBody = ((_a = requestOptions.request) == null ? void 0 : _a.parseSuccessResponseBody) !== false;
   if ((0, import_is_plain_object.isPlainObject)(requestOptions.body) || Array.isArray(requestOptions.body)) {
     requestOptions.body = JSON.stringify(requestOptions.body);
   }
   let headers = {};
   let status;
   let url;
-  const fetch = requestOptions.request && requestOptions.request.fetch || globalThis.fetch || /* istanbul ignore next */
-  import_node_fetch.default;
-  return fetch(
-    requestOptions.url,
-    Object.assign(
-      {
-        method: requestOptions.method,
-        body: requestOptions.body,
-        headers: requestOptions.headers,
-        redirect: requestOptions.redirect,
-        // duplex must be set if request.body is ReadableStream or Async Iterables.
-        // See https://fetch.spec.whatwg.org/#dom-requestinit-duplex.
-        ...requestOptions.body && { duplex: "half" }
-      },
-      // `requestOptions.request.agent` type is incompatible
-      // see https://github.com/octokit/types.ts/pull/264
-      requestOptions.request
-    )
-  ).then(async (response) => {
+  let { fetch } = globalThis;
+  if ((_b = requestOptions.request) == null ? void 0 : _b.fetch) {
+    fetch = requestOptions.request.fetch;
+  }
+  if (!fetch) {
+    throw new Error(
+      "fetch is not set. Please pass a fetch implementation as new Octokit({ request: { fetch }}). Learn more at https://github.com/octokit/octokit.js/#fetch-missing"
+    );
+  }
+  return fetch(requestOptions.url, {
+    method: requestOptions.method,
+    body: requestOptions.body,
+    headers: requestOptions.headers,
+    signal: (_c = requestOptions.request) == null ? void 0 : _c.signal,
+    // duplex must be set if request.body is ReadableStream or Async Iterables.
+    // See https://fetch.spec.whatwg.org/#dom-requestinit-duplex.
+    ...requestOptions.body && { duplex: "half" }
+  }).then(async (response) => {
     url = response.url;
     status = response.status;
     for (const keyAndValue of response.headers) {
@@ -45460,7 +45592,7 @@ function fetchWrapper(requestOptions) {
       });
       throw error;
     }
-    return getResponseData(response);
+    return parseSuccessResponseBody ? await getResponseData(response) : response.body;
   }).then((data) => {
     return {
       status,
@@ -45572,7 +45704,7 @@ var import_plugin_paginate_rest = __nccwpck_require__(4193);
 var import_plugin_rest_endpoint_methods = __nccwpck_require__(3044);
 
 // pkg/dist-src/version.js
-var VERSION = "19.0.13";
+var VERSION = "20.0.1";
 
 // pkg/dist-src/index.js
 var Octokit = import_core.Octokit.plugin(
