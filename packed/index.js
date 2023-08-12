@@ -486,8 +486,6 @@ function calculate_state_hash(args) {
         "LDFLAGS",
         "LIB",
         "LIBPATH",
-        "CMAKE_PREFIX_PATH",
-        "CMAKE_TOOLCHAIN_FILE",
         "MSYSTEM",
         "PKG_CONFIG_PATH",
     ];
@@ -495,6 +493,12 @@ function calculate_state_hash(args) {
     for (var _i = 0, ENV_KEYS_1 = ENV_KEYS; _i < ENV_KEYS_1.length; _i++) {
         var key = ENV_KEYS_1[_i];
         env_state.push("".concat(key, "=").concat(process.env[key]));
+    }
+    for (var _a = 0, _b = Object.keys(process.env); _a < _b.length; _a++) {
+        var key = _b[_a];
+        if (key.startsWith("CMAKE_")) {
+            env_state.push("".concat(key, "=").concat(process.env[key]));
+        }
     }
     var ACTION_KEYS = [
         "build-type",
@@ -504,8 +508,8 @@ function calculate_state_hash(args) {
         "sdl-test",
     ];
     var inputs_state = [];
-    for (var _a = 0, ACTION_KEYS_1 = ACTION_KEYS; _a < ACTION_KEYS_1.length; _a++) {
-        var key = ACTION_KEYS_1[_a];
+    for (var _c = 0, ACTION_KEYS_1 = ACTION_KEYS; _c < ACTION_KEYS_1.length; _c++) {
+        var key = ACTION_KEYS_1[_c];
         var v = core.getInput(key);
         inputs_state.push("".concat(key, "=").concat(v));
     }

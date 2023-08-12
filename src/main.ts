@@ -212,14 +212,17 @@ function calculate_state_hash(args: {
     "LDFLAGS",
     "LIB",
     "LIBPATH",
-    "CMAKE_PREFIX_PATH",
-    "CMAKE_TOOLCHAIN_FILE",
     "MSYSTEM",
     "PKG_CONFIG_PATH",
   ];
   const env_state: string[] = [];
   for (const key of ENV_KEYS) {
     env_state.push(`${key}=${process.env[key]}`);
+  }
+  for (const key of Object.keys(process.env)) {
+    if (key.startsWith("CMAKE_")) {
+      env_state.push(`${key}=${process.env[key]}`);
+    }
   }
 
   const ACTION_KEYS = [
