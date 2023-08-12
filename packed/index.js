@@ -811,7 +811,7 @@ function run() {
                         install_linux_dependencies(PACKAGE_MANAGER_TYPE);
                     }
                     cmake_configure_args = (0, util_1.shlex_split)(INPUT_CMAKE_CONFIGURE_ARGUMENTS);
-                    cmake_configure_args.push("-DSDL_TEST=".concat(BUILD_SDL_TEST), "-DCMAKE_BUILD_TYPE=".concat(CMAKE_BUILD_TYPE), "-DCMAKE_INSTALL_BINDIR=bin", "-DCMAKE_INSTALL_INCLUDEDIR=include", "-DCMAKE_INSTALL_LIBDIR=lib");
+                    cmake_configure_args.push("-DSDL_TEST_LIBRARY=".concat(BUILD_SDL_TEST), "-DCMAKE_BUILD_TYPE=".concat(CMAKE_BUILD_TYPE), "-DCMAKE_INSTALL_BINDIR=bin", "-DCMAKE_INSTALL_INCLUDEDIR=include", "-DCMAKE_INSTALL_LIBDIR=lib");
                     if (CMAKE_TOOLCHAIN_FILE) {
                         cmake_configure_args.push("-DCMAKE_TOOLCHAIN_FILE=\"".concat(CMAKE_TOOLCHAIN_FILE, "\""));
                     }

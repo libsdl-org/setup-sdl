@@ -577,7 +577,7 @@ async function run() {
     const cmake_configure_args = shlex_split(INPUT_CMAKE_CONFIGURE_ARGUMENTS);
 
     cmake_configure_args.push(
-      `-DSDL_TEST=${BUILD_SDL_TEST}`,
+      `-DSDL_TEST_LIBRARY=${BUILD_SDL_TEST}`,
       `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`,
       "-DCMAKE_INSTALL_BINDIR=bin",
       "-DCMAKE_INSTALL_INCLUDEDIR=include",
