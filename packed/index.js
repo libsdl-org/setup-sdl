@@ -796,7 +796,7 @@ function run() {
                         }); })];
                 case 2:
                     sdl_from_cache = _a.sent();
-                    if (!!sdl_from_cache) return [3 /*break*/, 6];
+                    if (!!sdl_from_cache) return [3 /*break*/, 8];
                     BUILD_SDL_TEST = core.getBooleanInput("sdl-test");
                     SOURCE_DIR = "".concat(SETUP_SDL_ROOT, "/").concat(STATE_HASH, "/source");
                     BUILD_DIR = "".concat(SETUP_SDL_ROOT, "/").concat(STATE_HASH, "/build");
@@ -807,9 +807,12 @@ function run() {
                         })];
                 case 3:
                     _a.sent();
-                    if (PACKAGE_MANAGER_TYPE) {
-                        install_linux_dependencies(PACKAGE_MANAGER_TYPE);
-                    }
+                    if (!PACKAGE_MANAGER_TYPE) return [3 /*break*/, 5];
+                    return [4 /*yield*/, install_linux_dependencies(PACKAGE_MANAGER_TYPE)];
+                case 4:
+                    _a.sent();
+                    _a.label = 5;
+                case 5:
                     cmake_configure_args = (0, util_1.shlex_split)(INPUT_CMAKE_CONFIGURE_ARGUMENTS);
                     cmake_configure_args.push("-DSDL_TEST_LIBRARY=".concat(BUILD_SDL_TEST), "-DCMAKE_BUILD_TYPE=".concat(CMAKE_BUILD_TYPE), "-DCMAKE_INSTALL_BINDIR=bin", "-DCMAKE_INSTALL_INCLUDEDIR=include", "-DCMAKE_INSTALL_LIBDIR=lib");
                     if (CMAKE_TOOLCHAIN_FILE) {
@@ -827,7 +830,7 @@ function run() {
                             cmake_configure_args: cmake_configure_args,
                             shell: SHELL,
                         })];
-                case 4:
+                case 6:
                     _a.sent();
                     return [4 /*yield*/, core.group("Storing SDL in the cache", function () { return __awaiter(_this, void 0, void 0, function () {
                             return __generator(this, function (_a) {
@@ -843,10 +846,10 @@ function run() {
                                 }
                             });
                         }); })];
-                case 5:
+                case 7:
                     _a.sent();
-                    _a.label = 6;
-                case 6:
+                    _a.label = 8;
+                case 8:
                     SDL_VERSION = version_1.SdlVersion.detect_sdl_version_from_install_prefix(PACKAGE_DIR);
                     core.info("SDL version is ".concat(SDL_VERSION.toString()));
                     if (core.getBooleanInput("add-to-environment")) {

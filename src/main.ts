@@ -571,7 +571,7 @@ async function run() {
     });
 
     if (PACKAGE_MANAGER_TYPE) {
-      install_linux_dependencies(PACKAGE_MANAGER_TYPE);
+      await install_linux_dependencies(PACKAGE_MANAGER_TYPE);
     }
 
     const cmake_configure_args = shlex_split(INPUT_CMAKE_CONFIGURE_ARGUMENTS);
