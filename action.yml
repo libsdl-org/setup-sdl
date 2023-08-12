@@ -20,6 +20,8 @@ inputs:
     description: "Path of a CMake toolchain file"
   cmake-generator:
     description: "CMake generator name (see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html)"
+  cmake-arguments:
+    description: "Extra CMake arguments during configuration"
   install-linux-dependencies:
     description: "Install Linux dependencies"
   shell:

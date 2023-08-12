@@ -531,6 +531,9 @@ function calculate_state_hash(args) {
             .digest("hex");
         misc_state.push("cmake_toolchain_file_hash=".concat(cmake_toolchain_file_hash));
     }
+    if (args.cmake_configure_arguments) {
+        misc_state.push("cmake_arguments=".concat(args.cmake_configure_arguments));
+    }
     var complete_state = __spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray([
         "ENVIRONMENT"
     ], env_state, true), [
@@ -696,7 +699,7 @@ function install_linux_dependencies(package_manager_type) {
 }
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var GITHUB_TOKEN, OCTOKIT, SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, github_releases, release_db, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, PACKAGE_MANAGER_TYPE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, BUILD_SDL_TEST, SOURCE_DIR, BUILD_DIR, cmake_configure_args, CMAKE_GENERATOR, SDL_VERSION, pkg_config_path, sdl2_config;
+        var GITHUB_TOKEN, OCTOKIT, SDL_BUILD_PLATFORM, SETUP_SDL_ROOT, IGNORED_SHELLS, shell_in, SHELL, REQUESTED_VERSION_TYPE, CMAKE_BUILD_TYPE, CMAKE_BUILD_TYPES, git_branch_hash, requested_version, requested_type, github_releases, release_db, sdl_release, GIT_HASH, CMAKE_TOOLCHAIN_FILE, INPUT_CMAKE_CONFIGURE_ARGUMENTS, PACKAGE_MANAGER_TYPE, STATE_HASH, PACKAGE_DIR, CACHE_KEY, CACHE_PATHS, sdl_from_cache, BUILD_SDL_TEST, SOURCE_DIR, BUILD_DIR, cmake_configure_args, CMAKE_GENERATOR, SDL_VERSION, pkg_config_path, sdl2_config;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -759,12 +762,14 @@ function run() {
                 case 1:
                     GIT_HASH = _a.sent();
                     CMAKE_TOOLCHAIN_FILE = get_cmake_toolchain_path();
+                    INPUT_CMAKE_CONFIGURE_ARGUMENTS = core.getInput("cmake-arguments");
                     PACKAGE_MANAGER_TYPE = parse_linux_package_manager(core.getInput("install-linux-dependencies"), SDL_BUILD_PLATFORM);
                     STATE_HASH = calculate_state_hash({
                         git_hash: GIT_HASH,
                         build_platform: SDL_BUILD_PLATFORM,
                         shell: SHELL,
                         cmake_toolchain_file: CMAKE_TOOLCHAIN_FILE,
+                        cmake_configure_arguments: INPUT_CMAKE_CONFIGURE_ARGUMENTS,
                         package_manager: PACKAGE_MANAGER_TYPE,
                     });
                     PACKAGE_DIR = "".concat(SETUP_SDL_ROOT, "/").concat(STATE_HASH, "/package");
@@ -805,13 +810,8 @@ function run() {
                     if (PACKAGE_MANAGER_TYPE) {
                         install_linux_dependencies(PACKAGE_MANAGER_TYPE);
                     }
-                    cmake_configure_args = [
-                        "-DSDL_TEST=".concat(BUILD_SDL_TEST),
-                        "-DCMAKE_BUILD_TYPE=".concat(CMAKE_BUILD_TYPE),
-                        "-DCMAKE_INSTALL_BINDIR=bin",
-                        "-DCMAKE_INSTALL_INCLUDEDIR=include",
-                        "-DCMAKE_INSTALL_LIBDIR=lib",
-                    ];
+                    cmake_configure_args = (0, util_1.shlex_split)(INPUT_CMAKE_CONFIGURE_ARGUMENTS);
+                    cmake_configure_args.push("-DSDL_TEST=".concat(BUILD_SDL_TEST), "-DCMAKE_BUILD_TYPE=".concat(CMAKE_BUILD_TYPE), "-DCMAKE_INSTALL_BINDIR=bin", "-DCMAKE_INSTALL_INCLUDEDIR=include", "-DCMAKE_INSTALL_LIBDIR=lib");
                     if (CMAKE_TOOLCHAIN_FILE) {
                         cmake_configure_args.push("-DCMAKE_TOOLCHAIN_FILE=\"".concat(CMAKE_TOOLCHAIN_FILE, "\""));
                     }
@@ -982,7 +982,7 @@ exports.export_environent_variables = export_environent_variables;
 /***/ }),
 
 /***/ 9731:
-/***/ (function(__unused_webpack_module, exports) {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
@@ -1002,7 +1002,8 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SetupSdlError = void 0;
+exports.shlex_split = exports.SetupSdlError = void 0;
+var shlex = __nccwpck_require__(5659);
 var SetupSdlError = /** @class */ (function (_super) {
     __extends(SetupSdlError, _super);
     function SetupSdlError(message) {
@@ -1011,6 +1012,19 @@ var SetupSdlError = /** @class */ (function (_super) {
     return SetupSdlError;
 }(Error));
 exports.SetupSdlError = SetupSdlError;
+function shlex_split(text) {
+    if (!text) {
+        return [];
+    }
+    else {
+        text = text.trim();
+        if (text == "") {
+            return [];
+        }
+        return shlex.split(text);
+    }
+}
+exports.shlex_split = shlex_split;
 
 
 /***/ }),
@@ -58914,6 +58928,318 @@ function coerce (version, options) {
   return parse(match[2] +
     '.' + (match[3] || '0') +
     '.' + (match[4] || '0'), options)
+}
+
+
+/***/ }),
+
+/***/ 5659:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+/* eslint-disable quotes, quote-props */
+
+
+/*
+  Port of a subset of the features of CPython's shlex module, which provides a
+  shell-like lexer. Original code by Eric S. Raymond and other contributors.
+*/
+
+class Shlexer {
+  constructor (string) {
+    this.i = 0
+    this.string = string
+
+    /**
+     * Characters that will be considered whitespace and skipped. Whitespace
+     * bounds tokens. By default, includes space, tab, linefeed and carriage
+     * return.
+     */
+    this.whitespace = ' \t\r\n'
+
+    /**
+     * Characters that will be considered string quotes. The token accumulates
+     * until the same quote is encountered again (thus, different quote types
+     * protect each other as in the shell.) By default, includes ASCII single
+     * and double quotes.
+     */
+    this.quotes = `'"`
+
+    /**
+     * Characters that will be considered as escape. Just `\` by default.
+     */
+    this.escapes = '\\'
+
+    /**
+     * The subset of quote types that allow escaped characters. Just `"` by default.
+     */
+    this.escapedQuotes = '"'
+
+    /**
+     * Whether to support ANSI C-style $'' quotes
+     * https://www.gnu.org/software/bash/manual/html_node/ANSI_002dC-Quoting.html
+     */
+    this.ansiCQuotes = true
+
+    /**
+     * Whether to support localized $"" quotes
+     * https://www.gnu.org/software/bash/manual/html_node/Locale-Translation.html
+     *
+     * The behavior is as if the current locale is set to C or POSIX, i.e., the
+     * contents are not translated.
+     */
+    this.localeQuotes = true
+
+    this.debug = false
+  }
+
+  readChar () {
+    return this.string.charAt(this.i++)
+  }
+
+  processEscapes (string, quote, isAnsiCQuote) {
+    if (!isAnsiCQuote && !this.escapedQuotes.includes(quote)) {
+      // This quote type doesn't support escape sequences
+      return string
+    }
+
+    // We need to form a regex that matches any of the escape characters,
+    // without interpreting any of the characters as a regex special character.
+    const anyEscape = '[' + this.escapes.replace(/(.)/g, '\\$1') + ']'
+
+    // In regular quoted strings, we can only escape an escape character, and
+    // the quote character itself.
+    if (!isAnsiCQuote && this.escapedQuotes.includes(quote)) {
+      const re = new RegExp(
+        anyEscape + '(' + anyEscape + '|\\' + quote + ')', 'g')
+      return string.replace(re, '$1')
+    }
+
+    // ANSI C quoted strings support a wide variety of escape sequences
+    if (isAnsiCQuote) {
+      const patterns = {
+        // Literal characters
+        '([\\\\\'"?])': (x) => x,
+
+        // Non-printable ASCII characters
+        'a': () => '\x07',
+        'b': () => '\x08',
+        'e|E': () => '\x1b',
+        'f': () => '\x0c',
+        'n': () => '\x0a',
+        'r': () => '\x0d',
+        't': () => '\x09',
+        'v': () => '\x0b',
+
+        // Octal bytes
+        '([0-7]{1,3})': (x) => String.fromCharCode(parseInt(x, 8)),
+
+        // Hexadecimal bytes
+        'x([0-9a-fA-F]{1,2})': (x) => String.fromCharCode(parseInt(x, 16)),
+
+        // Unicode code units
+        'u([0-9a-fA-F]{1,4})': (x) => String.fromCharCode(parseInt(x, 16)),
+        'U([0-9a-fA-F]{1,8})': (x) => String.fromCharCode(parseInt(x, 16)),
+
+        // Control characters
+        // https://en.wikipedia.org/wiki/Control_character#How_control_characters_map_to_keyboards
+        'c(.)': (x) => {
+          if (x === '?') {
+            return '\x7f'
+          } else if (x === '@') {
+            return '\x00'
+          } else {
+            return String.fromCharCode(x.charCodeAt(0) & 31)
+          }
+        }
+      }
+
+      // Construct an uber-RegEx that catches all of the above pattern
+      const re = new RegExp(
+        anyEscape + '(' + Object.keys(patterns).join('|') + ')', 'g')
+
+      // For each match, figure out which subpattern matched, and apply the
+      // corresponding function
+      return string.replace(re, function (m, p1) {
+        for (const matched in patterns) {
+          const mm = new RegExp('^' + matched + '$').exec(p1)
+          if (mm === null) {
+            continue
+          }
+
+          return patterns[matched].apply(null, mm.slice(1))
+        }
+      })
+    }
+
+    // Should not get here
+    return undefined
+  }
+
+  * [Symbol.iterator] () {
+    let inQuote = false
+    let inDollarQuote = false
+    let escaped = false
+    let lastDollar = -2 // position of last dollar sign we saw
+    let token
+
+    if (this.debug) {
+      console.log('full input:', '>' + this.string + '<')
+    }
+
+    while (true) {
+      const pos = this.i
+      const char = this.readChar()
+
+      if (this.debug) {
+        console.log(
+          'position:', pos,
+          'input:', '>' + char + '<',
+          'accumulated:', token,
+          'inQuote:', inQuote,
+          'inDollarQuote:', inDollarQuote,
+          'lastDollar:', lastDollar,
+          'escaped:', escaped
+        )
+      }
+
+      // Ran out of characters, we're done
+      if (char === '') {
+        if (inQuote) { throw new Error('Got EOF while in a quoted string') }
+        if (escaped) { throw new Error('Got EOF while in an escape sequence') }
+        if (token !== undefined) { yield token }
+        return
+      }
+
+      // We were in an escape sequence, complete it
+      if (escaped) {
+        if (char === '\n') {
+          // An escaped newline just means to continue the command on the next
+          // line. We just need to ignore it.
+        } else if (inQuote) {
+          // If we are in a quote, just accumulate the whole escape sequence,
+          // as we will interpret escape sequences later.
+          token = (token || '') + escaped + char
+        } else {
+          // Just use the literal character
+          token = (token || '') + char
+        }
+
+        escaped = false
+        continue
+      }
+
+      if (this.escapes.includes(char)) {
+        if (!inQuote || inDollarQuote !== false || this.escapedQuotes.includes(inQuote)) {
+          // We encountered an escape character, which is going to affect how
+          // we treat the next character.
+          escaped = char
+          continue
+        } else {
+          // This string type doesn't use escape characters. Ignore for now.
+        }
+      }
+
+      // We were in a string
+      if (inQuote !== false) {
+        // String is finished. Don't grab the quote character.
+        if (char === inQuote) {
+          token = this.processEscapes(token, inQuote, inDollarQuote === '\'')
+          inQuote = false
+          inDollarQuote = false
+          continue
+        }
+
+        // String isn't finished yet, accumulate the character
+        token = (token || '') + char
+        continue
+      }
+
+      // This is the start of a new string, don't accumulate the quotation mark
+      if (this.quotes.includes(char)) {
+        inQuote = char
+        if (lastDollar === pos - 1) {
+          if (char === '\'' && !this.ansiCQuotes) {
+            // Feature not enabled
+          } else if (char === '"' && !this.localeQuotes) {
+            // Feature not enabled
+          } else {
+            inDollarQuote = char
+          }
+        }
+
+        token = (token || '') // fixes blank string
+
+        if (inDollarQuote !== false) {
+          // Drop the opening $ we captured before
+          token = token.slice(0, -1)
+        }
+
+        continue
+      }
+
+      // This is a dollar sign, record that we saw it in case it's the start of
+      // an ANSI C or localized string
+      if (inQuote === false && char === '$') {
+        lastDollar = pos
+      }
+
+      // This is whitespace, so yield the token if we have one
+      if (this.whitespace.includes(char)) {
+        if (token !== undefined) { yield token }
+        token = undefined
+        continue
+      }
+
+      // Otherwise, accumulate the character
+      token = (token || '') + char
+    }
+  }
+}
+
+
+/**
+ * Splits a given string using shell-like syntax. This function is the inverse
+ * of shlex.join().
+ *
+ * @param {String} s String to split.
+ * @returns {String[]}
+ */
+exports.split = function (s) {
+  return Array.from(new Shlexer(s))
+}
+
+/**
+ * Escapes a potentially shell-unsafe string using quotes.
+ *
+ * @param {String} s String to quote
+ * @returns {String}
+ */
+exports.quote = function (s) {
+  if (s === '') { return '\'\'' }
+
+  const unsafeRe = /[^\w@%\-+=:,./]/
+  if (!unsafeRe.test(s)) { return s }
+
+  return ('\'' + s.replace(/('+)/g, '\'"$1"\'') + '\'').replace(/^''|''$/g, '')
+}
+
+
+/**
+ * Concatenate the tokens of the list args and return a string. This function
+ * is the inverse of shlex.split().
+ *
+ * The returned value is shell-escaped to protect against injection
+ * vulnerabilities (see shlex.quote()).
+ *
+ * @param {String[]} args List of args to join
+ * @returns {String}
+*/
+exports.join = function (args) {
+  if (!Array.isArray(args)) {
+    throw new TypeError("args should be an array")
+  }
+  return args.map(exports.quote).join(" ")
 }
 
 

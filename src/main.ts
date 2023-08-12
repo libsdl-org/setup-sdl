@@ -10,7 +10,7 @@ import { Octokit } from "@octokit/rest";
 import AdmZip = require("adm-zip");
 
 import { SDL_GIT_REPO } from "./constants";
-import { SetupSdlError } from "./util";
+import { SetupSdlError, shlex_split } from "./util";
 import * as linuxpm from "./linuxpm";
 
 import {
@@ -199,6 +199,7 @@ function calculate_state_hash(args: {
   build_platform: SdlBuildPlatform;
   shell: string;
   cmake_toolchain_file: string | undefined;
+  cmake_configure_arguments: string | undefined;
   package_manager: linuxpm.PackageManagerType | undefined;
 }) {
   const ENV_KEYS = [
@@ -257,6 +258,10 @@ function calculate_state_hash(args: {
       .update(toolchain_contents)
       .digest("hex");
     misc_state.push(`cmake_toolchain_file_hash=${cmake_toolchain_file_hash}`);
+  }
+
+  if (args.cmake_configure_arguments) {
+    misc_state.push(`cmake_arguments=${args.cmake_configure_arguments}`);
   }
 
   const complete_state: string[] = [
@@ -512,6 +517,7 @@ async function run() {
   });
 
   const CMAKE_TOOLCHAIN_FILE = get_cmake_toolchain_path();
+  const INPUT_CMAKE_CONFIGURE_ARGUMENTS = core.getInput("cmake-arguments");
 
   const PACKAGE_MANAGER_TYPE = parse_linux_package_manager(
     core.getInput("install-linux-dependencies"),
@@ -523,6 +529,7 @@ async function run() {
     build_platform: SDL_BUILD_PLATFORM,
     shell: SHELL,
     cmake_toolchain_file: CMAKE_TOOLCHAIN_FILE,
+    cmake_configure_arguments: INPUT_CMAKE_CONFIGURE_ARGUMENTS,
     package_manager: PACKAGE_MANAGER_TYPE,
   });
 
@@ -567,13 +574,15 @@ async function run() {
       install_linux_dependencies(PACKAGE_MANAGER_TYPE);
     }
 
-    const cmake_configure_args = [
+    const cmake_configure_args = shlex_split(INPUT_CMAKE_CONFIGURE_ARGUMENTS);
+
+    cmake_configure_args.push(
       `-DSDL_TEST=${BUILD_SDL_TEST}`,
       `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`,
       "-DCMAKE_INSTALL_BINDIR=bin",
       "-DCMAKE_INSTALL_INCLUDEDIR=include",
-      "-DCMAKE_INSTALL_LIBDIR=lib",
-    ];
+      "-DCMAKE_INSTALL_LIBDIR=lib"
+    );
     if (CMAKE_TOOLCHAIN_FILE) {
       cmake_configure_args.push(
         `-DCMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE}"`

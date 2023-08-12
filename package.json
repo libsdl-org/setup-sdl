@@ -45,6 +45,7 @@
     "@octokit/rest": "^19.0.13",
     "adm-zip": "^0.5.10",
     "octokit": "^2.1.0",
+    "shlex": "^2.1.2",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
