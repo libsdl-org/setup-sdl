@@ -45,3 +45,22 @@ Using the `version` option, a SDL release can be used or the latest git tag:
 ## Options
 
 See [action.yml](action.yml) for an overview of all options, and its defaults.
+
+## FAQ
+
+### My CMake project does not find SDL
+
+First, make sure you're looking for SDL using `find_package`:
+```cmake
+# SDL2
+find_package(SDL2 CONFIG REQUIRED)
+
+# SDL3
+find_package(SDL2 CONFIG REQUIRED)
+```
+If CMake is still not able to find SDL, the minimum required CMake version of your project is probably less than 3.12.
+Since this version, CMake will also look for packages using environment variables as hints (see [CMP0074](https://cmake.org/cmake/help/latest/policy/CMP0074.html)).
+
+When bumping the minimum CMake version is not desirable, here are 2 alternative methods (pick one!):
+- Add `-DCMAKE_PREFIX_PATH=${{ steps.sdl.outputs.prefix }}` to the CMake configure command (or add SDL's path to an already-existing `-DCMAKE_PREFIX_PATH=` argument)
+- Add `-DCMAKE_POLICY_DEFAULT_CMP0074=NEW` to the CMake configure command (this only works when the actual CMake version is >= 3.12).
