@@ -56,7 +56,7 @@ First, make sure you're looking for SDL using `find_package`:
 find_package(SDL2 CONFIG REQUIRED)
 
 # SDL3
-find_package(SDL2 CONFIG REQUIRED)
+find_package(SDL3 CONFIG REQUIRED)
 ```
 If CMake is still not able to find SDL, the minimum required CMake version of your project is probably less than 3.12.
 Since this version, CMake will also look for packages using environment variables as hints (see [CMP0074](https://cmake.org/cmake/help/latest/policy/CMP0074.html)).
