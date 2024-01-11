@@ -62,9 +62,9 @@ async function convert_git_branch_tag_to_hash(args: {
         core.debug("It was not a commit.");
       }
       throw new SetupSdlError(
-        `Unable to convert ${args.branch_or_hash} into a git hash.`,
+        `Unable to convert ${args.branch_or_hash} into a git hash.`
       );
-    },
+    }
   );
 }
 
@@ -97,7 +97,7 @@ async function download_sdl_git_hash(args: {
           const pos_last_slash = entry.entryName.lastIndexOf("/");
           const targetPath = path.join(
             args.directory,
-            entry.entryName.slice(pos_first_slash + 1, pos_last_slash),
+            entry.entryName.slice(pos_first_slash + 1, pos_last_slash)
           );
           const maintainEntryPath = true;
           const overwrite = false;
@@ -106,8 +106,8 @@ async function download_sdl_git_hash(args: {
           core.debug(
             `Extracting ${outFileName} to ${path.join(
               targetPath,
-              outFileName,
-            )}...`,
+              outFileName
+            )}...`
           );
           admzip.extractEntryTo(
             entry,
@@ -115,17 +115,17 @@ async function download_sdl_git_hash(args: {
             maintainEntryPath,
             overwrite,
             keepOriginalPermission,
-            outFileName,
+            outFileName
           );
         }
       });
-    },
+    }
   );
 }
 
 function execute_child_process(
   command: string,
-  shell: string | undefined | null,
+  shell: string | undefined | null
 ) {
   core.info(`${command}`);
   let final_command: string;
@@ -289,7 +289,7 @@ function resolve_workspace_path(in_path: string): string | undefined {
   }
   const workspace_path = path.resolve(
     `${process.env.GITHUB_WORKSPACE}`,
-    in_path,
+    in_path
   );
   if (fs.existsSync(workspace_path)) {
     return workspace_path;
@@ -301,11 +301,11 @@ function get_cmake_toolchain_path(): string | undefined {
   const in_cmake_toolchain_file = core.getInput("cmake-toolchain-file");
   if (in_cmake_toolchain_file) {
     const resolved_cmake_toolchain_file = resolve_workspace_path(
-      in_cmake_toolchain_file,
+      in_cmake_toolchain_file
     );
     if (!resolved_cmake_toolchain_file) {
       throw new SetupSdlError(
-        `Cannot find CMake toolchain file: ${in_cmake_toolchain_file}`,
+        `Cannot find CMake toolchain file: ${in_cmake_toolchain_file}`
       );
     }
     return resolved_cmake_toolchain_file;
@@ -313,11 +313,11 @@ function get_cmake_toolchain_path(): string | undefined {
   const env_cmake_toolchain_file = process.env.CMAKE_TOOLCHAIN_FILE;
   if (env_cmake_toolchain_file) {
     const resolved_cmake_toolchain_file = resolve_workspace_path(
-      env_cmake_toolchain_file,
+      env_cmake_toolchain_file
     );
     if (!resolved_cmake_toolchain_file) {
       throw new SetupSdlError(
-        `Cannot find CMake toolchain file: ${env_cmake_toolchain_file}`,
+        `Cannot find CMake toolchain file: ${env_cmake_toolchain_file}`
       );
     }
     return resolved_cmake_toolchain_file;
@@ -398,7 +398,7 @@ const SDL_LINUX_DEPENDENCIES: {
 
 function parse_linux_package_manager(
   input: string | undefined,
-  build_platform: SdlBuildPlatform,
+  build_platform: SdlBuildPlatform
 ): linuxpm.PackageManagerType | undefined {
   if (build_platform != SdlBuildPlatform.Linux) {
     return undefined;
@@ -420,13 +420,13 @@ function parse_linux_package_manager(
 }
 
 async function install_linux_dependencies(
-  package_manager_type: linuxpm.PackageManagerType,
+  package_manager_type: linuxpm.PackageManagerType
 ) {
   const package_manager = linuxpm.create_package_manager(package_manager_type);
   const packages = SDL_LINUX_DEPENDENCIES[package_manager_type];
   if (!packages) {
     throw new SetupSdlError(
-      `Don't know what packages to install for ${package_manager_type}. Please create a pr.`,
+      `Don't know what packages to install for ${package_manager_type}. Please create a pr.`
     );
   }
   await core.group(
@@ -441,7 +441,7 @@ async function install_linux_dependencies(
           /* intentionally left blank */
         }
       });
-    },
+    }
   );
 }
 
@@ -466,7 +466,7 @@ async function run() {
   const SHELL = shell_in;
 
   const REQUESTED_VERSION_TYPE = parse_requested_sdl_version(
-    core.getInput("version"),
+    core.getInput("version")
   );
 
   const CMAKE_BUILD_TYPE = core.getInput("build-type");
@@ -501,11 +501,11 @@ async function run() {
       const sdl_release = release_db.find(
         requested_version,
         core.getBooleanInput("pre-release"),
-        requested_type,
+        requested_type
       );
       if (!sdl_release) {
         throw new SetupSdlError(
-          `Could not find a matching SDL release for ${requested_version}`,
+          `Could not find a matching SDL release for ${requested_version}`
         );
       }
       git_branch_hash = sdl_release.tag;
@@ -522,7 +522,7 @@ async function run() {
 
   const PACKAGE_MANAGER_TYPE = parse_linux_package_manager(
     core.getInput("install-linux-dependencies"),
-    SDL_BUILD_PLATFORM,
+    SDL_BUILD_PLATFORM
   );
 
   const STATE_HASH = calculate_state_hash({
@@ -547,7 +547,7 @@ async function run() {
       // Pass a copy of CACHE_PATHS since cache.restoreCache modifies/modified its arguments
       const found_cache_key = await cache.restoreCache(
         CACHE_PATHS.slice(),
-        CACHE_KEY,
+        CACHE_KEY
       );
       if (found_cache_key) {
         core.info(`SDL found in the cache: key = ${found_cache_key}`);
@@ -556,7 +556,7 @@ async function run() {
       }
 
       return !!found_cache_key;
-    },
+    }
   );
 
   if (!sdl_from_cache) {
@@ -582,11 +582,11 @@ async function run() {
       `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`,
       "-DCMAKE_INSTALL_BINDIR=bin",
       "-DCMAKE_INSTALL_INCLUDEDIR=include",
-      "-DCMAKE_INSTALL_LIBDIR=lib",
+      "-DCMAKE_INSTALL_LIBDIR=lib"
     );
     if (CMAKE_TOOLCHAIN_FILE) {
       cmake_configure_args.push(
-        `-DCMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE}"`,
+        `-DCMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE}"`
       );
     }
 

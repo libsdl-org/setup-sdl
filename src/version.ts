@@ -30,7 +30,7 @@ export class GitHubRelease {
           line_parts[0],
           line_parts[1].toLowerCase() == "pre-release",
           line_parts[2],
-          Date.parse(line_parts[3]),
+          Date.parse(line_parts[3])
         );
       });
   }
@@ -41,13 +41,13 @@ export class SdlVersion {
   minor: number;
   patch: number;
   constructor(
-    version: string | { major: number; minor: number; patch: number },
+    version: string | { major: number; minor: number; patch: number }
   ) {
     if (typeof version == "string") {
       const v_list = version.split(".");
       if (v_list.length == 0 || v_list.length > 3) {
         throw new SetupSdlError(
-          `Cannot convert version (${version}) to MAJOR.MINOR.PATCH`,
+          `Cannot convert version (${version}) to MAJOR.MINOR.PATCH`
         );
       }
       this.major = Number(v_list[0]);
@@ -68,7 +68,7 @@ export class SdlVersion {
     }
     if (isNaN(this.major) || isNaN(this.minor) || isNaN(this.patch)) {
       throw new SetupSdlError(
-        `Cannot convert version (${version}) to MAJOR.MINOR.PATCH`,
+        `Cannot convert version (${version}) to MAJOR.MINOR.PATCH`
       );
     }
   }
@@ -110,19 +110,19 @@ export class SdlVersion {
     const sdl3_SDL_version_h_path = `${path}/include/SDL3/SDL_version.h`;
     if (fs.existsSync(sdl3_SDL_version_h_path)) {
       return this.extract_sdl_version_from_SDL_version_h(
-        sdl3_SDL_version_h_path,
+        sdl3_SDL_version_h_path
       );
     }
 
     const sdl2_SDL_version_h_path = `${path}/include/SDL_version.h`;
     if (fs.existsSync(sdl2_SDL_version_h_path)) {
       return this.extract_sdl_version_from_SDL_version_h(
-        sdl2_SDL_version_h_path,
+        sdl2_SDL_version_h_path
       );
     }
 
     throw new SetupSdlError(
-      `Could not find a SDL_version.h in the source tree (${path})`,
+      `Could not find a SDL_version.h in the source tree (${path})`
     );
   }
 
@@ -130,53 +130,53 @@ export class SdlVersion {
     const sdl3_SDL_version_h_path = `${path}/include/SDL3/SDL_version.h`;
     if (fs.existsSync(sdl3_SDL_version_h_path)) {
       return this.extract_sdl_version_from_SDL_version_h(
-        sdl3_SDL_version_h_path,
+        sdl3_SDL_version_h_path
       );
     }
 
     const sdl2_SDL_version_h_path = `${path}/include/SDL2/SDL_version.h`;
     if (fs.existsSync(sdl2_SDL_version_h_path)) {
       return this.extract_sdl_version_from_SDL_version_h(
-        sdl2_SDL_version_h_path,
+        sdl2_SDL_version_h_path
       );
     }
 
     throw new SetupSdlError(
-      `Could not find a SDL_version.h in the prefix (${path})`,
+      `Could not find a SDL_version.h in the prefix (${path})`
     );
   }
 
   static extract_sdl_version_from_SDL_version_h(
-    SDL_version_h_path: string,
+    SDL_version_h_path: string
   ): SdlVersion {
     const SDL_version_h = fs.readFileSync(SDL_version_h_path, "utf8");
 
     const match_major = SDL_version_h.match(
-      /#define[ \t]+SDL_MAJOR_VERSION[ \t]+([0-9]+)/,
+      /#define[ \t]+SDL_MAJOR_VERSION[ \t]+([0-9]+)/
     );
     if (!match_major) {
       throw new SdlVersion(
-        `Unable to extract major SDL version from ${SDL_version_h_path}`,
+        `Unable to extract major SDL version from ${SDL_version_h_path}`
       );
     }
     const major_version = Number(match_major[1]);
 
     const match_minor = SDL_version_h.match(
-      /#define[ \t]+SDL_MINOR_VERSION[ \t]+([0-9]+)/,
+      /#define[ \t]+SDL_MINOR_VERSION[ \t]+([0-9]+)/
     );
     if (!match_minor) {
       throw new SdlVersion(
-        `Unable to extract minor SDL version from ${SDL_version_h_path}`,
+        `Unable to extract minor SDL version from ${SDL_version_h_path}`
       );
     }
     const minor_version = Number(match_minor[1]);
 
     const match_patch = SDL_version_h.match(
-      /#define[ \t]+SDL_PATCHLEVEL[ \t]+([0-9]+)/,
+      /#define[ \t]+SDL_PATCHLEVEL[ \t]+([0-9]+)/
     );
     if (!match_patch) {
       throw new SdlVersion(
-        `Unable to extract patch SDL version from ${SDL_version_h_path}`,
+        `Unable to extract patch SDL version from ${SDL_version_h_path}`
       );
     }
     const patch_version = Number(match_patch[1]);
@@ -206,7 +206,7 @@ export class SdlReleaseDb {
   find(
     version: SdlVersion,
     prerelease: boolean,
-    type: SdlReleaseType,
+    type: SdlReleaseType
   ): SdlRelease | null {
     for (const release of this.releases) {
       // Skip if a pre-release has not been requested
@@ -244,7 +244,7 @@ export class SdlReleaseDb {
       return new SdlRelease(
         new SdlVersion(version),
         prerelease,
-        gh_release.tag,
+        gh_release.tag
       );
     });
     releases.sort((release1, release2) => {
@@ -293,7 +293,7 @@ export class SdlRelease {
 }
 
 export function parse_requested_sdl_version(
-  version_request: string,
+  version_request: string
 ): { version: SdlVersion; type: SdlReleaseType } | null {
   const ANY_SUFFIX = "-any";
   const HEAD_SUFFIX = "-head";
@@ -312,7 +312,7 @@ export function parse_requested_sdl_version(
       version_type = SdlReleaseType.Any;
       const version_str = version_request.substring(
         0,
-        version_request.length - ANY_SUFFIX.length,
+        version_request.length - ANY_SUFFIX.length
       );
       version = new SdlVersion({
         major: Number(version_str),
@@ -323,7 +323,7 @@ export function parse_requested_sdl_version(
       version_type = SdlReleaseType.Head;
       const version_str = version_request.substring(
         0,
-        version_request.length - HEAD_SUFFIX.length,
+        version_request.length - HEAD_SUFFIX.length
       );
       version = new SdlVersion({
         major: Number(version_str),
@@ -334,7 +334,7 @@ export function parse_requested_sdl_version(
       version_type = SdlReleaseType.Latest;
       const version_str = version_request.substring(
         0,
-        version_request.length - LATEST_SUFFIX.length,
+        version_request.length - LATEST_SUFFIX.length
       );
       version = new SdlVersion({
         major: Number(version_str),
