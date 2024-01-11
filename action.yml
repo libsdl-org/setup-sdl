@@ -5,6 +5,21 @@ inputs:
     description: "Required version of SDL (2.x.y, 2-any, 2-latest, 2-head, 3-head), or git hash"
     default: "2-any"
     required: true
+  version-sdl-image:
+    description: "Version of SDL_image (2.x.y, 2-any, 2-latest, 2-head, 3-head), git hash, or <empty>"
+    required: false
+  version-sdl-mixer:
+    description: "Version of SDL_mixer (2.x.y, 2-any, 2-latest, 2-head, 3-head), git hash, or <empty>"
+    required: false
+  version-sdl-net:
+    description: "Version of SDL_net (2.x.y, 2-any, 2-latest, 2-head, 3-head), git hash, or <empty>"
+    required: false
+  version-sdl-rtf:
+    description: "Version of SDL_rtf (2.x.y, 2-any, 2-latest, 2-head, 3-head), git hash, or <empty>"
+    required: false
+  version-sdl-ttf:
+    description: "Version of SDL_ttf (2.x.y, 2-any, 2-latest, 2-head, 3-head), git hash, or <empty>"
+    required: false
   pre-release:
     description: "Allow pre-releases"
     default: "true"
@@ -23,7 +38,7 @@ inputs:
   cmake-arguments:
     description: "Extra CMake arguments during configuration"
   install-linux-dependencies:
-    description: "Install Linux dependencies"
+    description: "Install dependencies (supports apt-get, dnf, brew, and msys2-pacman)"
   shell:
     description: "Run commands as `$shell $file` (with $file containing the build commands)"
   discriminator:
@@ -40,5 +55,5 @@ outputs:
   version:
     description: "SDL version"
 runs:
-  using: "node16"
+  using: "node20"
   main: "packed/index.js"

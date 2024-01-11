@@ -1,6 +1,7 @@
 import * as child_process from "child_process";
 import * as fs from "fs";
 
+import * as pm from "./pm";
 import { SetupSdlError } from "./util";
 
 export class GitHubRelease {
@@ -36,7 +37,7 @@ export class GitHubRelease {
   }
 }
 
-export class SdlVersion {
+export class Version {
   major: number;
   minor: number;
   patch: number;
@@ -73,7 +74,7 @@ export class SdlVersion {
     }
   }
 
-  compare(other: SdlVersion): number {
+  compare(other: Version): number {
     if (this.major > other.major) {
       return -1;
     }
@@ -98,105 +99,292 @@ export class SdlVersion {
     return 0;
   }
 
-  equals(other: SdlVersion): boolean {
+  equals(other: Version): boolean {
     return this.compare(other) == 0;
   }
 
   toString(): string {
     return `${this.major}.${this.minor}.${this.patch}`;
   }
+}
 
-  static detect_sdl_version_from_source_tree(path: string): SdlVersion {
-    const sdl3_SDL_version_h_path = `${path}/include/SDL3/SDL_version.h`;
-    if (fs.existsSync(sdl3_SDL_version_h_path)) {
-      return this.extract_sdl_version_from_SDL_version_h(
-        sdl3_SDL_version_h_path,
-      );
-    }
+export enum Project {
+  SDL = "SDL",
+  SDL_image = "SDL_image",
+  SDL_mixer = "SDL_mixer",
+  SDL_net = "SDL_net",
+  SDL_rtf = "SDL_rtf",
+  SDL_ttf = "SDL_ttf",
+}
 
-    const sdl2_SDL_version_h_path = `${path}/include/SDL_version.h`;
-    if (fs.existsSync(sdl2_SDL_version_h_path)) {
-      return this.extract_sdl_version_from_SDL_version_h(
-        sdl2_SDL_version_h_path,
-      );
-    }
+interface ProjectDescription {
+  option_name: string;
+  discarded_prefix?: string;
+  cmake_var_out_prefix: string;
+  cmake_var_out_suffix: string;
+  deps: Project[];
+  major_define: string;
+  minor_define: string;
+  patch_define: string;
+  header_paths: string[];
+  header_filename: string;
+  git_url: string;
+  repo_owner: string;
+  repo_name: string;
+  version_branch_map: { [version: number]: string };
+  packages?: pm.Packages;
+}
 
-    throw new SetupSdlError(
-      `Could not find a SDL_version.h in the source tree (${path})`,
-    );
+export class VersionExtractor {
+  major_define: string;
+  minor_define: string;
+  patch_define: string;
+  header_paths: string[];
+  header_filename: string;
+
+  constructor(desc: ProjectDescription) {
+    this.major_define = desc.major_define;
+    this.minor_define = desc.minor_define;
+    this.patch_define = desc.patch_define;
+    this.header_paths = desc.header_paths;
+    this.header_filename = desc.header_filename;
   }
 
-  static detect_sdl_version_from_install_prefix(path: string): SdlVersion {
-    const sdl3_SDL_version_h_path = `${path}/include/SDL3/SDL_version.h`;
-    if (fs.existsSync(sdl3_SDL_version_h_path)) {
-      return this.extract_sdl_version_from_SDL_version_h(
-        sdl3_SDL_version_h_path,
-      );
+  extract_from_header_path(path: string): Version {
+    if (!fs.existsSync(path)) {
+      throw new SetupSdlError(`Cannot find ${path}`);
     }
 
-    const sdl2_SDL_version_h_path = `${path}/include/SDL2/SDL_version.h`;
-    if (fs.existsSync(sdl2_SDL_version_h_path)) {
-      return this.extract_sdl_version_from_SDL_version_h(
-        sdl2_SDL_version_h_path,
-      );
-    }
+    const contents = fs.readFileSync(path, "utf8");
 
-    throw new SetupSdlError(
-      `Could not find a SDL_version.h in the prefix (${path})`,
-    );
-  }
-
-  static extract_sdl_version_from_SDL_version_h(
-    SDL_version_h_path: string,
-  ): SdlVersion {
-    const SDL_version_h = fs.readFileSync(SDL_version_h_path, "utf8");
-
-    const match_major = SDL_version_h.match(
-      /#define[ \t]+SDL_MAJOR_VERSION[ \t]+([0-9]+)/,
+    const match_major = contents.match(
+      new RegExp(`#define[ \\t]+${this.major_define}[ \\t]+([0-9]+)`),
     );
     if (!match_major) {
-      throw new SdlVersion(
-        `Unable to extract major SDL version from ${SDL_version_h_path}`,
-      );
+      throw new SetupSdlError(`Unable to extract major version from ${path}`);
     }
     const major_version = Number(match_major[1]);
 
-    const match_minor = SDL_version_h.match(
-      /#define[ \t]+SDL_MINOR_VERSION[ \t]+([0-9]+)/,
+    const match_minor = contents.match(
+      new RegExp(`#define[ \\t]+${this.minor_define}[ \\t]+([0-9]+)`),
     );
     if (!match_minor) {
-      throw new SdlVersion(
-        `Unable to extract minor SDL version from ${SDL_version_h_path}`,
-      );
+      throw new SetupSdlError(`Unable to extract minor version from ${path}`);
     }
     const minor_version = Number(match_minor[1]);
 
-    const match_patch = SDL_version_h.match(
-      /#define[ \t]+SDL_PATCHLEVEL[ \t]+([0-9]+)/,
+    const match_patch = contents.match(
+      new RegExp(`#define[ \\t]+${this.patch_define}[ \\t]+([0-9]+)`),
     );
     if (!match_patch) {
-      throw new SdlVersion(
-        `Unable to extract patch SDL version from ${SDL_version_h_path}`,
-      );
+      throw new SetupSdlError(`Unable to extract patch version from ${path}`);
     }
     const patch_version = Number(match_patch[1]);
 
-    return new SdlVersion({
+    return new Version({
       major: major_version,
       minor: minor_version,
       patch: patch_version,
     });
   }
+
+  extract_from_install_prefix(path: string): Version {
+    const version = (() => {
+      for (const infix_path of this.header_paths) {
+        const hdr_path = `${path}/${infix_path}/${this.header_filename}`;
+        if (!fs.existsSync(hdr_path)) {
+          continue;
+        }
+        return this.extract_from_header_path(hdr_path);
+      }
+      throw new SetupSdlError(`Could not extract version from ${path}.`);
+    })();
+    return version;
+  }
 }
 
-export enum SdlReleaseType {
+export const project_descriptions: { [key in Project]: ProjectDescription } = {
+  [Project.SDL]: {
+    option_name: "version",
+    discarded_prefix: "sdl",
+    cmake_var_out_prefix: "SDL",
+    cmake_var_out_suffix: "_ROOT",
+    deps: [],
+    major_define: "SDL_MAJOR_VERSION",
+    minor_define: "SDL_MINOR_VERSION",
+    patch_define: "SDL_PATCHLEVEL",
+    header_paths: ["include/SDL3", "include/SDL2"],
+    header_filename: "SDL_version.h",
+    git_url: "https://github.com/libsdl-org/SDL.git",
+    repo_owner: "libsdl-org",
+    repo_name: "SDL",
+    version_branch_map: { 2: "SDL2", 3: "main" },
+    packages: {
+      [pm.PackageManagerType.AptGet]: {
+        required: [
+          "cmake",
+          "make",
+          "ninja-build",
+          "libasound2-dev",
+          "libpulse-dev",
+          "libaudio-dev",
+          "libjack-dev",
+          "libsndio-dev",
+          "libusb-1.0-0-dev",
+          "libx11-dev",
+          "libxext-dev",
+          "libxrandr-dev",
+          "libxcursor-dev",
+          "libxfixes-dev",
+          "libxi-dev",
+          "libxss-dev",
+          "libwayland-dev",
+          "libxkbcommon-dev",
+          "libdrm-dev",
+          "libgbm-dev",
+          "libgl1-mesa-dev",
+          "libgles2-mesa-dev",
+          "libegl1-mesa-dev",
+          "libdbus-1-dev",
+          "libibus-1.0-dev",
+          "libudev-dev",
+          "fcitx-libs-dev",
+        ],
+        optional: [
+          "libpipewire-0.3-dev" /* Ubuntu 22.04 */,
+          "libdecor-0-dev" /* Ubuntu 22.04 */,
+        ],
+      },
+      [pm.PackageManagerType.Dnf]: {
+        required: [
+          "cmake",
+          "make",
+          "ninja-build",
+          "alsa-lib-devel",
+          "dbus-devel",
+          "ibus-devel",
+          "libusb1-devel",
+          "libX11-devel",
+          "libXau-devel",
+          "libXScrnSaver-devel",
+          "libXcursor-devel",
+          "libXext-devel",
+          "libXfixes-devel",
+          "libXi-devel",
+          "libXrandr-devel",
+          "libxkbcommon-devel",
+          "libdecor-devel",
+          "libglvnd-devel",
+          "pipewire-devel",
+          "pipewire-jack-audio-connection-kit-devel",
+          "pulseaudio-libs-devel",
+          "wayland-devel",
+        ],
+        optional: [],
+      },
+    },
+  },
+  [Project.SDL_image]: {
+    option_name: "version-sdl-image",
+    cmake_var_out_prefix: "SDL",
+    cmake_var_out_suffix: "_image_ROOT",
+    deps: [Project.SDL],
+    major_define: "SDL_IMAGE_MAJOR_VERSION",
+    minor_define: "SDL_IMAGE_MINOR_VERSION",
+    patch_define: "SDL_IMAGE_PATCHLEVEL",
+    header_paths: ["include/SDL3_image", "include/SDL2"],
+    header_filename: "SDL_image.h",
+    git_url: "https://github.com/libsdl-org/SDL_image.git",
+    repo_owner: "libsdl-org",
+    repo_name: "SDL_image",
+    version_branch_map: { 2: "SDL2", 3: "main" },
+  },
+  [Project.SDL_mixer]: {
+    option_name: "version-sdl-mixer",
+    cmake_var_out_prefix: "SDL",
+    cmake_var_out_suffix: "_mixer_ROOT",
+    deps: [Project.SDL],
+    major_define: "SDL_MIXER_MAJOR_VERSION",
+    minor_define: "SDL_MIXER_MINOR_VERSION",
+    patch_define: "SDL_MIXER_PATCHLEVEL",
+    header_paths: ["include/SDL3_mixer", "include/SDL2"],
+    header_filename: "SDL_mixer.h",
+    git_url: "https://github.com/libsdl-org/SDL_mixer.git",
+    repo_owner: "libsdl-org",
+    repo_name: "SDL_mixer",
+    version_branch_map: { 2: "SDL2", 3: "main" },
+  },
+  [Project.SDL_net]: {
+    option_name: "version-sdl-net",
+    cmake_var_out_prefix: "SDL",
+    cmake_var_out_suffix: "_net_ROOT",
+    deps: [Project.SDL],
+    major_define: "SDL_NET_MAJOR_VERSION",
+    minor_define: "SDL_NET_MINOR_VERSION",
+    patch_define: "SDL_NET_PATCHLEVEL",
+    header_paths: ["include/SDL3_net", "include/SDL2", "include"],
+    header_filename: "SDL_net.h",
+    git_url: "https://github.com/libsdl-org/SDL_net.git",
+    repo_owner: "libsdl-org",
+    repo_name: "SDL_net",
+    version_branch_map: { 2: "SDL2", 3: "main" },
+  },
+  [Project.SDL_rtf]: {
+    option_name: "version-sdl-rtf",
+    cmake_var_out_prefix: "SDL",
+    cmake_var_out_suffix: "_rtf_ROOT",
+    deps: [Project.SDL, Project.SDL_ttf],
+    major_define: "SDL_RTF_MAJOR_VERSION",
+    minor_define: "SDL_RTF_MINOR_VERSION",
+    patch_define: "SDL_RTF_PATCHLEVEL",
+    header_paths: ["include/SDL3_rtf", "include/SDL2", "include"],
+    header_filename: "SDL_rtf.h",
+    git_url: "https://github.com/libsdl-org/SDL_rtf.git",
+    repo_owner: "libsdl-org",
+    repo_name: "SDL_rtf",
+    version_branch_map: { 2: "SDL2", 3: "main" },
+  },
+  [Project.SDL_ttf]: {
+    option_name: "version-sdl-ttf",
+    cmake_var_out_prefix: "SDL",
+    cmake_var_out_suffix: "_ttf_ROOT",
+    deps: [Project.SDL],
+    major_define: "SDL_TTF_MAJOR_VERSION",
+    minor_define: "SDL_TTF_MINOR_VERSION",
+    patch_define: "SDL_TTF_PATCHLEVEL",
+    header_paths: ["include/SDL3_ttf", "include/SDL2"],
+    header_filename: "SDL_ttf.h",
+    git_url: "https://github.com/libsdl-org/SDL_ttf.git",
+    repo_owner: "libsdl-org",
+    repo_name: "SDL_ttf",
+    version_branch_map: { 2: "SDL2", 3: "main" },
+    packages: {
+      [pm.PackageManagerType.AptGet]: {
+        required: ["libfreetype-dev", "libharfbuzz-dev"],
+        optional: [],
+      },
+      [pm.PackageManagerType.Dnf]: {
+        required: ["freetype-devel", "harfbuzz-devel"],
+        optional: [],
+      },
+      [pm.PackageManagerType.Msys2Pacman]: {
+        required: ["freetype", "harfbuzz"],
+        optional: [],
+      },
+    },
+  },
+};
+
+export enum ReleaseType {
   Any = "Any",
   Head = "Head",
   Latest = "Latest",
   Exact = "Exact",
+  Commit = "Commit",
 }
 
-export class SdlReleaseDb {
+// FIXME: rename to ReleaseDb + rename SdlRelease to Release
+export class ReleaseDb {
   releases: SdlRelease[];
 
   constructor(releases: SdlRelease[]) {
@@ -204,21 +392,21 @@ export class SdlReleaseDb {
   }
 
   find(
-    version: SdlVersion,
+    version: Version,
     prerelease: boolean,
-    type: SdlReleaseType,
+    type: ReleaseType,
   ): SdlRelease | null {
     for (const release of this.releases) {
       // Skip if a pre-release has not been requested
       if (release.prerelease != null && !prerelease) {
         continue;
       }
-      if (type == SdlReleaseType.Exact) {
+      if (type == ReleaseType.Exact) {
         if (release.version.equals(version)) {
           return release;
         }
       }
-      if (type == SdlReleaseType.Latest || type == SdlReleaseType.Any) {
+      if (type == ReleaseType.Latest || type == ReleaseType.Any) {
         if (release.version.major == version.major) {
           return release;
         }
@@ -227,7 +415,7 @@ export class SdlReleaseDb {
     return null;
   }
 
-  static create(github_releases: GitHubRelease[]): SdlReleaseDb {
+  static create(github_releases: GitHubRelease[]): ReleaseDb {
     const R = new RegExp("(release-|prerelease-)?([0-9.]+)(-RC([0-9]+))?");
     const releases = github_releases.map((gh_release) => {
       const m = gh_release.tag.match(R);
@@ -241,32 +429,28 @@ export class SdlReleaseDb {
         prerelease = Number(m[4]) + 1;
       }
       const version = m[2];
-      return new SdlRelease(
-        new SdlVersion(version),
-        prerelease,
-        gh_release.tag,
-      );
+      return new SdlRelease(new Version(version), prerelease, gh_release.tag);
     });
     releases.sort((release1, release2) => {
       return release1.compare(release2);
     });
 
-    return new SdlReleaseDb(releases);
+    return new ReleaseDb(releases);
   }
 }
 
-export class SdlRelease {
-  version: SdlVersion;
+class Release {
+  version: Version;
   prerelease: number | null;
   tag: string;
 
-  constructor(version: SdlVersion, prerelease: number | null, tag: string) {
+  constructor(version: Version, prerelease: number | null, tag: string) {
     this.version = version;
     this.prerelease = prerelease;
     this.tag = tag;
   }
 
-  compare(other: SdlRelease): number {
+  compare(other: Release): number {
     const cmp = this.version.compare(other.version);
     if (cmp != 0) {
       return cmp;
@@ -283,71 +467,84 @@ export class SdlRelease {
     return -1;
   }
 
-  equals(other: SdlRelease): boolean {
+  equals(other: Release): boolean {
     return this.compare(other) == 0;
   }
 
   toString(): string {
-    return `<SDLRelease:version=${this.version} prerelease=${this.prerelease} tag=${this.tag}>`;
+    return `<Release:version=${this.version} prerelease=${this.prerelease} tag=${this.tag}>`;
   }
 }
 
-export function parse_requested_sdl_version(
+export class SdlRelease extends Release {}
+
+export type ParsedVersion = {
+  version: Version | string;
+  type: ReleaseType;
+};
+
+export function parse_version_string(
   version_request: string,
-): { version: SdlVersion; type: SdlReleaseType } | null {
+  discarded_prefix: string | undefined,
+): ParsedVersion {
   const ANY_SUFFIX = "-any";
   const HEAD_SUFFIX = "-head";
   const LATEST_SUFFIX = "-latest";
 
-  let version: SdlVersion;
-  let version_type: SdlReleaseType;
+  let version: Version;
+  let version_type: ReleaseType;
 
-  version_request = version_request.toLowerCase();
-  if (version_request.startsWith("sdl")) {
-    version_request = version_request.substring(3);
+  let stripped_version_request = version_request.toLowerCase();
+  if (
+    discarded_prefix &&
+    stripped_version_request.startsWith(discarded_prefix)
+  ) {
+    stripped_version_request = stripped_version_request.substring(
+      discarded_prefix.length,
+    );
   }
 
   try {
-    if (version_request.endsWith(ANY_SUFFIX)) {
-      version_type = SdlReleaseType.Any;
-      const version_str = version_request.substring(
+    if (stripped_version_request.endsWith(ANY_SUFFIX)) {
+      version_type = ReleaseType.Any;
+      const version_str = stripped_version_request.substring(
         0,
-        version_request.length - ANY_SUFFIX.length,
+        stripped_version_request.length - ANY_SUFFIX.length,
       );
-      version = new SdlVersion({
+      version = new Version({
         major: Number(version_str),
         minor: 0,
         patch: 0,
       });
-    } else if (version_request.endsWith(HEAD_SUFFIX)) {
-      version_type = SdlReleaseType.Head;
-      const version_str = version_request.substring(
+    } else if (stripped_version_request.endsWith(HEAD_SUFFIX)) {
+      version_type = ReleaseType.Head;
+      const version_str = stripped_version_request.substring(
         0,
-        version_request.length - HEAD_SUFFIX.length,
+        stripped_version_request.length - HEAD_SUFFIX.length,
       );
-      version = new SdlVersion({
+      version = new Version({
         major: Number(version_str),
         minor: 0,
         patch: 0,
       });
-    } else if (version_request.endsWith(LATEST_SUFFIX)) {
-      version_type = SdlReleaseType.Latest;
-      const version_str = version_request.substring(
+    } else if (stripped_version_request.endsWith(LATEST_SUFFIX)) {
+      version_type = ReleaseType.Latest;
+      const version_str = stripped_version_request.substring(
         0,
-        version_request.length - LATEST_SUFFIX.length,
+        stripped_version_request.length - LATEST_SUFFIX.length,
       );
-      version = new SdlVersion({
+      version = new Version({
         major: Number(version_str),
         minor: 0,
         patch: 0,
       });
     } else {
-      version_type = SdlReleaseType.Exact;
-      const version_str = version_request;
-      version = new SdlVersion(version_str);
+      version_type = ReleaseType.Exact;
+      const version_str = stripped_version_request;
+      version = new Version(version_str);
     }
     return { version: version, type: version_type };
   } catch (e) {
-    return null;
+    return { version: version_request, type: ReleaseType.Commit };
   }
 }

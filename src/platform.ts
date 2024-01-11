@@ -1,5 +1,6 @@
 import * as os from "os";
 import * as core from "@actions/core";
+import * as path from "path";
 
 import { SetupSdlError } from "./util";
 
@@ -37,28 +38,39 @@ export function get_platform_root_directory(
   }
 }
 
-export function export_environent_variables(
+export function export_environment_variables(
   platform: SdlBuildPlatform,
-  prefix: string,
+  prefixes: string[],
 ) {
   switch (platform) {
-    case SdlBuildPlatform.Windows:
-      core.addPath(`${prefix}/bin`);
+    case SdlBuildPlatform.Windows: {
+      const bin_paths = prefixes.map((prefix) => {
+        return `${prefix}/bin`;
+      });
+      const extra_path = bin_paths.join(path.delimiter);
+      core.addPath(extra_path);
       break;
+    }
     case SdlBuildPlatform.Macos: {
-      let libpath = `${prefix}/lib`;
+      const lib_paths = prefixes.map((prefix) => {
+        return `${prefix}/lib`;
+      });
+      let dyld_path = lib_paths.join(path.delimiter);
       if (process.env.DYLD_LIBRARY_PATH) {
-        libpath += `:${process.env.DYLD_LIBRARY_PATH}`;
+        dyld_path += `:${process.env.DYLD_LIBRARY_PATH}`;
       }
-      core.exportVariable("DYLD_LIBRARY_PATH", libpath);
+      core.exportVariable("DYLD_LIBRARY_PATH", dyld_path);
       break;
     }
     case SdlBuildPlatform.Linux: {
-      let libpath = `${prefix}/lib`;
+      const lib_paths = prefixes.map((prefix) => {
+        return `${prefix}/lib`;
+      });
+      let ld_path = lib_paths.join(path.delimiter);
       if (process.env.LD_LIBRARY_PATH) {
-        libpath += `:${process.env.LD_LIBRARY_PATH}`;
+        ld_path += `:${process.env.LD_LIBRARY_PATH}`;
       }
-      core.exportVariable("LD_LIBRARY_PATH", libpath);
+      core.exportVariable("LD_LIBRARY_PATH", ld_path);
       break;
     }
   }

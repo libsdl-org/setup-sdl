@@ -9,78 +9,73 @@ import * as core from "@actions/core";
 import { Octokit } from "@octokit/rest";
 import AdmZip = require("adm-zip");
 
-import { SDL_GIT_REPO } from "./constants";
+import { convert_git_branch_tag_to_hash } from "./repo";
 import { SetupSdlError, shlex_split } from "./util";
-import * as linuxpm from "./linuxpm";
+import * as pm from "./pm";
+
+import { GitHubRelease, ReleaseDb, ReleaseType } from "./version";
 
 import {
-  GitHubRelease,
-  SdlReleaseDb,
-  SdlReleaseType,
-  SdlVersion,
-  parse_requested_sdl_version,
-} from "./version";
-
-import {
-  export_environent_variables,
+  export_environment_variables,
   get_sdl_build_platform,
   get_platform_root_directory,
   SdlBuildPlatform,
 } from "./platform";
 
-async function convert_git_branch_tag_to_hash(args: {
-  branch_or_hash: string;
-  octokit: Octokit;
-}): Promise<string> {
-  return await core.group(
-    `Calculating git hash of ${args.branch_or_hash}`,
-    async () => {
-      try {
-        core.debug(`Look for a branch named "${args.branch_or_hash}"...`);
-        const response = await args.octokit.rest.repos.getBranch({
-          owner: SDL_GIT_REPO.owner,
-          repo: SDL_GIT_REPO.repo,
-          branch: args.branch_or_hash,
-        });
-        core.debug("It was a branch.");
-        const sha = response.data.commit.sha;
-        core.info(`git hash = ${sha}`);
-        return sha;
-      } catch (e) {
-        core.debug("It was not a branch.");
-      }
-      try {
-        core.debug(`Look for a commit named "${args.branch_or_hash}"...`);
-        const response = await args.octokit.rest.repos.getCommit({
-          owner: SDL_GIT_REPO.owner,
-          repo: SDL_GIT_REPO.repo,
-          ref: args.branch_or_hash,
-        });
-        core.debug("It was a commit.");
-        return response.data.sha;
-      } catch (e) {
-        core.debug("It was not a commit.");
-      }
-      throw new SetupSdlError(
-        `Unable to convert ${args.branch_or_hash} into a git hash.`,
-      );
-    },
-  );
+interface GitSubmodule {
+  path: string;
+  repo_owner: string;
+  repo_name: string;
+  branch: string;
 }
 
-async function download_sdl_git_hash(args: {
+function read_gitmodules(path: string): GitSubmodule[] {
+  if (!fs.existsSync(path)) {
+    return [];
+  }
+  const submodules = [];
+  const sdl_repo_regex =
+    /https:\/\/github\.com\/([a-zA-Z0-9_-]+)\/([0-9a-zA-Z_-]+)(\.git)?/;
+  const gitmodules_lines = fs
+    .readFileSync(path, { encoding: "utf8" })
+    .trim()
+    .split("\n");
+  for (let i = 0; 4 * i + 3 <= gitmodules_lines.length; i += 1) {
+    const path = gitmodules_lines[4 * i + 1].split("=")[1].trim();
+    const url = gitmodules_lines[4 * i + 2].split("=")[1].trim();
+    const match = url.match(sdl_repo_regex);
+    if (!match) {
+      throw new SetupSdlError(`Unable to extract owner/name from "${url}"`);
+    }
+    const repo_owner = match[1];
+    const repo_name = match[2];
+    const branch = gitmodules_lines[4 * i + 3].split("=")[1].trim();
+    submodules.push({
+      path: path,
+      repo_owner: repo_owner,
+      repo_name: repo_name,
+      branch: branch,
+    });
+  }
+  return submodules;
+}
+
+async function download_git_repo(args: {
+  repo_owner: string;
+  repo_name: string;
+  submodules: boolean;
   git_hash: string;
   directory: string;
   octokit: Octokit;
 }) {
   fs.mkdirSync(args.directory, { recursive: true });
   await core.group(
-    `Downloading and extracting ${args.git_hash} into ${args.directory}`,
+    `Downloading and extracting ${args.repo_owner}/${args.repo_name} (${args.git_hash}) into ${args.directory}`,
     async () => {
       core.info("Downloading git zip archive...");
       const response = await args.octokit.rest.repos.downloadZipballArchive({
-        owner: SDL_GIT_REPO.owner,
-        repo: SDL_GIT_REPO.repo,
+        owner: args.repo_owner,
+        repo: args.repo_name,
         ref: args.git_hash,
       });
       core.info("Writing zip archive to disk...");
@@ -121,32 +116,62 @@ async function download_sdl_git_hash(args: {
       });
     },
   );
+  if (args.submodules) {
+    const submodules = read_gitmodules(`${args.directory}/.gitmodules`);
+    for (const submodule of submodules) {
+      const submodule_hash = await convert_git_branch_tag_to_hash({
+        branch_or_hash: submodule.branch,
+        owner: submodule.repo_owner,
+        repo: submodule.repo_name,
+        octokit: args.octokit,
+      });
+      const submodule_directory = `${args.directory}/${submodule.path}`;
+      await download_git_repo({
+        repo_owner: submodule.repo_owner,
+        repo_name: submodule.repo_name,
+        submodules: false,
+        git_hash: submodule_hash,
+        directory: submodule_directory,
+        octokit: args.octokit,
+      });
+    }
+  }
 }
 
-function execute_child_process(
-  command: string,
-  shell: string | undefined | null,
-) {
-  core.info(`${command}`);
-  let final_command: string;
-  if (shell && shell.indexOf("{0}") >= 0) {
-    const cmd_file = `${os.tmpdir}/cmd.txt`;
-    fs.writeFileSync(cmd_file, command);
-    final_command = shell.replace("{0}", cmd_file);
-    core.info(`-> ${final_command}`);
-  } else {
-    final_command = command;
+export class Executor {
+  shell?: string | undefined;
+
+  constructor(args: { shell: string | undefined }) {
+    this.shell = args.shell;
   }
-  child_process.execSync(final_command, { stdio: "inherit" });
+
+  run(command: string, stdio_inherit: boolean = false) {
+    core.info(`${command}`);
+    let final_command: string;
+    if (this.shell && this.shell.indexOf("{0}") >= 0) {
+      const cmd_file = `${os.tmpdir}/cmd.txt`;
+      fs.writeFileSync(cmd_file, command);
+      final_command = this.shell.replace("{0}", cmd_file);
+      core.info(`-> ${final_command}`);
+    } else {
+      final_command = command;
+    }
+    const stdio_options: { stdio?: "inherit" } = {};
+    if (stdio_inherit) {
+      stdio_options.stdio = "inherit";
+    }
+    child_process.execSync(final_command, stdio_options);
+  }
 }
 
 async function cmake_configure_build(args: {
+  project: string;
   source_dir: string;
   build_dir: string;
   package_dir: string;
   build_type: string;
   cmake_configure_args: string[];
-  shell: string;
+  executor: Executor;
 }) {
   const configure_args = [
     "cmake",
@@ -180,27 +205,28 @@ async function cmake_configure_build(args: {
     args.build_type,
   ];
 
-  await core.group(`Configuring SDL (CMake)`, async () => {
+  await core.group(`Configuring ${args.project} (CMake)`, async () => {
     const configure_command = configure_args.join(" ");
-    execute_child_process(configure_command, args.shell);
+    args.executor.run(configure_command, true);
   });
-  await core.group(`Building SDL (CMake)`, async () => {
+  await core.group(`Building ${args.project} (CMake)`, async () => {
     const build_command = build_args.join(" ");
-    execute_child_process(build_command, args.shell);
+    args.executor.run(build_command, true);
   });
-  await core.group(`Installing SDL (CMake)`, async () => {
+  await core.group(`Installing ${args.project} (CMake)`, async () => {
     const install_command = install_args.join(" ");
-    execute_child_process(install_command, args.shell);
+    args.executor.run(install_command, true);
   });
 }
 
 function calculate_state_hash(args: {
   git_hash: string;
   build_platform: SdlBuildPlatform;
-  shell: string;
+  executor: Executor;
   cmake_toolchain_file: string | undefined;
   cmake_configure_arguments: string | undefined;
-  package_manager: linuxpm.PackageManagerType | undefined;
+  package_manager: pm.PackageManagerType | undefined;
+  dependency_hashes: { [_: string]: string };
 }) {
   const ENV_KEYS = [
     "AR",
@@ -242,7 +268,7 @@ function calculate_state_hash(args: {
   const misc_state = [
     `GIT_HASH=${args.git_hash}`,
     `build_platform=${args.build_platform}`,
-    `shell=${args.shell}`,
+    `shell=${args.executor.shell}`,
   ];
 
   if (args.package_manager) {
@@ -262,6 +288,10 @@ function calculate_state_hash(args: {
 
   if (args.cmake_configure_arguments) {
     misc_state.push(`cmake_arguments=${args.cmake_configure_arguments}`);
+  }
+
+  for (const dep in args.dependency_hashes) {
+    misc_state.push(`dependency_${dep}=${args.dependency_hashes[dep]}`);
   }
 
   const complete_state: string[] = [
@@ -325,116 +355,52 @@ function get_cmake_toolchain_path(): string | undefined {
   return undefined;
 }
 
-const SDL_LINUX_DEPENDENCIES: {
-  [key in linuxpm.PackageManagerType]:
-    | { required: string[]; optional: string[] }
-    | undefined;
-} = {
-  [linuxpm.PackageManagerType.AptGet]: {
-    required: [
-      "cmake",
-      "make",
-      "ninja-build",
-      "libasound2-dev",
-      "libpulse-dev",
-      "libaudio-dev",
-      "libjack-dev",
-      "libsndio-dev",
-      "libusb-1.0-0-dev",
-      "libx11-dev",
-      "libxext-dev",
-      "libxrandr-dev",
-      "libxcursor-dev",
-      "libxfixes-dev",
-      "libxi-dev",
-      "libxss-dev",
-      "libwayland-dev",
-      "libxkbcommon-dev",
-      "libdrm-dev",
-      "libgbm-dev",
-      "libgl1-mesa-dev",
-      "libgles2-mesa-dev",
-      "libegl1-mesa-dev",
-      "libdbus-1-dev",
-      "libibus-1.0-dev",
-      "libudev-dev",
-      "fcitx-libs-dev",
-    ],
-    optional: [
-      "libpipewire-0.3-dev" /* Ubuntu 22.04 */,
-      "libdecor-0-dev" /* Ubuntu 22.04 */,
-    ],
-  },
-  [linuxpm.PackageManagerType.Dnf]: {
-    required: [
-      "cmake",
-      "make",
-      "ninja-build",
-      "alsa-lib-devel",
-      "dbus-devel",
-      "ibus-devel",
-      "libusb1-devel",
-      "libX11-devel",
-      "libXau-devel",
-      "libXScrnSaver-devel",
-      "libXcursor-devel",
-      "libXext-devel",
-      "libXfixes-devel",
-      "libXi-devel",
-      "libXrandr-devel",
-      "libxkbcommon-devel",
-      "libdecor-devel",
-      "libglvnd-devel",
-      "pipewire-devel",
-      "pipewire-jack-audio-connection-kit-devel",
-      "pulseaudio-libs-devel",
-      "wayland-devel",
-    ],
-    optional: [],
-  },
-  [linuxpm.PackageManagerType.Apk]: undefined, // FIXME
-  [linuxpm.PackageManagerType.Pacman]: undefined, // FIXME
-};
-
-function parse_linux_package_manager(
-  input: string | undefined,
-  build_platform: SdlBuildPlatform,
-): linuxpm.PackageManagerType | undefined {
-  if (build_platform != SdlBuildPlatform.Linux) {
+function parse_package_manager(args: {
+  build_platform: SdlBuildPlatform;
+  input: string | undefined;
+}): pm.PackageManagerType | undefined {
+  if (!args.input) {
     return undefined;
   }
-  if (!input) {
-    return undefined;
-  }
-  input = input.trim().toLowerCase();
+  const input = args.input.trim().toLowerCase();
   if (input.length == 0) {
     return undefined;
   }
   if (input == "false") {
     return undefined;
   } else if (input == "true") {
-    return linuxpm.detect_package_manager();
+    return pm.detect_package_manager({ build_platform: args.build_platform });
   } else {
-    return linuxpm.package_manager_type_from_string(input);
+    return pm.package_manager_type_from_string(input);
   }
 }
 
-async function install_linux_dependencies(
-  package_manager_type: linuxpm.PackageManagerType,
-) {
-  const package_manager = linuxpm.create_package_manager(package_manager_type);
-  const packages = SDL_LINUX_DEPENDENCIES[package_manager_type];
-  if (!packages) {
-    throw new SetupSdlError(
-      `Don't know what packages to install for ${package_manager_type}. Please create a pr.`,
+async function install_dependencies(args: {
+  project: Project;
+  package_manager_type: pm.PackageManagerType;
+  packages: pm.Packages;
+  executor: Executor;
+}) {
+  const package_manager = pm.create_package_manager({
+    type: args.package_manager_type,
+    executor: args.executor,
+  });
+  const pm_packages = args.packages[args.package_manager_type];
+  if (pm_packages && !package_manager) {
+    core.info(
+      `Don't know how to install packages the for current platform (${args.package_manager_type}). Please create a pr.`,
     );
+    return;
+  }
+  if (!pm_packages) {
+    return;
   }
   await core.group(
-    `Installing SDL dependencies using ${package_manager_type}`,
+    `Installing ${args.project} dependencies using ${args.package_manager_type}`,
     async () => {
       package_manager.update();
-      package_manager.install(packages.required);
-      packages.optional.forEach((optional_package) => {
+      package_manager.install(pm_packages.required);
+      pm_packages.optional.forEach((optional_package) => {
         try {
           package_manager.install([optional_package]);
         } catch (e) {
@@ -445,7 +411,17 @@ async function install_linux_dependencies(
   );
 }
 
+import {
+  parse_version_string,
+  Project,
+  project_descriptions,
+  ParsedVersion,
+  VersionExtractor,
+  Version,
+} from "./version";
+
 async function run() {
+  core.debug("hello");
   const GITHUB_TOKEN = core.getInput("token");
   process.env.GH_TOKEN = GITHUB_TOKEN;
   process.env.GITHUB_TOKEN = GITHUB_TOKEN;
@@ -458,17 +434,17 @@ async function run() {
   const SETUP_SDL_ROOT = get_platform_root_directory(SDL_BUILD_PLATFORM);
   core.info(`root = ${SETUP_SDL_ROOT}`);
 
-  const IGNORED_SHELLS = ["bash", "pwsh", "sh", "cmd", "pwsh", "powershell"];
-  let shell_in = core.getInput("shell");
-  if (IGNORED_SHELLS.indexOf(shell_in) >= 0) {
-    shell_in = "";
-  }
-  const SHELL = shell_in;
-
-  const REQUESTED_VERSION_TYPE = parse_requested_sdl_version(
-    core.getInput("version"),
-  );
-
+  const SHELL = (() => {
+    let shell_in = core.getInput("shell");
+    const IGNORED_SHELLS = ["bash", "cmd", "powershell", "pwsh", "sh"];
+    if (IGNORED_SHELLS.indexOf(shell_in) >= 0) {
+      shell_in = "";
+    }
+    return shell_in;
+  })();
+  const EXECUTOR = new Executor({ shell: SHELL });
+  const ALLOW_PRE_RELEASE = core.getBooleanInput("pre-release");
+  const CMAKE_TOOLCHAIN_FILE = get_cmake_toolchain_path();
   const CMAKE_BUILD_TYPE = core.getInput("build-type");
   const CMAKE_BUILD_TYPES = [
     "Release",
@@ -479,165 +455,315 @@ async function run() {
   if (!CMAKE_BUILD_TYPES.includes(CMAKE_BUILD_TYPE)) {
     throw new SetupSdlError("Invalid build-type");
   }
+  const PACKAGE_MANAGER_TYPE = parse_package_manager({
+    build_platform: SDL_BUILD_PLATFORM,
+    input: core.getInput("install-linux-dependencies"),
+  });
+  const BUILD_SDL_TEST = core.getBooleanInput("sdl-test");
 
-  let git_branch_hash: string;
-  if (REQUESTED_VERSION_TYPE == null) {
-    git_branch_hash = core.getInput("version");
-  } else {
-    const { version: requested_version, type: requested_type } =
-      REQUESTED_VERSION_TYPE;
+  let major_version: number | null = null;
 
-    if (requested_type == SdlReleaseType.Head) {
-      if (requested_version.major == 2) {
-        git_branch_hash = "SDL2";
-      } else if (requested_version.major == 3) {
-        git_branch_hash = "main";
-      } else {
-        throw new SetupSdlError("Invalid -head version");
+  // Parse inputs
+  const requested_versions: { [key in Project]?: ParsedVersion } = {};
+  for (const project in Project) {
+    const description = project_descriptions[project as Project];
+    const version_string = core.getInput(description.option_name);
+    core.debug(`Project ${project}: input "${version_string}"`);
+    if (!version_string) {
+      continue;
+    }
+    const parsed_version = parse_version_string(
+      version_string,
+      description.discarded_prefix,
+    );
+    switch (parsed_version.type) {
+      case ReleaseType.Any:
+      case ReleaseType.Head:
+      case ReleaseType.Latest:
+      case ReleaseType.Exact: {
+        const v = parsed_version.version as Version;
+        if (major_version != null) {
+          if (major_version != v.major) {
+            throw new SetupSdlError(
+              `Version(s) are incompatiable: all must have the same major version.`,
+            );
+          }
+          major_version = v.major;
+        }
+        break;
       }
-    } else {
-      const github_releases = GitHubRelease.fetch_all("libsdl-org/SDL");
-      const release_db = SdlReleaseDb.create(github_releases);
+    }
+
+    core.debug(
+      `Project ${project}: requested version type: ${
+        parsed_version.type
+      }, version: ${parsed_version.version.toString()}`,
+    );
+    requested_versions[project as Project] = parsed_version;
+  }
+
+  // Create build plan
+  const build_order: Project[] = [];
+  let projects_left: Project[] = Object.keys(requested_versions) as Project[];
+
+  while (projects_left.length > 0) {
+    core.debug(`projects_left=${projects_left} order=${build_order}`);
+    const new_projects_left: Project[] = [];
+    for (const project_left of projects_left) {
+      core.debug(
+        `project: ${project_left} deps: ${project_descriptions[project_left].deps}`,
+      );
+      if (
+        project_descriptions[project_left].deps.every((proj) => {
+          core.debug(`proj=${proj}`);
+          core.debug(`build_order=${build_order}`);
+          core.debug(`proj in build_order=${proj in build_order}`);
+          return build_order.findIndex((e) => e == proj) >= 0;
+        })
+      ) {
+        build_order.push(project_left);
+      } else {
+        new_projects_left.push(project_left);
+      }
+    }
+    if (new_projects_left.length == projects_left.length) {
+      throw new SetupSdlError(`Unable to establish build order`);
+    }
+    projects_left = new_projects_left;
+  }
+  core.info(`Build order is ${build_order}.`);
+
+  // Execute build plan
+
+  const project_hashes: { [key in Project]?: string } = {};
+  const package_dirs: { [key in Project]?: string } = {};
+  const project_versions: { [key in Project]?: Version } = {};
+
+  for (const project of build_order) {
+    const project_description = project_descriptions[project];
+    const req_step_version = requested_versions[project];
+
+    // Calculate branch name
+    const git_branch_hash: string = (() => {
+      if (req_step_version == undefined) {
+        if (major_version == undefined) {
+          throw new SetupSdlError(
+            `Don't know what branch/hash to fetch for ${project}.`,
+          );
+        }
+        const branch = project_description.version_branch_map[major_version];
+        if (branch == undefined) {
+          throw new SetupSdlError(
+            `Don't know what branch to use for ${project} ${major_version}.`,
+          );
+        }
+        return branch;
+      }
+      if (req_step_version.type == ReleaseType.Commit) {
+        return req_step_version.version as string;
+      }
+      const req_version = req_step_version.version as Version;
+      if (req_step_version.type == ReleaseType.Head) {
+        const branch =
+          project_description.version_branch_map[req_version.major];
+        if (branch == undefined) {
+          throw new SetupSdlError("Invalid -head version");
+        }
+        return branch;
+      }
+      const github_releases = GitHubRelease.fetch_all(
+        `${project_description.repo_owner}/${project_description.repo_name}`,
+      );
+      const release_db = ReleaseDb.create(github_releases);
       const sdl_release = release_db.find(
-        requested_version,
-        core.getBooleanInput("pre-release"),
-        requested_type,
+        req_version,
+        ALLOW_PRE_RELEASE,
+        req_step_version.type,
       );
       if (!sdl_release) {
         throw new SetupSdlError(
-          `Could not find a matching SDL release for ${requested_version}`,
+          `Could not find a matching release for ${project} ${req_version}`,
         );
       }
-      git_branch_hash = sdl_release.tag;
-    }
-  }
+      return sdl_release.tag;
+    })();
 
-  const GIT_HASH: string = await convert_git_branch_tag_to_hash({
-    branch_or_hash: git_branch_hash,
-    octokit: OCTOKIT,
-  });
-
-  const CMAKE_TOOLCHAIN_FILE = get_cmake_toolchain_path();
-  const INPUT_CMAKE_CONFIGURE_ARGUMENTS = core.getInput("cmake-arguments");
-
-  const PACKAGE_MANAGER_TYPE = parse_linux_package_manager(
-    core.getInput("install-linux-dependencies"),
-    SDL_BUILD_PLATFORM,
-  );
-
-  const STATE_HASH = calculate_state_hash({
-    git_hash: GIT_HASH,
-    build_platform: SDL_BUILD_PLATFORM,
-    shell: SHELL,
-    cmake_toolchain_file: CMAKE_TOOLCHAIN_FILE,
-    cmake_configure_arguments: INPUT_CMAKE_CONFIGURE_ARGUMENTS,
-    package_manager: PACKAGE_MANAGER_TYPE,
-  });
-
-  const PACKAGE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/package`;
-
-  const CACHE_KEY = `setup-sdl-${STATE_HASH}`;
-  const CACHE_PATHS = [PACKAGE_DIR];
-
-  const sdl_from_cache = await core.group(
-    `Looking up a SDL build in the cache`,
-    async () => {
-      core.info(`setup-sdl state = ${STATE_HASH}`);
-
-      // Pass a copy of CACHE_PATHS since cache.restoreCache modifies/modified its arguments
-      const found_cache_key = await cache.restoreCache(
-        CACHE_PATHS.slice(),
-        CACHE_KEY,
-      );
-      if (found_cache_key) {
-        core.info(`SDL found in the cache: key = ${found_cache_key}`);
-      } else {
-        core.info("No match found in cache. Building SDL from scratch.");
-      }
-
-      return !!found_cache_key;
-    },
-  );
-
-  if (!sdl_from_cache) {
-    const BUILD_SDL_TEST = core.getBooleanInput("sdl-test");
-
-    const SOURCE_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/source`;
-    const BUILD_DIR = `${SETUP_SDL_ROOT}/${STATE_HASH}/build`;
-
-    await download_sdl_git_hash({
-      git_hash: GIT_HASH,
-      directory: SOURCE_DIR,
+    // Calculate git hash
+    const git_hash: string = await convert_git_branch_tag_to_hash({
+      branch_or_hash: git_branch_hash,
+      owner: project_description.repo_owner,
+      repo: project_description.repo_name,
       octokit: OCTOKIT,
     });
+    const project_cmake_arguments = (() => {
+      const args = [];
+      const input_cmake_arguments = core.getInput("cmake-arguments");
+      if (input_cmake_arguments) {
+        args.push(input_cmake_arguments);
+      }
+      if (project == Project.SDL) {
+        args.push(`-DSDL_TEST_LIBRARY=${BUILD_SDL_TEST}`);
+      }
+      return args.join(" ");
+    })();
 
-    if (PACKAGE_MANAGER_TYPE) {
-      await install_linux_dependencies(PACKAGE_MANAGER_TYPE);
-    }
+    // Calculate unique hash for caching
+    const dependency_hashes = (() => {
+      const dep_hashes: { [_: string]: string } = {};
+      for (const dep of project_description.deps) {
+        dep_hashes[dep as string] = project_hashes[dep as Project] as string;
+      }
+      return dep_hashes;
+    })();
 
-    const cmake_configure_args = shlex_split(INPUT_CMAKE_CONFIGURE_ARGUMENTS);
+    const project_hash = calculate_state_hash({
+      git_hash: git_hash,
+      build_platform: SDL_BUILD_PLATFORM,
+      executor: EXECUTOR,
+      cmake_toolchain_file: CMAKE_TOOLCHAIN_FILE,
+      cmake_configure_arguments: project_cmake_arguments,
+      package_manager: PACKAGE_MANAGER_TYPE,
+      dependency_hashes: dependency_hashes,
+    });
+    project_hashes[project] = project_hash;
 
-    cmake_configure_args.push(
-      `-DSDL_TEST_LIBRARY=${BUILD_SDL_TEST}`,
-      `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`,
-      "-DCMAKE_INSTALL_BINDIR=bin",
-      "-DCMAKE_INSTALL_INCLUDEDIR=include",
-      "-DCMAKE_INSTALL_LIBDIR=lib",
+    const package_dir = `${SETUP_SDL_ROOT}/${project_hash}/package`;
+    package_dirs[project] = package_dir;
+
+    const cache_key = `setup-sdl-${project}-${project_hash}`;
+    const cache_paths = [package_dir];
+
+    // Look in cache
+    const was_in_cache = await core.group(
+      `Looking up a ${project} build in the cache`,
+      async () => {
+        core.info(`setup-sdl ${project} state = ${project_hash}`);
+
+        // Pass a copy of cache_paths since cache.restoreCache modifies/modified its arguments
+        const found_cache_key = await cache.restoreCache(
+          cache_paths.slice(),
+          cache_key,
+        );
+        if (found_cache_key) {
+          core.info(`${project} found in the cache: key = ${found_cache_key}`);
+        } else {
+          core.info(
+            `No match found in cache. Building ${project} from scratch.`,
+          );
+        }
+
+        return !!found_cache_key;
+      },
     );
-    if (CMAKE_TOOLCHAIN_FILE) {
+
+    // Always install linux dependencies (SDL_ttf links to libfreetype)
+    const project_packages = project_description.packages;
+    if (project_packages && PACKAGE_MANAGER_TYPE) {
+      await install_dependencies({
+        project: project,
+        executor: EXECUTOR,
+        package_manager_type: PACKAGE_MANAGER_TYPE,
+        packages: project_packages,
+      });
+    }
+
+    // if not in cache, fetch sources + build + install + store
+    if (!was_in_cache) {
+      const source_dir = `${SETUP_SDL_ROOT}/${project_hash}/source`;
+      const build_dir = `${SETUP_SDL_ROOT}/${project_hash}/build`;
+
+      await download_git_repo({
+        repo_owner: project_description.repo_owner,
+        repo_name: project_description.repo_name,
+        submodules: true,
+        git_hash: git_hash,
+        directory: source_dir,
+        octokit: OCTOKIT,
+      });
+
+      const cmake_configure_args = shlex_split(project_cmake_arguments);
+
       cmake_configure_args.push(
-        `-DCMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE}"`,
+        `-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}`,
+        "-DCMAKE_INSTALL_BINDIR=bin",
+        "-DCMAKE_INSTALL_INCLUDEDIR=include",
+        "-DCMAKE_INSTALL_LIBDIR=lib",
       );
+      if (CMAKE_TOOLCHAIN_FILE) {
+        cmake_configure_args.push(
+          `-DCMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE}"`,
+        );
+      }
+
+      const CMAKE_GENERATOR = core.getInput("cmake-generator");
+      if (CMAKE_GENERATOR && CMAKE_GENERATOR.length > 0) {
+        cmake_configure_args.push("-G", `"${CMAKE_GENERATOR}"`);
+      }
+
+      await cmake_configure_build({
+        project: project,
+        source_dir: source_dir,
+        build_dir: build_dir,
+        package_dir: package_dir,
+        build_type: CMAKE_BUILD_TYPE,
+        cmake_configure_args: cmake_configure_args,
+        executor: EXECUTOR,
+      });
+
+      await core.group(`Storing ${project} in the cache`, async () => {
+        core.info(`Caching ${cache_paths}.`);
+        // Pass a copy of cache_paths since cache.saveCache modifies/modified its arguments
+        await cache.saveCache(cache_paths.slice(), cache_key);
+      });
     }
 
-    const CMAKE_GENERATOR = core.getInput("cmake-generator");
-    if (CMAKE_GENERATOR && CMAKE_GENERATOR.length > 0) {
-      cmake_configure_args.push(`-G "${CMAKE_GENERATOR}"`);
-    }
+    const version_extractor = new VersionExtractor(project_description);
+    const project_version =
+      version_extractor.extract_from_install_prefix(package_dir);
+    project_versions[project] = project_version;
+    core.info(`${project} version is ${project_version.toString()}`);
 
-    await cmake_configure_build({
-      source_dir: SOURCE_DIR,
-      build_dir: BUILD_DIR,
-      package_dir: PACKAGE_DIR,
-      build_type: CMAKE_BUILD_TYPE,
-      cmake_configure_args: cmake_configure_args,
-      shell: SHELL,
-    });
-
-    await core.group("Storing SDL in the cache", async () => {
-      core.info(`Caching ${CACHE_PATHS}.`);
-      // Pass a copy of CACHE_PATHS since cache.saveCache modifies/modified its arguments
-      await cache.saveCache(CACHE_PATHS.slice(), CACHE_KEY);
-    });
+    // Set environment variable (e.g. SDL3_ROOT)
+    const cmake_export_name = `${project_description.cmake_var_out_prefix}${project_version.major}${project_description.cmake_var_out_suffix}`;
+    core.exportVariable(cmake_export_name, package_dir);
   }
 
-  const SDL_VERSION =
-    SdlVersion.detect_sdl_version_from_install_prefix(PACKAGE_DIR);
-  core.info(`SDL version is ${SDL_VERSION.toString()}`);
-
   if (core.getBooleanInput("add-to-environment")) {
-    export_environent_variables(SDL_BUILD_PLATFORM, PACKAGE_DIR);
+    export_environment_variables(
+      SDL_BUILD_PLATFORM,
+      Object.values(package_dirs),
+    );
   }
 
   // Append <prefix>/lib/pkgconfig to PKG_CONFIG_PATH
-  let pkg_config_path = process.env.PKG_CONFIG_PATH;
-  if (pkg_config_path) {
-    pkg_config_path += path.delimiter;
-  } else {
-    pkg_config_path = "";
-  }
-  pkg_config_path += [PACKAGE_DIR, "lib", "pkgconfig"].join("/");
+  const pkg_config_path = (() => {
+    const extra_pkg_config_paths = Object.values(package_dirs).map(
+      (package_dir) => {
+        return `${package_dir}/lib/pkgconfig`;
+      },
+    );
+    let pkg_config_path = process.env.PKG_CONFIG_PATH || "";
+    if (pkg_config_path) {
+      pkg_config_path += path.delimiter;
+    }
+    pkg_config_path += extra_pkg_config_paths.join(path.delimiter);
+    return pkg_config_path;
+  })();
   core.exportVariable("PKG_CONFIG_PATH", pkg_config_path);
 
   // Set SDL2_CONFIG environment variable
-  if (SDL_VERSION.major == 2) {
-    const sdl2_config = [PACKAGE_DIR, "bin", "sdl2-config"].join("/");
+  if (major_version == 2) {
+    const sdl2_config = [package_dirs[Project.SDL], "bin", "sdl2-config"].join(
+      "/",
+    );
     core.exportVariable(`SDL2_CONFIG`, sdl2_config);
   }
 
-  core.exportVariable(`SDL${SDL_VERSION.major}_ROOT`, PACKAGE_DIR);
-  core.setOutput("prefix", PACKAGE_DIR);
-  core.setOutput("version", SDL_VERSION.toString());
+  core.setOutput("prefix", package_dirs[Project.SDL] as string);
+  core.setOutput(
+    "version",
+    (project_versions[Project.SDL] as Version).toString(),
+  );
 }
 
 try {

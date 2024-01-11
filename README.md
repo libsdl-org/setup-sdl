@@ -1,6 +1,6 @@
 # setup-sdl
 
-This GitHub action downloads, builds and installs SDL from source. 
+This GitHub action downloads, builds and installs SDL and its satellite libraries from source. 
 
 By caching the result, subsequent workflow runs will be fast(er).
 
@@ -18,7 +18,8 @@ jobs:
         id: sdl
         with:
           install-linux-dependencies: true
-          version: sdl2-latest
+          version: 2-latest
+          version-sdl-image: 2-latest
           
       - name: 'Configure and build your project'
         run: |
@@ -32,15 +33,18 @@ This action will build SDL using the default c/c++ toolchain, with CMake configu
 
 An alternative build toolchain can be configured by using a [CMake toolchain file](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html).
 
-## SDL versions
+## versions
 
 Using the `version` option, a SDL release can be used or the latest git tag:
-- `sdl2-latest`: use the latest SDL2 release
-- `sdlx.y.z`: use exactly a SDL `x.y.z` release (example: `sdl2.8.1`)
-- `sdl2-head`: use the latest SDL2 development commit
-- `sdl3-latest`: use the latest SDL3 release
-- `sdl3-head`: use the latest SDL3 development commit
+- `2-latest`: use the latest SDL2 release
+- `x.y.z`: use exactly a SDL `x.y.z` release (example: `2.8.1`)
+- `2-head`: use the latest SDL2 development commit
+- `3-latest`: use the latest SDL3 release
+- `3-head`: use the latest SDL3 development commit
 - `<git hash>`: use an exact SDL git hash (repo: https://github.com/libsdl-org/SDL.git)
+
+Using the `version-sdl-*` inputs, it is possible to install the satellite libraries.
+They accept the same kind of input as `version`.
 
 ## Options
 
@@ -64,3 +68,7 @@ Since this version, CMake will also look for packages using environment variable
 When bumping the minimum required CMake version is not desirable, here are 2 alternative methods (pick one!):
 - Add `-DCMAKE_PREFIX_PATH=${{ steps.sdl.outputs.prefix }}` to the CMake configure command (or add SDL's prefix to an already-existing `-DCMAKE_PREFIX_PATH=` argument)
 - Add `-DCMAKE_POLICY_DEFAULT_CMP0074=NEW` to the CMake configure command (this only works when the actual CMake version is >= 3.12).
+
+### `install-linux-dependencies` does things on non-Linux GitHub runners
+
+This input will be renamed to `install-dependencies`.
