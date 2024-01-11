@@ -11,7 +11,7 @@ export enum PackageManagerType {
 }
 
 export function package_manager_type_from_string(
-  text: string
+  text: string,
 ): PackageManagerType | undefined {
   switch (text.trim().toLowerCase()) {
     case "apk":
@@ -107,7 +107,7 @@ class PacmanPackageManager extends PackageManager {
 }
 
 export function create_package_manager(
-  type: PackageManagerType
+  type: PackageManagerType,
 ): PackageManager {
   switch (type) {
     case PackageManagerType.AptGet:
