@@ -38,14 +38,14 @@ describe("testing parsing of version string", () => {
     major: number,
     minor: number,
     patch: number,
-    type: SdlReleaseType
+    type: SdlReleaseType,
   ) {
     test(`test ${input}`, () => {
       const result = parse_requested_sdl_version(input);
       expect(result).toBeTruthy();
       if (result) {
         expect(result.version).toStrictEqual(
-          new SdlVersion({ major: major, minor: minor, patch: patch })
+          new SdlVersion({ major: major, minor: minor, patch: patch }),
         );
         expect(result.type).toStrictEqual(type);
       }
@@ -158,7 +158,7 @@ describe("test finding a release", () => {
     if (rel) {
       // FIXME: Only 3.0.0-prerelease exists at the moment
       expect(rel.version.compare(new SdlVersion("3.0.0"))).toBeLessThanOrEqual(
-        0
+        0,
       );
       expect(rel.version.major).toBe(3);
     }
