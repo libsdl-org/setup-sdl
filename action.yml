@@ -55,5 +55,5 @@ outputs:
   version:
     description: "SDL version"
 runs:
-  using: "node20"
+  using: "node16"
   main: "packed/index.js"
