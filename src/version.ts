@@ -220,7 +220,7 @@ export const project_descriptions: { [key in Project]: ProjectDescription } = {
     minor_define: "SDL_MINOR_VERSION",
     patch_define: "(?:SDL_PATCHLEVEL|SDL_MICRO_VERSION)",
     header_paths: ["include/SDL3", "include/SDL2"],
-    header_filenames: ["SDL.h", "SDL_version.h"],
+    header_filenames: ["SDL_version.h"],
     git_url: "https://github.com/libsdl-org/SDL.git",
     repo_owner: "libsdl-org",
     repo_name: "SDL",
