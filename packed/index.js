@@ -1467,7 +1467,7 @@ var VersionExtractor = /** @class */ (function () {
         this.minor_define = desc.minor_define;
         this.patch_define = desc.patch_define;
         this.header_paths = desc.header_paths;
-        this.header_filename = desc.header_filename;
+        this.header_filenames = desc.header_filenames;
     }
     VersionExtractor.prototype.extract_from_header_path = function (path) {
         if (!fs.existsSync(path)) {
@@ -1476,17 +1476,17 @@ var VersionExtractor = /** @class */ (function () {
         var contents = fs.readFileSync(path, "utf8");
         var match_major = contents.match(new RegExp("#define[ \\t]+".concat(this.major_define, "[ \\t]+([0-9]+)")));
         if (!match_major) {
-            throw new util_1.SetupSdlError("Unable to extract major version from ".concat(path));
+            return null;
         }
         var major_version = Number(match_major[1]);
         var match_minor = contents.match(new RegExp("#define[ \\t]+".concat(this.minor_define, "[ \\t]+([0-9]+)")));
         if (!match_minor) {
-            throw new util_1.SetupSdlError("Unable to extract minor version from ".concat(path));
+            return null;
         }
         var minor_version = Number(match_minor[1]);
         var match_patch = contents.match(new RegExp("#define[ \\t]+".concat(this.patch_define, "[ \\t]+([0-9]+)")));
         if (!match_patch) {
-            throw new util_1.SetupSdlError("Unable to extract patch version from ".concat(path));
+            return null;
         }
         var patch_version = Number(match_patch[1]);
         return new Version({
@@ -1500,11 +1500,18 @@ var VersionExtractor = /** @class */ (function () {
         var version = (function () {
             for (var _i = 0, _a = _this.header_paths; _i < _a.length; _i++) {
                 var infix_path = _a[_i];
-                var hdr_path = "".concat(path, "/").concat(infix_path, "/").concat(_this.header_filename);
-                if (!fs.existsSync(hdr_path)) {
-                    continue;
+                for (var _b = 0, _c = _this.header_filenames; _b < _c.length; _b++) {
+                    var header_filename = _c[_b];
+                    var hdr_path = "".concat(path, "/").concat(infix_path, "/").concat(header_filename);
+                    if (!fs.existsSync(hdr_path)) {
+                        continue;
+                    }
+                    var version_1 = _this.extract_from_header_path(hdr_path);
+                    if (version_1 == null) {
+                        continue;
+                    }
+                    return version_1;
                 }
-                return _this.extract_from_header_path(hdr_path);
             }
             throw new util_1.SetupSdlError("Could not extract version from ".concat(path, "."));
         })();
@@ -1522,9 +1529,9 @@ exports.project_descriptions = (_a = {},
         deps: [],
         major_define: "SDL_MAJOR_VERSION",
         minor_define: "SDL_MINOR_VERSION",
-        patch_define: "SDL_PATCHLEVEL",
+        patch_define: "(?:SDL_PATCHLEVEL|SDL_MICRO_VERSION)",
         header_paths: ["include/SDL3", "include/SDL2"],
-        header_filename: "SDL_version.h",
+        header_filenames: ["SDL.h", "SDL_version.h"],
         git_url: "https://github.com/libsdl-org/SDL.git",
         repo_owner: "libsdl-org",
         repo_name: "SDL",
@@ -1603,7 +1610,7 @@ exports.project_descriptions = (_a = {},
         minor_define: "SDL_IMAGE_MINOR_VERSION",
         patch_define: "SDL_IMAGE_PATCHLEVEL",
         header_paths: ["include/SDL3_image", "include/SDL2"],
-        header_filename: "SDL_image.h",
+        header_filenames: ["SDL_image.h"],
         git_url: "https://github.com/libsdl-org/SDL_image.git",
         repo_owner: "libsdl-org",
         repo_name: "SDL_image",
@@ -1618,7 +1625,7 @@ exports.project_descriptions = (_a = {},
         minor_define: "SDL_MIXER_MINOR_VERSION",
         patch_define: "SDL_MIXER_PATCHLEVEL",
         header_paths: ["include/SDL3_mixer", "include/SDL2"],
-        header_filename: "SDL_mixer.h",
+        header_filenames: ["SDL_mixer.h"],
         git_url: "https://github.com/libsdl-org/SDL_mixer.git",
         repo_owner: "libsdl-org",
         repo_name: "SDL_mixer",
@@ -1633,7 +1640,7 @@ exports.project_descriptions = (_a = {},
         minor_define: "SDL_NET_MINOR_VERSION",
         patch_define: "SDL_NET_PATCHLEVEL",
         header_paths: ["include/SDL3_net", "include/SDL2", "include"],
-        header_filename: "SDL_net.h",
+        header_filenames: ["SDL_net.h"],
         git_url: "https://github.com/libsdl-org/SDL_net.git",
         repo_owner: "libsdl-org",
         repo_name: "SDL_net",
@@ -1648,7 +1655,7 @@ exports.project_descriptions = (_a = {},
         minor_define: "SDL_RTF_MINOR_VERSION",
         patch_define: "SDL_RTF_PATCHLEVEL",
         header_paths: ["include/SDL3_rtf", "include/SDL2", "include"],
-        header_filename: "SDL_rtf.h",
+        header_filenames: ["SDL_rtf.h"],
         git_url: "https://github.com/libsdl-org/SDL_rtf.git",
         repo_owner: "libsdl-org",
         repo_name: "SDL_rtf",
@@ -1663,7 +1670,7 @@ exports.project_descriptions = (_a = {},
         minor_define: "SDL_TTF_MINOR_VERSION",
         patch_define: "SDL_TTF_PATCHLEVEL",
         header_paths: ["include/SDL3_ttf", "include/SDL2"],
-        header_filename: "SDL_ttf.h",
+        header_filenames: ["SDL_ttf.h"],
         git_url: "https://github.com/libsdl-org/SDL_ttf.git",
         repo_owner: "libsdl-org",
         repo_name: "SDL_ttf",
