@@ -206,15 +206,21 @@ async function cmake_configure_build(args: {
   ];
 
   await core.group(`Configuring ${args.project} (CMake)`, async () => {
+    core.debug(`configure_args: ${configure_args}`);
     const configure_command = configure_args.join(" ");
+    core.debug(`configure_command: ${configure_command}`);
     args.executor.run(configure_command, true);
   });
   await core.group(`Building ${args.project} (CMake)`, async () => {
+    core.debug(`build_args: ${build_args}`);
     const build_command = build_args.join(" ");
+    core.debug(`build_command: ${build_command}`);
     args.executor.run(build_command, true);
   });
   await core.group(`Installing ${args.project} (CMake)`, async () => {
+    core.debug(`install_args: ${install_args}`);
     const install_command = install_args.join(" ");
+    core.debug(`install_command: ${install_command}`);
     args.executor.run(install_command, true);
   });
 }

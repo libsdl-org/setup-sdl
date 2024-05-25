@@ -267,7 +267,9 @@ function cmake_configure_build(args) {
                     return [4 /*yield*/, core.group("Configuring ".concat(args.project, " (CMake)"), function () { return __awaiter(_this, void 0, void 0, function () {
                             var configure_command;
                             return __generator(this, function (_a) {
+                                core.debug("configure_args: ".concat(configure_args));
                                 configure_command = configure_args.join(" ");
+                                core.debug("configure_command: ".concat(configure_command));
                                 args.executor.run(configure_command, true);
                                 return [2 /*return*/];
                             });
@@ -277,7 +279,9 @@ function cmake_configure_build(args) {
                     return [4 /*yield*/, core.group("Building ".concat(args.project, " (CMake)"), function () { return __awaiter(_this, void 0, void 0, function () {
                             var build_command;
                             return __generator(this, function (_a) {
+                                core.debug("build_args: ".concat(build_args));
                                 build_command = build_args.join(" ");
+                                core.debug("build_command: ".concat(build_command));
                                 args.executor.run(build_command, true);
                                 return [2 /*return*/];
                             });
@@ -287,7 +291,9 @@ function cmake_configure_build(args) {
                     return [4 /*yield*/, core.group("Installing ".concat(args.project, " (CMake)"), function () { return __awaiter(_this, void 0, void 0, function () {
                             var install_command;
                             return __generator(this, function (_a) {
+                                core.debug("install_args: ".concat(install_args));
                                 install_command = install_args.join(" ");
+                                core.debug("install_command: ".concat(install_command));
                                 args.executor.run(install_command, true);
                                 return [2 /*return*/];
                             });
