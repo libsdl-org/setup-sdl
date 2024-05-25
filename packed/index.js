@@ -268,7 +268,7 @@ function cmake_configure_build(args) {
                             var configure_command;
                             return __generator(this, function (_a) {
                                 core.debug("configure_args: ".concat(configure_args));
-                                configure_command = configure_args.join(" ");
+                                configure_command = (0, util_1.command_arglist_to_string)(configure_args);
                                 core.debug("configure_command: ".concat(configure_command));
                                 args.executor.run(configure_command, true);
                                 return [2 /*return*/];
@@ -280,7 +280,7 @@ function cmake_configure_build(args) {
                             var build_command;
                             return __generator(this, function (_a) {
                                 core.debug("build_args: ".concat(build_args));
-                                build_command = build_args.join(" ");
+                                build_command = (0, util_1.command_arglist_to_string)(build_args);
                                 core.debug("build_command: ".concat(build_command));
                                 args.executor.run(build_command, true);
                                 return [2 /*return*/];
@@ -292,7 +292,7 @@ function cmake_configure_build(args) {
                             var install_command;
                             return __generator(this, function (_a) {
                                 core.debug("install_args: ".concat(install_args));
-                                install_command = install_args.join(" ");
+                                install_command = (0, util_1.command_arglist_to_string)(install_args);
                                 core.debug("install_command: ".concat(install_command));
                                 args.executor.run(install_command, true);
                                 return [2 /*return*/];
@@ -1298,7 +1298,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.shlex_split = exports.SetupSdlError = void 0;
+exports.command_arglist_to_string = exports.shlex_split = exports.SetupSdlError = void 0;
 var shlex = __nccwpck_require__(5659);
 var SetupSdlError = /** @class */ (function (_super) {
     __extends(SetupSdlError, _super);
@@ -1321,6 +1321,10 @@ function shlex_split(text) {
     }
 }
 exports.shlex_split = shlex_split;
+function command_arglist_to_string(args) {
+    return args.map(function (s) { return "\"".concat(s, "\""); }).join(" ");
+}
+exports.command_arglist_to_string = command_arglist_to_string;
 
 
 /***/ }),

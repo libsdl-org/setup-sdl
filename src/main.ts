@@ -10,7 +10,7 @@ import { Octokit } from "@octokit/rest";
 import AdmZip = require("adm-zip");
 
 import { convert_git_branch_tag_to_hash } from "./repo";
-import { SetupSdlError, shlex_split } from "./util";
+import { SetupSdlError, command_arglist_to_string, shlex_split } from "./util";
 import * as pm from "./pm";
 
 import { GitHubRelease, ReleaseDb, ReleaseType } from "./version";
@@ -207,19 +207,19 @@ async function cmake_configure_build(args: {
 
   await core.group(`Configuring ${args.project} (CMake)`, async () => {
     core.debug(`configure_args: ${configure_args}`);
-    const configure_command = configure_args.join(" ");
+    const configure_command = command_arglist_to_string(configure_args);
     core.debug(`configure_command: ${configure_command}`);
     args.executor.run(configure_command, true);
   });
   await core.group(`Building ${args.project} (CMake)`, async () => {
     core.debug(`build_args: ${build_args}`);
-    const build_command = build_args.join(" ");
+    const build_command = command_arglist_to_string(build_args);
     core.debug(`build_command: ${build_command}`);
     args.executor.run(build_command, true);
   });
   await core.group(`Installing ${args.project} (CMake)`, async () => {
     core.debug(`install_args: ${install_args}`);
-    const install_command = install_args.join(" ");
+    const install_command = command_arglist_to_string(install_args);
     core.debug(`install_command: ${install_command}`);
     args.executor.run(install_command, true);
   });

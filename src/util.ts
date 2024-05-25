@@ -17,3 +17,7 @@ export function shlex_split(text: undefined | string): string[] {
     return shlex.split(text);
   }
 }
+
+export function command_arglist_to_string(args: string[]): string {
+  return args.map((s) => `"${s}"`).join(" ");
+}
