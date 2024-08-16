@@ -81,6 +81,8 @@ var crypto = __importStar(__nccwpck_require__(6113));
 var fs = __importStar(__nccwpck_require__(7147));
 var os = __importStar(__nccwpck_require__(2037));
 var path = __importStar(__nccwpck_require__(1017));
+var node_fs_1 = __nccwpck_require__(7561);
+var promises_1 = __nccwpck_require__(6402);
 var cache = __importStar(__nccwpck_require__(7799));
 var core = __importStar(__nccwpck_require__(2186));
 var rest_1 = __nccwpck_require__(1273);
@@ -128,7 +130,7 @@ function download_git_repo(args) {
                 case 0:
                     fs.mkdirSync(args.directory, { recursive: true });
                     return [4 /*yield*/, core.group("Downloading and extracting ".concat(args.repo_owner, "/").concat(args.repo_name, " (").concat(args.git_hash, ") into ").concat(args.directory), function () { return __awaiter(_this, void 0, void 0, function () {
-                            var response, ARCHIVE_PATH, admzip;
+                            var response, assetStream, ARCHIVE_PATH, outputFile, admzip;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0:
@@ -137,12 +139,19 @@ function download_git_repo(args) {
                                                 owner: args.repo_owner,
                                                 repo: args.repo_name,
                                                 ref: args.git_hash,
+                                                request: {
+                                                    parseSuccessResponseBody: false, // required to access response as stream
+                                                },
                                             })];
                                     case 1:
                                         response = _a.sent();
-                                        core.info("Writing zip archive to disk...");
+                                        assetStream = response.data;
                                         ARCHIVE_PATH = path.join(args.directory, "archive.zip");
-                                        fs.writeFileSync(ARCHIVE_PATH, Buffer.from(response.data));
+                                        outputFile = (0, node_fs_1.createWriteStream)(ARCHIVE_PATH);
+                                        core.info("Writing zip archive to disk...");
+                                        return [4 /*yield*/, (0, promises_1.pipeline)(assetStream, outputFile)];
+                                    case 2:
+                                        _a.sent();
                                         core.info("Extracting zip archive...");
                                         admzip = new AdmZip(ARCHIVE_PATH);
                                         admzip.getEntries().forEach(function (entry) {
@@ -67087,6 +67096,14 @@ module.exports = require("node:events");
 
 /***/ }),
 
+/***/ 7561:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:fs");
+
+/***/ }),
+
 /***/ 8849:
 /***/ ((module) => {
 
@@ -67124,6 +67141,14 @@ module.exports = require("node:process");
 
 "use strict";
 module.exports = require("node:stream");
+
+/***/ }),
+
+/***/ 6402:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:stream/promises");
 
 /***/ }),
 

@@ -3,6 +3,8 @@ import * as crypto from "crypto";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import { createWriteStream } from "node:fs";
+import { pipeline } from "node:stream/promises";
 
 import * as cache from "@actions/cache";
 import * as core from "@actions/core";
@@ -73,16 +75,25 @@ async function download_git_repo(args: {
     `Downloading and extracting ${args.repo_owner}/${args.repo_name} (${args.git_hash}) into ${args.directory}`,
     async () => {
       core.info("Downloading git zip archive...");
+      /* Use streams to avoid HTTP 500 HttpError/RequestError: other side closed
+       * https://github.com/octokit/rest.js/issues/12#issuecomment-1916023479
+       * https://github.com/octokit/rest.js/issues/461#issuecomment-2293930969
+       */
       const response = await args.octokit.rest.repos.downloadZipballArchive({
         owner: args.repo_owner,
         repo: args.repo_name,
         ref: args.git_hash,
+        request: {
+          parseSuccessResponseBody: false, // required to access response as stream
+        },
       });
-      core.info("Writing zip archive to disk...");
+      const assetStream = response.data as unknown as NodeJS.ReadableStream;
       const ARCHIVE_PATH = path.join(args.directory, "archive.zip");
-      fs.writeFileSync(ARCHIVE_PATH, Buffer.from(response.data as ArrayBuffer));
-      core.info("Extracting zip archive...");
+      const outputFile = createWriteStream(ARCHIVE_PATH);
+      core.info("Writing zip archive to disk...");
+      await pipeline(assetStream, outputFile);
 
+      core.info("Extracting zip archive...");
       const admzip = new AdmZip(ARCHIVE_PATH);
       admzip.getEntries().forEach((entry) => {
         if (entry.isDirectory) {
