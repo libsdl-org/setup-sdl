@@ -620,6 +620,7 @@ async function run() {
       }
       if (project == Project.SDL) {
         args.push(`-DSDL_TEST_LIBRARY=${BUILD_SDL_TEST}`);
+        args.push(`-DSDL_UNIX_CONSOLE_BUILD=ON`);
       }
       return args.join(" ");
     })();

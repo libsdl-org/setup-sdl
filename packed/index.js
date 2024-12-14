@@ -642,6 +642,7 @@ function run() {
                                         }
                                         if (project == version_2.Project.SDL) {
                                             args.push("-DSDL_TEST_LIBRARY=".concat(BUILD_SDL_TEST));
+                                            args.push("-DSDL_UNIX_CONSOLE_BUILD=ON");
                                         }
                                         return args.join(" ");
                                     })();
