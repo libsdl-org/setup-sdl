@@ -535,6 +535,19 @@ async function run() {
           core.debug(`proj=${proj}`);
           core.debug(`build_order=${build_order}`);
           core.debug(`proj in build_order=${proj in build_order}`);
+          if (
+            proj == Project.SDL12_compat &&
+            (build_order.indexOf(Project.SDL) >= 0 ||
+              build_order.indexOf(Project.SDL2_compat) >= 0)
+          ) {
+            return 1;
+          }
+          if (
+            proj == Project.SDL2_compat &&
+            build_order.indexOf(Project.SDL) >= 0
+          ) {
+            return 1;
+          }
           return build_order.findIndex((e) => e == proj) >= 0;
         })
       ) {
@@ -742,7 +755,8 @@ async function run() {
     core.info(`${project} version is ${project_version.toString()}`);
 
     // Set environment variable (e.g. SDL3_ROOT)
-    const cmake_export_name = `${project_description.cmake_var_out_prefix}${project_version.major}${project_description.cmake_var_out_suffix}`;
+    const infix = project_version.major == 1 ? "" : `${project_version.major}`;
+    const cmake_export_name = `${project_description.cmake_var_out_prefix}${infix}${project_description.cmake_var_out_suffix}`;
     core.exportVariable(cmake_export_name, package_dir);
   }
 

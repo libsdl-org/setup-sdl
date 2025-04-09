@@ -572,6 +572,15 @@ function run() {
                                 core.debug("proj=".concat(proj));
                                 core.debug("build_order=".concat(build_order));
                                 core.debug("proj in build_order=".concat(proj in build_order));
+                                if (proj == version_2.Project.SDL12_compat &&
+                                    (build_order.indexOf(version_2.Project.SDL) >= 0 ||
+                                        build_order.indexOf(version_2.Project.SDL2_compat) >= 0)) {
+                                    return 1;
+                                }
+                                if (proj == version_2.Project.SDL2_compat &&
+                                    build_order.indexOf(version_2.Project.SDL) >= 0) {
+                                    return 1;
+                                }
                                 return build_order.findIndex(function (e) { return e == proj; }) >= 0;
                             })) {
                                 build_order.push(project_left);
@@ -590,7 +599,7 @@ function run() {
                     package_dirs = {};
                     project_versions = {};
                     _loop_1 = function (project) {
-                        var project_description, req_step_version, git_branch_hash, git_hash, project_cmake_arguments, dependency_hashes, project_hash, package_dir, cache_key, cache_paths, was_in_cache, project_packages, source_dir, build_dir, cmake_configure_args, CMAKE_GENERATOR, version_extractor, project_version, cmake_export_name;
+                        var project_description, req_step_version, git_branch_hash, git_hash, project_cmake_arguments, dependency_hashes, project_hash, package_dir, cache_key, cache_paths, was_in_cache, project_packages, source_dir, build_dir, cmake_configure_args, CMAKE_GENERATOR, version_extractor, project_version, infix, cmake_export_name;
                         return __generator(this, function (_c) {
                             switch (_c.label) {
                                 case 0:
@@ -756,7 +765,8 @@ function run() {
                                     project_version = version_extractor.extract_from_install_prefix(package_dir);
                                     project_versions[project] = project_version;
                                     core.info("".concat(project, " version is ").concat(project_version.toString()));
-                                    cmake_export_name = "".concat(project_description.cmake_var_out_prefix).concat(project_version.major).concat(project_description.cmake_var_out_suffix);
+                                    infix = project_version.major == 1 ? "" : "".concat(project_version.major);
+                                    cmake_export_name = "".concat(project_description.cmake_var_out_prefix).concat(infix).concat(project_description.cmake_var_out_suffix);
                                     core.exportVariable(cmake_export_name, package_dir);
                                     return [2 /*return*/];
                             }
@@ -1525,6 +1535,8 @@ exports.Version = Version;
 var Project;
 (function (Project) {
     Project["SDL"] = "SDL";
+    Project["SDL2_compat"] = "SDL2_compat";
+    Project["SDL12_compat"] = "SDL12_compat";
     Project["SDL_image"] = "SDL_image";
     Project["SDL_mixer"] = "SDL_mixer";
     Project["SDL_net"] = "SDL_net";
@@ -1759,6 +1771,36 @@ exports.project_descriptions = (_a = {},
                 optional: [],
             },
             _c),
+    },
+    _a[Project.SDL2_compat] = {
+        option_name: "version-sdl2-compat",
+        cmake_var_out_prefix: "SDL2",
+        cmake_var_out_suffix: "_ROOT",
+        deps: [Project.SDL],
+        major_define: "SDL_MAJOR_VERSION",
+        minor_define: "SDL_MINOR_VERSION",
+        patch_define: "SDL_PATCHLEVEL",
+        header_paths: ["include/SDL2"],
+        header_filenames: ["SDL_version.h"],
+        git_url: "https://github.com/libsdl-org/sdl2-compat.git",
+        repo_owner: "libsdl-org",
+        repo_name: "sdl2-compat",
+        version_branch_map: { 2: "main" },
+    },
+    _a[Project.SDL12_compat] = {
+        option_name: "version-sdl12-compat",
+        cmake_var_out_prefix: "SDL",
+        cmake_var_out_suffix: "_ROOT",
+        deps: [Project.SDL2_compat],
+        major_define: "SDL_MAJOR_VERSION",
+        minor_define: "SDL_MINOR_VERSION",
+        patch_define: "SDL_PATCHLEVEL",
+        header_paths: ["include/SDL"],
+        header_filenames: ["SDL_version.h"],
+        git_url: "https://github.com/libsdl-org/sdl12-compat.git",
+        repo_owner: "libsdl-org",
+        repo_name: "sdl12-compat",
+        version_branch_map: { 1: "main" },
     },
     _a);
 var ReleaseType;

@@ -20,6 +20,12 @@ inputs:
   version-sdl-ttf:
     description: "Version of SDL_ttf (2.x.y, 2-any, 2-latest, 2-head, 3-head), git hash, or <empty>"
     required: false
+  version-sdl2-compat:
+    description: "Version of sdl2-compat (2.x.y, 2-any, 2-latest, 2-head), git hash, or <empty>"
+    required: false
+  version-sdl12-compat:
+    description: "Version of sdl12-compat (1.x.y, 1-any, 1-latest, 1-head), git hash, or <empty>"
+    required: false
   pre-release:
     description: "Allow pre-releases"
     default: "true"
