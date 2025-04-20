@@ -23,7 +23,7 @@ export async function convert_git_branch_tag_to_hash(args: {
         const sha = response.data.commit.sha;
         core.info(`git hash = ${sha}`);
         return sha;
-      } catch (e) {
+      } catch {
         core.debug("It was not a branch.");
       }
       try {
@@ -35,7 +35,7 @@ export async function convert_git_branch_tag_to_hash(args: {
         });
         core.debug("It was a commit.");
         return response.data.sha;
-      } catch (e) {
+      } catch {
         core.debug("It was not a commit.");
       }
       throw new SetupSdlError(

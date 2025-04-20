@@ -1,4 +1,4 @@
-import shlex = require("shlex");
+import * as shlex from "shlex";
 
 export class SetupSdlError extends Error {
   constructor(message: string) {

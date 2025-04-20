@@ -197,7 +197,7 @@ function command_exists(name: string): boolean {
   try {
     child_process.execSync(`command -v ${name}`);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }

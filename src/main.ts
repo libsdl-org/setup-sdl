@@ -9,7 +9,7 @@ import { pipeline } from "node:stream/promises";
 import * as cache from "@actions/cache";
 import * as core from "@actions/core";
 import { Octokit } from "@octokit/rest";
-import AdmZip = require("adm-zip");
+import AdmZip from "adm-zip";
 
 import { convert_git_branch_tag_to_hash } from "./repo";
 import { SetupSdlError, command_arglist_to_string, shlex_split } from "./util";
@@ -420,7 +420,7 @@ async function install_dependencies(args: {
       pm_packages.optional.forEach((optional_package) => {
         try {
           package_manager.install([optional_package]);
-        } catch (e) {
+        } catch {
           /* intentionally left blank */
         }
       });

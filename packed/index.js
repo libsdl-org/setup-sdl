@@ -84,6 +84,9 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Executor = void 0;
 var child_process = __importStar(__nccwpck_require__(5317));
@@ -96,7 +99,7 @@ var promises_1 = __nccwpck_require__(6466);
 var cache = __importStar(__nccwpck_require__(5116));
 var core = __importStar(__nccwpck_require__(7484));
 var rest_1 = __nccwpck_require__(6999);
-var AdmZip = __nccwpck_require__(1316);
+var adm_zip_1 = __importDefault(__nccwpck_require__(1316));
 var repo_1 = __nccwpck_require__(1239);
 var util_1 = __nccwpck_require__(2375);
 var pm = __importStar(__nccwpck_require__(1224));
@@ -163,7 +166,7 @@ function download_git_repo(args) {
                                     case 2:
                                         _a.sent();
                                         core.info("Extracting zip archive...");
-                                        admzip = new AdmZip(ARCHIVE_PATH);
+                                        admzip = new adm_zip_1.default(ARCHIVE_PATH);
                                         admzip.getEntries().forEach(function (entry) {
                                             if (entry.isDirectory) {
                                                 /* Ignore directories */
@@ -475,7 +478,7 @@ function install_dependencies(args) {
                                     try {
                                         package_manager.install([optional_package]);
                                     }
-                                    catch (e) {
+                                    catch (_a) {
                                         /* intentionally left blank */
                                     }
                                 });
@@ -1170,7 +1173,7 @@ function command_exists(name) {
         child_process.execSync("command -v ".concat(name));
         return true;
     }
-    catch (e) {
+    catch (_a) {
         return false;
     }
 }
@@ -1286,11 +1289,11 @@ function convert_git_branch_tag_to_hash(args) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, core.group("Calculating git hash of ".concat(args.owner, "/").concat(args.repo, ":").concat(args.branch_or_hash), function () { return __awaiter(_this, void 0, void 0, function () {
-                        var response, sha, e_1, response, e_2;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
+                        var response, sha, _a, response, _b;
+                        return __generator(this, function (_c) {
+                            switch (_c.label) {
                                 case 0:
-                                    _a.trys.push([0, 2, , 3]);
+                                    _c.trys.push([0, 2, , 3]);
                                     core.debug("Look for a branch named \"".concat(args.branch_or_hash, "\"..."));
                                     return [4 /*yield*/, args.octokit.rest.repos.getBranch({
                                             owner: args.owner,
@@ -1298,17 +1301,17 @@ function convert_git_branch_tag_to_hash(args) {
                                             branch: args.branch_or_hash,
                                         })];
                                 case 1:
-                                    response = _a.sent();
+                                    response = _c.sent();
                                     core.debug("It was a branch.");
                                     sha = response.data.commit.sha;
                                     core.info("git hash = ".concat(sha));
                                     return [2 /*return*/, sha];
                                 case 2:
-                                    e_1 = _a.sent();
+                                    _a = _c.sent();
                                     core.debug("It was not a branch.");
                                     return [3 /*break*/, 3];
                                 case 3:
-                                    _a.trys.push([3, 5, , 6]);
+                                    _c.trys.push([3, 5, , 6]);
                                     core.debug("Look for a commit named \"".concat(args.branch_or_hash, "\"..."));
                                     return [4 /*yield*/, args.octokit.rest.repos.getCommit({
                                             owner: args.owner,
@@ -1316,11 +1319,11 @@ function convert_git_branch_tag_to_hash(args) {
                                             ref: args.branch_or_hash,
                                         })];
                                 case 4:
-                                    response = _a.sent();
+                                    response = _c.sent();
                                     core.debug("It was a commit.");
                                     return [2 /*return*/, response.data.sha];
                                 case 5:
-                                    e_2 = _a.sent();
+                                    _b = _c.sent();
                                     core.debug("It was not a commit.");
                                     return [3 /*break*/, 6];
                                 case 6: throw new util_1.SetupSdlError("Unable to convert ".concat(args.branch_or_hash, " into a git hash."));
@@ -1356,11 +1359,44 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SetupSdlError = void 0;
 exports.shlex_split = shlex_split;
 exports.command_arglist_to_string = command_arglist_to_string;
-var shlex = __nccwpck_require__(4060);
+var shlex = __importStar(__nccwpck_require__(4060));
 var SetupSdlError = /** @class */ (function (_super) {
     __extends(SetupSdlError, _super);
     function SetupSdlError(message) {
@@ -1945,7 +1981,7 @@ function parse_version_string(version_request, discarded_prefix) {
         }
         return { version: version, type: version_type };
     }
-    catch (e) {
+    catch (_a) {
         return { version: version_request, type: ReleaseType.Commit };
     }
 }
@@ -1996,7 +2032,10 @@ const core = __importStar(__nccwpck_require__(7484));
 const path = __importStar(__nccwpck_require__(6928));
 const utils = __importStar(__nccwpck_require__(680));
 const cacheHttpClient = __importStar(__nccwpck_require__(5552));
+const cacheTwirpClient = __importStar(__nccwpck_require__(6819));
+const config_1 = __nccwpck_require__(7606);
 const tar_1 = __nccwpck_require__(5321);
+const constants_1 = __nccwpck_require__(8287);
 class ValidationError extends Error {
     constructor(message) {
         super(message);
@@ -2040,15 +2079,39 @@ exports.isFeatureAvailable = isFeatureAvailable;
  * Restores cache from keys
  *
  * @param paths a list of file paths to restore from the cache
- * @param primaryKey an explicit key for restoring the cache
- * @param restoreKeys an optional ordered list of keys to use for restoring the cache if no cache hit occurred for key
+ * @param primaryKey an explicit key for restoring the cache. Lookup is done with prefix matching.
+ * @param restoreKeys an optional ordered list of keys to use for restoring the cache if no cache hit occurred for primaryKey
  * @param downloadOptions cache download options
  * @param enableCrossOsArchive an optional boolean enabled to restore on windows any cache created on any platform
  * @returns string returns the key for the cache hit, otherwise returns undefined
  */
 function restoreCache(paths, primaryKey, restoreKeys, options, enableCrossOsArchive = false) {
     return __awaiter(this, void 0, void 0, function* () {
+        const cacheServiceVersion = (0, config_1.getCacheServiceVersion)();
+        core.debug(`Cache service version: ${cacheServiceVersion}`);
         checkPaths(paths);
+        switch (cacheServiceVersion) {
+            case 'v2':
+                return yield restoreCacheV2(paths, primaryKey, restoreKeys, options, enableCrossOsArchive);
+            case 'v1':
+            default:
+                return yield restoreCacheV1(paths, primaryKey, restoreKeys, options, enableCrossOsArchive);
+        }
+    });
+}
+exports.restoreCache = restoreCache;
+/**
+ * Restores cache using the legacy Cache Service
+ *
+ * @param paths a list of file paths to restore from the cache
+ * @param primaryKey an explicit key for restoring the cache. Lookup is done with prefix matching.
+ * @param restoreKeys an optional ordered list of keys to use for restoring the cache if no cache hit occurred for primaryKey
+ * @param options cache download options
+ * @param enableCrossOsArchive an optional boolean enabled to restore on Windows any cache created on any platform
+ * @returns string returns the key for the cache hit, otherwise returns undefined
+ */
+function restoreCacheV1(paths, primaryKey, restoreKeys, options, enableCrossOsArchive = false) {
+    return __awaiter(this, void 0, void 0, function* () {
         restoreKeys = restoreKeys || [];
         const keys = [primaryKey, ...restoreKeys];
         core.debug('Resolved Keys:');
@@ -2110,7 +2173,85 @@ function restoreCache(paths, primaryKey, restoreKeys, options, enableCrossOsArch
         return undefined;
     });
 }
-exports.restoreCache = restoreCache;
+/**
+ * Restores cache using Cache Service v2
+ *
+ * @param paths a list of file paths to restore from the cache
+ * @param primaryKey an explicit key for restoring the cache. Lookup is done with prefix matching
+ * @param restoreKeys an optional ordered list of keys to use for restoring the cache if no cache hit occurred for primaryKey
+ * @param downloadOptions cache download options
+ * @param enableCrossOsArchive an optional boolean enabled to restore on windows any cache created on any platform
+ * @returns string returns the key for the cache hit, otherwise returns undefined
+ */
+function restoreCacheV2(paths, primaryKey, restoreKeys, options, enableCrossOsArchive = false) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Override UploadOptions to force the use of Azure
+        options = Object.assign(Object.assign({}, options), { useAzureSdk: true });
+        restoreKeys = restoreKeys || [];
+        const keys = [primaryKey, ...restoreKeys];
+        core.debug('Resolved Keys:');
+        core.debug(JSON.stringify(keys));
+        if (keys.length > 10) {
+            throw new ValidationError(`Key Validation Error: Keys are limited to a maximum of 10.`);
+        }
+        for (const key of keys) {
+            checkKey(key);
+        }
+        let archivePath = '';
+        try {
+            const twirpClient = cacheTwirpClient.internalCacheTwirpClient();
+            const compressionMethod = yield utils.getCompressionMethod();
+            const request = {
+                key: primaryKey,
+                restoreKeys,
+                version: utils.getCacheVersion(paths, compressionMethod, enableCrossOsArchive)
+            };
+            const response = yield twirpClient.GetCacheEntryDownloadURL(request);
+            if (!response.ok) {
+                core.debug(`Cache not found for version ${request.version} of keys: ${keys.join(', ')}`);
+                return undefined;
+            }
+            core.info(`Cache hit for: ${request.key}`);
+            if (options === null || options === void 0 ? void 0 : options.lookupOnly) {
+                core.info('Lookup only - skipping download');
+                return response.matchedKey;
+            }
+            archivePath = path.join(yield utils.createTempDirectory(), utils.getCacheFileName(compressionMethod));
+            core.debug(`Archive path: ${archivePath}`);
+            core.debug(`Starting download of archive to: ${archivePath}`);
+            yield cacheHttpClient.downloadCache(response.signedDownloadUrl, archivePath, options);
+            const archiveFileSize = utils.getArchiveFileSizeInBytes(archivePath);
+            core.info(`Cache Size: ~${Math.round(archiveFileSize / (1024 * 1024))} MB (${archiveFileSize} B)`);
+            if (core.isDebug()) {
+                yield (0, tar_1.listTar)(archivePath, compressionMethod);
+            }
+            yield (0, tar_1.extractTar)(archivePath, compressionMethod);
+            core.info('Cache restored successfully');
+            return response.matchedKey;
+        }
+        catch (error) {
+            const typedError = error;
+            if (typedError.name === ValidationError.name) {
+                throw error;
+            }
+            else {
+                // Supress all non-validation cache related errors because caching should be optional
+                core.warning(`Failed to restore: ${error.message}`);
+            }
+        }
+        finally {
+            try {
+                if (archivePath) {
+                    yield utils.unlinkFile(archivePath);
+                }
+            }
+            catch (error) {
+                core.debug(`Failed to delete archive: ${error}`);
+            }
+        }
+        return undefined;
+    });
+}
 /**
  * Saves a list of files with the specified key
  *
@@ -2121,10 +2262,33 @@ exports.restoreCache = restoreCache;
  * @returns number returns cacheId if the cache was saved successfully and throws an error if save fails
  */
 function saveCache(paths, key, options, enableCrossOsArchive = false) {
-    var _a, _b, _c, _d, _e;
     return __awaiter(this, void 0, void 0, function* () {
+        const cacheServiceVersion = (0, config_1.getCacheServiceVersion)();
+        core.debug(`Cache service version: ${cacheServiceVersion}`);
         checkPaths(paths);
         checkKey(key);
+        switch (cacheServiceVersion) {
+            case 'v2':
+                return yield saveCacheV2(paths, key, options, enableCrossOsArchive);
+            case 'v1':
+            default:
+                return yield saveCacheV1(paths, key, options, enableCrossOsArchive);
+        }
+    });
+}
+exports.saveCache = saveCache;
+/**
+ * Save cache using the legacy Cache Service
+ *
+ * @param paths
+ * @param key
+ * @param options
+ * @param enableCrossOsArchive
+ * @returns
+ */
+function saveCacheV1(paths, key, options, enableCrossOsArchive = false) {
+    var _a, _b, _c, _d, _e;
+    return __awaiter(this, void 0, void 0, function* () {
         const compressionMethod = yield utils.getCompressionMethod();
         let cacheId = -1;
         const cachePaths = yield utils.resolvePaths(paths);
@@ -2145,7 +2309,7 @@ function saveCache(paths, key, options, enableCrossOsArchive = false) {
             const archiveFileSize = utils.getArchiveFileSizeInBytes(archivePath);
             core.debug(`File Size: ${archiveFileSize}`);
             // For GHES, this check will take place in ReserveCache API with enterprise file size limit
-            if (archiveFileSize > fileSizeLimit && !utils.isGhes()) {
+            if (archiveFileSize > fileSizeLimit && !(0, config_1.isGhes)()) {
                 throw new Error(`Cache size of ~${Math.round(archiveFileSize / (1024 * 1024))} MB (${archiveFileSize} B) is over the 10GB limit, not saving cache.`);
             }
             core.debug('Reserving Cache');
@@ -2164,7 +2328,7 @@ function saveCache(paths, key, options, enableCrossOsArchive = false) {
                 throw new ReserveCacheError(`Unable to reserve cache with key ${key}, another job may be creating this cache. More details: ${(_e = reserveCacheResponse === null || reserveCacheResponse === void 0 ? void 0 : reserveCacheResponse.error) === null || _e === void 0 ? void 0 : _e.message}`);
             }
             core.debug(`Saving Cache (ID: ${cacheId})`);
-            yield cacheHttpClient.saveCache(cacheId, archivePath, options);
+            yield cacheHttpClient.saveCache(cacheId, archivePath, '', options);
         }
         catch (error) {
             const typedError = error;
@@ -2190,8 +2354,714 @@ function saveCache(paths, key, options, enableCrossOsArchive = false) {
         return cacheId;
     });
 }
-exports.saveCache = saveCache;
+/**
+ * Save cache using Cache Service v2
+ *
+ * @param paths a list of file paths to restore from the cache
+ * @param key an explicit key for restoring the cache
+ * @param options cache upload options
+ * @param enableCrossOsArchive an optional boolean enabled to save cache on windows which could be restored on any platform
+ * @returns
+ */
+function saveCacheV2(paths, key, options, enableCrossOsArchive = false) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Override UploadOptions to force the use of Azure
+        // ...options goes first because we want to override the default values
+        // set in UploadOptions with these specific figures
+        options = Object.assign(Object.assign({}, options), { uploadChunkSize: 64 * 1024 * 1024, uploadConcurrency: 8, useAzureSdk: true });
+        const compressionMethod = yield utils.getCompressionMethod();
+        const twirpClient = cacheTwirpClient.internalCacheTwirpClient();
+        let cacheId = -1;
+        const cachePaths = yield utils.resolvePaths(paths);
+        core.debug('Cache Paths:');
+        core.debug(`${JSON.stringify(cachePaths)}`);
+        if (cachePaths.length === 0) {
+            throw new Error(`Path Validation Error: Path(s) specified in the action for caching do(es) not exist, hence no cache is being saved.`);
+        }
+        const archiveFolder = yield utils.createTempDirectory();
+        const archivePath = path.join(archiveFolder, utils.getCacheFileName(compressionMethod));
+        core.debug(`Archive Path: ${archivePath}`);
+        try {
+            yield (0, tar_1.createTar)(archiveFolder, cachePaths, compressionMethod);
+            if (core.isDebug()) {
+                yield (0, tar_1.listTar)(archivePath, compressionMethod);
+            }
+            const archiveFileSize = utils.getArchiveFileSizeInBytes(archivePath);
+            core.debug(`File Size: ${archiveFileSize}`);
+            // For GHES, this check will take place in ReserveCache API with enterprise file size limit
+            if (archiveFileSize > constants_1.CacheFileSizeLimit && !(0, config_1.isGhes)()) {
+                throw new Error(`Cache size of ~${Math.round(archiveFileSize / (1024 * 1024))} MB (${archiveFileSize} B) is over the 10GB limit, not saving cache.`);
+            }
+            // Set the archive size in the options, will be used to display the upload progress
+            options.archiveSizeBytes = archiveFileSize;
+            core.debug('Reserving Cache');
+            const version = utils.getCacheVersion(paths, compressionMethod, enableCrossOsArchive);
+            const request = {
+                key,
+                version
+            };
+            let signedUploadUrl;
+            try {
+                const response = yield twirpClient.CreateCacheEntry(request);
+                if (!response.ok) {
+                    throw new Error('Response was not ok');
+                }
+                signedUploadUrl = response.signedUploadUrl;
+            }
+            catch (error) {
+                core.debug(`Failed to reserve cache: ${error}`);
+                throw new ReserveCacheError(`Unable to reserve cache with key ${key}, another job may be creating this cache.`);
+            }
+            core.debug(`Attempting to upload cache located at: ${archivePath}`);
+            yield cacheHttpClient.saveCache(cacheId, archivePath, signedUploadUrl, options);
+            const finalizeRequest = {
+                key,
+                version,
+                sizeBytes: `${archiveFileSize}`
+            };
+            const finalizeResponse = yield twirpClient.FinalizeCacheEntryUpload(finalizeRequest);
+            core.debug(`FinalizeCacheEntryUploadResponse: ${finalizeResponse.ok}`);
+            if (!finalizeResponse.ok) {
+                throw new Error(`Unable to finalize cache with key ${key}, another job may be finalizing this cache.`);
+            }
+            cacheId = parseInt(finalizeResponse.entryId);
+        }
+        catch (error) {
+            const typedError = error;
+            if (typedError.name === ValidationError.name) {
+                throw error;
+            }
+            else if (typedError.name === ReserveCacheError.name) {
+                core.info(`Failed to save: ${typedError.message}`);
+            }
+            else {
+                core.warning(`Failed to save: ${typedError.message}`);
+            }
+        }
+        finally {
+            // Try to delete the archive to save space
+            try {
+                yield utils.unlinkFile(archivePath);
+            }
+            catch (error) {
+                core.debug(`Failed to delete archive: ${error}`);
+            }
+        }
+        return cacheId;
+    });
+}
 //# sourceMappingURL=cache.js.map
+
+/***/ }),
+
+/***/ 3156:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CacheService = exports.GetCacheEntryDownloadURLResponse = exports.GetCacheEntryDownloadURLRequest = exports.FinalizeCacheEntryUploadResponse = exports.FinalizeCacheEntryUploadRequest = exports.CreateCacheEntryResponse = exports.CreateCacheEntryRequest = void 0;
+// @generated by protobuf-ts 2.9.1 with parameter long_type_string,client_none,generate_dependencies
+// @generated from protobuf file "results/api/v1/cache.proto" (package "github.actions.results.api.v1", syntax proto3)
+// tslint:disable
+const runtime_rpc_1 = __nccwpck_require__(4420);
+const runtime_1 = __nccwpck_require__(8886);
+const runtime_2 = __nccwpck_require__(8886);
+const runtime_3 = __nccwpck_require__(8886);
+const runtime_4 = __nccwpck_require__(8886);
+const runtime_5 = __nccwpck_require__(8886);
+const cachemetadata_1 = __nccwpck_require__(9444);
+// @generated message type with reflection information, may provide speed optimized methods
+class CreateCacheEntryRequest$Type extends runtime_5.MessageType {
+    constructor() {
+        super("github.actions.results.api.v1.CreateCacheEntryRequest", [
+            { no: 1, name: "metadata", kind: "message", T: () => cachemetadata_1.CacheMetadata },
+            { no: 2, name: "key", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "version", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value) {
+        const message = { key: "", version: "" };
+        globalThis.Object.defineProperty(message, runtime_4.MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            (0, runtime_3.reflectionMergePartial)(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target !== null && target !== void 0 ? target : this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* github.actions.results.entities.v1.CacheMetadata metadata */ 1:
+                    message.metadata = cachemetadata_1.CacheMetadata.internalBinaryRead(reader, reader.uint32(), options, message.metadata);
+                    break;
+                case /* string key */ 2:
+                    message.key = reader.string();
+                    break;
+                case /* string version */ 3:
+                    message.version = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? runtime_2.UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* github.actions.results.entities.v1.CacheMetadata metadata = 1; */
+        if (message.metadata)
+            cachemetadata_1.CacheMetadata.internalBinaryWrite(message.metadata, writer.tag(1, runtime_1.WireType.LengthDelimited).fork(), options).join();
+        /* string key = 2; */
+        if (message.key !== "")
+            writer.tag(2, runtime_1.WireType.LengthDelimited).string(message.key);
+        /* string version = 3; */
+        if (message.version !== "")
+            writer.tag(3, runtime_1.WireType.LengthDelimited).string(message.version);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? runtime_2.UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message github.actions.results.api.v1.CreateCacheEntryRequest
+ */
+exports.CreateCacheEntryRequest = new CreateCacheEntryRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class CreateCacheEntryResponse$Type extends runtime_5.MessageType {
+    constructor() {
+        super("github.actions.results.api.v1.CreateCacheEntryResponse", [
+            { no: 1, name: "ok", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 2, name: "signed_upload_url", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value) {
+        const message = { ok: false, signedUploadUrl: "" };
+        globalThis.Object.defineProperty(message, runtime_4.MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            (0, runtime_3.reflectionMergePartial)(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target !== null && target !== void 0 ? target : this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* bool ok */ 1:
+                    message.ok = reader.bool();
+                    break;
+                case /* string signed_upload_url */ 2:
+                    message.signedUploadUrl = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? runtime_2.UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* bool ok = 1; */
+        if (message.ok !== false)
+            writer.tag(1, runtime_1.WireType.Varint).bool(message.ok);
+        /* string signed_upload_url = 2; */
+        if (message.signedUploadUrl !== "")
+            writer.tag(2, runtime_1.WireType.LengthDelimited).string(message.signedUploadUrl);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? runtime_2.UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message github.actions.results.api.v1.CreateCacheEntryResponse
+ */
+exports.CreateCacheEntryResponse = new CreateCacheEntryResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class FinalizeCacheEntryUploadRequest$Type extends runtime_5.MessageType {
+    constructor() {
+        super("github.actions.results.api.v1.FinalizeCacheEntryUploadRequest", [
+            { no: 1, name: "metadata", kind: "message", T: () => cachemetadata_1.CacheMetadata },
+            { no: 2, name: "key", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "size_bytes", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 4, name: "version", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value) {
+        const message = { key: "", sizeBytes: "0", version: "" };
+        globalThis.Object.defineProperty(message, runtime_4.MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            (0, runtime_3.reflectionMergePartial)(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target !== null && target !== void 0 ? target : this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* github.actions.results.entities.v1.CacheMetadata metadata */ 1:
+                    message.metadata = cachemetadata_1.CacheMetadata.internalBinaryRead(reader, reader.uint32(), options, message.metadata);
+                    break;
+                case /* string key */ 2:
+                    message.key = reader.string();
+                    break;
+                case /* int64 size_bytes */ 3:
+                    message.sizeBytes = reader.int64().toString();
+                    break;
+                case /* string version */ 4:
+                    message.version = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? runtime_2.UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* github.actions.results.entities.v1.CacheMetadata metadata = 1; */
+        if (message.metadata)
+            cachemetadata_1.CacheMetadata.internalBinaryWrite(message.metadata, writer.tag(1, runtime_1.WireType.LengthDelimited).fork(), options).join();
+        /* string key = 2; */
+        if (message.key !== "")
+            writer.tag(2, runtime_1.WireType.LengthDelimited).string(message.key);
+        /* int64 size_bytes = 3; */
+        if (message.sizeBytes !== "0")
+            writer.tag(3, runtime_1.WireType.Varint).int64(message.sizeBytes);
+        /* string version = 4; */
+        if (message.version !== "")
+            writer.tag(4, runtime_1.WireType.LengthDelimited).string(message.version);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? runtime_2.UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message github.actions.results.api.v1.FinalizeCacheEntryUploadRequest
+ */
+exports.FinalizeCacheEntryUploadRequest = new FinalizeCacheEntryUploadRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class FinalizeCacheEntryUploadResponse$Type extends runtime_5.MessageType {
+    constructor() {
+        super("github.actions.results.api.v1.FinalizeCacheEntryUploadResponse", [
+            { no: 1, name: "ok", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 2, name: "entry_id", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
+        ]);
+    }
+    create(value) {
+        const message = { ok: false, entryId: "0" };
+        globalThis.Object.defineProperty(message, runtime_4.MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            (0, runtime_3.reflectionMergePartial)(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target !== null && target !== void 0 ? target : this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* bool ok */ 1:
+                    message.ok = reader.bool();
+                    break;
+                case /* int64 entry_id */ 2:
+                    message.entryId = reader.int64().toString();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? runtime_2.UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* bool ok = 1; */
+        if (message.ok !== false)
+            writer.tag(1, runtime_1.WireType.Varint).bool(message.ok);
+        /* int64 entry_id = 2; */
+        if (message.entryId !== "0")
+            writer.tag(2, runtime_1.WireType.Varint).int64(message.entryId);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? runtime_2.UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message github.actions.results.api.v1.FinalizeCacheEntryUploadResponse
+ */
+exports.FinalizeCacheEntryUploadResponse = new FinalizeCacheEntryUploadResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class GetCacheEntryDownloadURLRequest$Type extends runtime_5.MessageType {
+    constructor() {
+        super("github.actions.results.api.v1.GetCacheEntryDownloadURLRequest", [
+            { no: 1, name: "metadata", kind: "message", T: () => cachemetadata_1.CacheMetadata },
+            { no: 2, name: "key", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "restore_keys", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "version", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value) {
+        const message = { key: "", restoreKeys: [], version: "" };
+        globalThis.Object.defineProperty(message, runtime_4.MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            (0, runtime_3.reflectionMergePartial)(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target !== null && target !== void 0 ? target : this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* github.actions.results.entities.v1.CacheMetadata metadata */ 1:
+                    message.metadata = cachemetadata_1.CacheMetadata.internalBinaryRead(reader, reader.uint32(), options, message.metadata);
+                    break;
+                case /* string key */ 2:
+                    message.key = reader.string();
+                    break;
+                case /* repeated string restore_keys */ 3:
+                    message.restoreKeys.push(reader.string());
+                    break;
+                case /* string version */ 4:
+                    message.version = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? runtime_2.UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* github.actions.results.entities.v1.CacheMetadata metadata = 1; */
+        if (message.metadata)
+            cachemetadata_1.CacheMetadata.internalBinaryWrite(message.metadata, writer.tag(1, runtime_1.WireType.LengthDelimited).fork(), options).join();
+        /* string key = 2; */
+        if (message.key !== "")
+            writer.tag(2, runtime_1.WireType.LengthDelimited).string(message.key);
+        /* repeated string restore_keys = 3; */
+        for (let i = 0; i < message.restoreKeys.length; i++)
+            writer.tag(3, runtime_1.WireType.LengthDelimited).string(message.restoreKeys[i]);
+        /* string version = 4; */
+        if (message.version !== "")
+            writer.tag(4, runtime_1.WireType.LengthDelimited).string(message.version);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? runtime_2.UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message github.actions.results.api.v1.GetCacheEntryDownloadURLRequest
+ */
+exports.GetCacheEntryDownloadURLRequest = new GetCacheEntryDownloadURLRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class GetCacheEntryDownloadURLResponse$Type extends runtime_5.MessageType {
+    constructor() {
+        super("github.actions.results.api.v1.GetCacheEntryDownloadURLResponse", [
+            { no: 1, name: "ok", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 2, name: "signed_download_url", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "matched_key", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value) {
+        const message = { ok: false, signedDownloadUrl: "", matchedKey: "" };
+        globalThis.Object.defineProperty(message, runtime_4.MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            (0, runtime_3.reflectionMergePartial)(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target !== null && target !== void 0 ? target : this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* bool ok */ 1:
+                    message.ok = reader.bool();
+                    break;
+                case /* string signed_download_url */ 2:
+                    message.signedDownloadUrl = reader.string();
+                    break;
+                case /* string matched_key */ 3:
+                    message.matchedKey = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? runtime_2.UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* bool ok = 1; */
+        if (message.ok !== false)
+            writer.tag(1, runtime_1.WireType.Varint).bool(message.ok);
+        /* string signed_download_url = 2; */
+        if (message.signedDownloadUrl !== "")
+            writer.tag(2, runtime_1.WireType.LengthDelimited).string(message.signedDownloadUrl);
+        /* string matched_key = 3; */
+        if (message.matchedKey !== "")
+            writer.tag(3, runtime_1.WireType.LengthDelimited).string(message.matchedKey);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? runtime_2.UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message github.actions.results.api.v1.GetCacheEntryDownloadURLResponse
+ */
+exports.GetCacheEntryDownloadURLResponse = new GetCacheEntryDownloadURLResponse$Type();
+/**
+ * @generated ServiceType for protobuf service github.actions.results.api.v1.CacheService
+ */
+exports.CacheService = new runtime_rpc_1.ServiceType("github.actions.results.api.v1.CacheService", [
+    { name: "CreateCacheEntry", options: {}, I: exports.CreateCacheEntryRequest, O: exports.CreateCacheEntryResponse },
+    { name: "FinalizeCacheEntryUpload", options: {}, I: exports.FinalizeCacheEntryUploadRequest, O: exports.FinalizeCacheEntryUploadResponse },
+    { name: "GetCacheEntryDownloadURL", options: {}, I: exports.GetCacheEntryDownloadURLRequest, O: exports.GetCacheEntryDownloadURLResponse }
+]);
+//# sourceMappingURL=cache.js.map
+
+/***/ }),
+
+/***/ 1486:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CacheServiceClientProtobuf = exports.CacheServiceClientJSON = void 0;
+const cache_1 = __nccwpck_require__(3156);
+class CacheServiceClientJSON {
+    constructor(rpc) {
+        this.rpc = rpc;
+        this.CreateCacheEntry.bind(this);
+        this.FinalizeCacheEntryUpload.bind(this);
+        this.GetCacheEntryDownloadURL.bind(this);
+    }
+    CreateCacheEntry(request) {
+        const data = cache_1.CreateCacheEntryRequest.toJson(request, {
+            useProtoFieldName: true,
+            emitDefaultValues: false,
+        });
+        const promise = this.rpc.request("github.actions.results.api.v1.CacheService", "CreateCacheEntry", "application/json", data);
+        return promise.then((data) => cache_1.CreateCacheEntryResponse.fromJson(data, {
+            ignoreUnknownFields: true,
+        }));
+    }
+    FinalizeCacheEntryUpload(request) {
+        const data = cache_1.FinalizeCacheEntryUploadRequest.toJson(request, {
+            useProtoFieldName: true,
+            emitDefaultValues: false,
+        });
+        const promise = this.rpc.request("github.actions.results.api.v1.CacheService", "FinalizeCacheEntryUpload", "application/json", data);
+        return promise.then((data) => cache_1.FinalizeCacheEntryUploadResponse.fromJson(data, {
+            ignoreUnknownFields: true,
+        }));
+    }
+    GetCacheEntryDownloadURL(request) {
+        const data = cache_1.GetCacheEntryDownloadURLRequest.toJson(request, {
+            useProtoFieldName: true,
+            emitDefaultValues: false,
+        });
+        const promise = this.rpc.request("github.actions.results.api.v1.CacheService", "GetCacheEntryDownloadURL", "application/json", data);
+        return promise.then((data) => cache_1.GetCacheEntryDownloadURLResponse.fromJson(data, {
+            ignoreUnknownFields: true,
+        }));
+    }
+}
+exports.CacheServiceClientJSON = CacheServiceClientJSON;
+class CacheServiceClientProtobuf {
+    constructor(rpc) {
+        this.rpc = rpc;
+        this.CreateCacheEntry.bind(this);
+        this.FinalizeCacheEntryUpload.bind(this);
+        this.GetCacheEntryDownloadURL.bind(this);
+    }
+    CreateCacheEntry(request) {
+        const data = cache_1.CreateCacheEntryRequest.toBinary(request);
+        const promise = this.rpc.request("github.actions.results.api.v1.CacheService", "CreateCacheEntry", "application/protobuf", data);
+        return promise.then((data) => cache_1.CreateCacheEntryResponse.fromBinary(data));
+    }
+    FinalizeCacheEntryUpload(request) {
+        const data = cache_1.FinalizeCacheEntryUploadRequest.toBinary(request);
+        const promise = this.rpc.request("github.actions.results.api.v1.CacheService", "FinalizeCacheEntryUpload", "application/protobuf", data);
+        return promise.then((data) => cache_1.FinalizeCacheEntryUploadResponse.fromBinary(data));
+    }
+    GetCacheEntryDownloadURL(request) {
+        const data = cache_1.GetCacheEntryDownloadURLRequest.toBinary(request);
+        const promise = this.rpc.request("github.actions.results.api.v1.CacheService", "GetCacheEntryDownloadURL", "application/protobuf", data);
+        return promise.then((data) => cache_1.GetCacheEntryDownloadURLResponse.fromBinary(data));
+    }
+}
+exports.CacheServiceClientProtobuf = CacheServiceClientProtobuf;
+//# sourceMappingURL=cache.twirp-client.js.map
+
+/***/ }),
+
+/***/ 9444:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CacheMetadata = void 0;
+const runtime_1 = __nccwpck_require__(8886);
+const runtime_2 = __nccwpck_require__(8886);
+const runtime_3 = __nccwpck_require__(8886);
+const runtime_4 = __nccwpck_require__(8886);
+const runtime_5 = __nccwpck_require__(8886);
+const cachescope_1 = __nccwpck_require__(9425);
+// @generated message type with reflection information, may provide speed optimized methods
+class CacheMetadata$Type extends runtime_5.MessageType {
+    constructor() {
+        super("github.actions.results.entities.v1.CacheMetadata", [
+            { no: 1, name: "repository_id", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 2, name: "scope", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => cachescope_1.CacheScope }
+        ]);
+    }
+    create(value) {
+        const message = { repositoryId: "0", scope: [] };
+        globalThis.Object.defineProperty(message, runtime_4.MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            (0, runtime_3.reflectionMergePartial)(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target !== null && target !== void 0 ? target : this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int64 repository_id */ 1:
+                    message.repositoryId = reader.int64().toString();
+                    break;
+                case /* repeated github.actions.results.entities.v1.CacheScope scope */ 2:
+                    message.scope.push(cachescope_1.CacheScope.internalBinaryRead(reader, reader.uint32(), options));
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? runtime_2.UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* int64 repository_id = 1; */
+        if (message.repositoryId !== "0")
+            writer.tag(1, runtime_1.WireType.Varint).int64(message.repositoryId);
+        /* repeated github.actions.results.entities.v1.CacheScope scope = 2; */
+        for (let i = 0; i < message.scope.length; i++)
+            cachescope_1.CacheScope.internalBinaryWrite(message.scope[i], writer.tag(2, runtime_1.WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? runtime_2.UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message github.actions.results.entities.v1.CacheMetadata
+ */
+exports.CacheMetadata = new CacheMetadata$Type();
+//# sourceMappingURL=cachemetadata.js.map
+
+/***/ }),
+
+/***/ 9425:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CacheScope = void 0;
+const runtime_1 = __nccwpck_require__(8886);
+const runtime_2 = __nccwpck_require__(8886);
+const runtime_3 = __nccwpck_require__(8886);
+const runtime_4 = __nccwpck_require__(8886);
+const runtime_5 = __nccwpck_require__(8886);
+// @generated message type with reflection information, may provide speed optimized methods
+class CacheScope$Type extends runtime_5.MessageType {
+    constructor() {
+        super("github.actions.results.entities.v1.CacheScope", [
+            { no: 1, name: "scope", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "permission", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
+        ]);
+    }
+    create(value) {
+        const message = { scope: "", permission: "0" };
+        globalThis.Object.defineProperty(message, runtime_4.MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            (0, runtime_3.reflectionMergePartial)(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target !== null && target !== void 0 ? target : this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string scope */ 1:
+                    message.scope = reader.string();
+                    break;
+                case /* int64 permission */ 2:
+                    message.permission = reader.int64().toString();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? runtime_2.UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* string scope = 1; */
+        if (message.scope !== "")
+            writer.tag(1, runtime_1.WireType.LengthDelimited).string(message.scope);
+        /* int64 permission = 2; */
+        if (message.permission !== "0")
+            writer.tag(2, runtime_1.WireType.Varint).int64(message.permission);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? runtime_2.UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message github.actions.results.entities.v1.CacheScope
+ */
+exports.CacheScope = new CacheScope$Type();
+//# sourceMappingURL=cachescope.js.map
 
 /***/ }),
 
@@ -2233,20 +3103,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.saveCache = exports.reserveCache = exports.downloadCache = exports.getCacheEntry = exports.getCacheVersion = void 0;
+exports.saveCache = exports.reserveCache = exports.downloadCache = exports.getCacheEntry = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const http_client_1 = __nccwpck_require__(4844);
 const auth_1 = __nccwpck_require__(4552);
-const crypto = __importStar(__nccwpck_require__(6982));
 const fs = __importStar(__nccwpck_require__(9896));
 const url_1 = __nccwpck_require__(7016);
 const utils = __importStar(__nccwpck_require__(680));
+const uploadUtils_1 = __nccwpck_require__(5268);
 const downloadUtils_1 = __nccwpck_require__(5067);
 const options_1 = __nccwpck_require__(8356);
 const requestUtils_1 = __nccwpck_require__(2846);
-const versionSalt = '1.0';
+const config_1 = __nccwpck_require__(7606);
+const user_agent_1 = __nccwpck_require__(1899);
 function getCacheApiUrl(resource) {
-    const baseUrl = process.env['ACTIONS_CACHE_URL'] || '';
+    const baseUrl = (0, config_1.getCacheServiceURL)();
     if (!baseUrl) {
         throw new Error('Cache Service Url not found, unable to restore cache.');
     }
@@ -2268,29 +3139,12 @@ function getRequestOptions() {
 function createHttpClient() {
     const token = process.env['ACTIONS_RUNTIME_TOKEN'] || '';
     const bearerCredentialHandler = new auth_1.BearerCredentialHandler(token);
-    return new http_client_1.HttpClient('actions/cache', [bearerCredentialHandler], getRequestOptions());
+    return new http_client_1.HttpClient((0, user_agent_1.getUserAgentString)(), [bearerCredentialHandler], getRequestOptions());
 }
-function getCacheVersion(paths, compressionMethod, enableCrossOsArchive = false) {
-    // don't pass changes upstream
-    const components = paths.slice();
-    // Add compression method to cache version to restore
-    // compressed cache as per compression method
-    if (compressionMethod) {
-        components.push(compressionMethod);
-    }
-    // Only check for windows platforms if enableCrossOsArchive is false
-    if (process.platform === 'win32' && !enableCrossOsArchive) {
-        components.push('windows-only');
-    }
-    // Add salt to cache version to support breaking changes in cache entry
-    components.push(versionSalt);
-    return crypto.createHash('sha256').update(components.join('|')).digest('hex');
-}
-exports.getCacheVersion = getCacheVersion;
 function getCacheEntry(keys, paths, options) {
     return __awaiter(this, void 0, void 0, function* () {
         const httpClient = createHttpClient();
-        const version = getCacheVersion(paths, options === null || options === void 0 ? void 0 : options.compressionMethod, options === null || options === void 0 ? void 0 : options.enableCrossOsArchive);
+        const version = utils.getCacheVersion(paths, options === null || options === void 0 ? void 0 : options.compressionMethod, options === null || options === void 0 ? void 0 : options.enableCrossOsArchive);
         const resource = `cache?keys=${encodeURIComponent(keys.join(','))}&version=${version}`;
         const response = yield (0, requestUtils_1.retryTypedResponse)('getCacheEntry', () => __awaiter(this, void 0, void 0, function* () { return httpClient.getJson(getCacheApiUrl(resource)); }));
         // Cache not found
@@ -2361,7 +3215,7 @@ exports.downloadCache = downloadCache;
 function reserveCache(key, paths, options) {
     return __awaiter(this, void 0, void 0, function* () {
         const httpClient = createHttpClient();
-        const version = getCacheVersion(paths, options === null || options === void 0 ? void 0 : options.compressionMethod, options === null || options === void 0 ? void 0 : options.enableCrossOsArchive);
+        const version = utils.getCacheVersion(paths, options === null || options === void 0 ? void 0 : options.compressionMethod, options === null || options === void 0 ? void 0 : options.enableCrossOsArchive);
         const reserveCacheRequest = {
             key,
             version,
@@ -2443,20 +3297,30 @@ function commitCache(httpClient, cacheId, filesize) {
         }));
     });
 }
-function saveCache(cacheId, archivePath, options) {
+function saveCache(cacheId, archivePath, signedUploadURL, options) {
     return __awaiter(this, void 0, void 0, function* () {
-        const httpClient = createHttpClient();
-        core.debug('Upload cache');
-        yield uploadFile(httpClient, cacheId, archivePath, options);
-        // Commit Cache
-        core.debug('Commiting cache');
-        const cacheSize = utils.getArchiveFileSizeInBytes(archivePath);
-        core.info(`Cache Size: ~${Math.round(cacheSize / (1024 * 1024))} MB (${cacheSize} B)`);
-        const commitCacheResponse = yield commitCache(httpClient, cacheId, cacheSize);
-        if (!(0, requestUtils_1.isSuccessStatusCode)(commitCacheResponse.statusCode)) {
-            throw new Error(`Cache service responded with ${commitCacheResponse.statusCode} during commit cache.`);
+        const uploadOptions = (0, options_1.getUploadOptions)(options);
+        if (uploadOptions.useAzureSdk) {
+            // Use Azure storage SDK to upload caches directly to Azure
+            if (!signedUploadURL) {
+                throw new Error('Azure Storage SDK can only be used when a signed URL is provided.');
+            }
+            yield (0, uploadUtils_1.uploadCacheArchiveSDK)(signedUploadURL, archivePath, options);
         }
-        core.info('Cache saved successfully');
+        else {
+            const httpClient = createHttpClient();
+            core.debug('Upload cache');
+            yield uploadFile(httpClient, cacheId, archivePath, options);
+            // Commit Cache
+            core.debug('Commiting cache');
+            const cacheSize = utils.getArchiveFileSizeInBytes(archivePath);
+            core.info(`Cache Size: ~${Math.round(cacheSize / (1024 * 1024))} MB (${cacheSize} B)`);
+            const commitCacheResponse = yield commitCache(httpClient, cacheId, cacheSize);
+            if (!(0, requestUtils_1.isSuccessStatusCode)(commitCacheResponse.statusCode)) {
+                throw new Error(`Cache service responded with ${commitCacheResponse.statusCode} during commit cache.`);
+            }
+            core.info('Cache saved successfully');
+        }
     });
 }
 exports.saveCache = saveCache;
@@ -2509,7 +3373,7 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
     function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.isGhes = exports.assertDefined = exports.getGnuTarPathOnWindows = exports.getCacheFileName = exports.getCompressionMethod = exports.unlinkFile = exports.resolvePaths = exports.getArchiveFileSizeInBytes = exports.createTempDirectory = void 0;
+exports.getRuntimeToken = exports.getCacheVersion = exports.assertDefined = exports.getGnuTarPathOnWindows = exports.getCacheFileName = exports.getCompressionMethod = exports.unlinkFile = exports.resolvePaths = exports.getArchiveFileSizeInBytes = exports.createTempDirectory = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const exec = __importStar(__nccwpck_require__(5236));
 const glob = __importStar(__nccwpck_require__(7206));
@@ -2520,6 +3384,7 @@ const path = __importStar(__nccwpck_require__(6928));
 const semver = __importStar(__nccwpck_require__(9318));
 const util = __importStar(__nccwpck_require__(9023));
 const constants_1 = __nccwpck_require__(8287);
+const versionSalt = '1.0';
 // From https://github.com/actions/toolkit/blob/main/packages/tool-cache/src/tool-cache.ts#L23
 function createTempDirectory() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -2657,15 +3522,76 @@ function assertDefined(name, value) {
     return value;
 }
 exports.assertDefined = assertDefined;
+function getCacheVersion(paths, compressionMethod, enableCrossOsArchive = false) {
+    // don't pass changes upstream
+    const components = paths.slice();
+    // Add compression method to cache version to restore
+    // compressed cache as per compression method
+    if (compressionMethod) {
+        components.push(compressionMethod);
+    }
+    // Only check for windows platforms if enableCrossOsArchive is false
+    if (process.platform === 'win32' && !enableCrossOsArchive) {
+        components.push('windows-only');
+    }
+    // Add salt to cache version to support breaking changes in cache entry
+    components.push(versionSalt);
+    return crypto.createHash('sha256').update(components.join('|')).digest('hex');
+}
+exports.getCacheVersion = getCacheVersion;
+function getRuntimeToken() {
+    const token = process.env['ACTIONS_RUNTIME_TOKEN'];
+    if (!token) {
+        throw new Error('Unable to get the ACTIONS_RUNTIME_TOKEN env variable');
+    }
+    return token;
+}
+exports.getRuntimeToken = getRuntimeToken;
+//# sourceMappingURL=cacheUtils.js.map
+
+/***/ }),
+
+/***/ 7606:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getCacheServiceURL = exports.getCacheServiceVersion = exports.isGhes = void 0;
 function isGhes() {
     const ghUrl = new URL(process.env['GITHUB_SERVER_URL'] || 'https://github.com');
     const hostname = ghUrl.hostname.trimEnd().toUpperCase();
     const isGitHubHost = hostname === 'GITHUB.COM';
-    const isGheHost = hostname.endsWith('.GHE.COM') || hostname.endsWith('.GHE.LOCALHOST');
-    return !isGitHubHost && !isGheHost;
+    const isGheHost = hostname.endsWith('.GHE.COM');
+    const isLocalHost = hostname.endsWith('.LOCALHOST');
+    return !isGitHubHost && !isGheHost && !isLocalHost;
 }
 exports.isGhes = isGhes;
-//# sourceMappingURL=cacheUtils.js.map
+function getCacheServiceVersion() {
+    // Cache service v2 is not supported on GHES. We will default to
+    // cache service v1 even if the feature flag was enabled by user.
+    if (isGhes())
+        return 'v1';
+    return process.env['ACTIONS_CACHE_SERVICE_V2'] ? 'v2' : 'v1';
+}
+exports.getCacheServiceVersion = getCacheServiceVersion;
+function getCacheServiceURL() {
+    const version = getCacheServiceVersion();
+    // Based on the version of the cache service, we will determine which
+    // URL to use.
+    switch (version) {
+        case 'v1':
+            return (process.env['ACTIONS_CACHE_URL'] ||
+                process.env['ACTIONS_RESULTS_URL'] ||
+                '');
+        case 'v2':
+            return process.env['ACTIONS_RESULTS_URL'] || '';
+        default:
+            throw new Error(`Unsupported cache service version: ${version}`);
+    }
+}
+exports.getCacheServiceURL = getCacheServiceURL;
+//# sourceMappingURL=config.js.map
 
 /***/ }),
 
@@ -2675,7 +3601,7 @@ exports.isGhes = isGhes;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ManifestFilename = exports.TarFilename = exports.SystemTarPathOnWindows = exports.GnuTarPathOnWindows = exports.SocketTimeout = exports.DefaultRetryDelay = exports.DefaultRetryAttempts = exports.ArchiveToolType = exports.CompressionMethod = exports.CacheFilename = void 0;
+exports.CacheFileSizeLimit = exports.ManifestFilename = exports.TarFilename = exports.SystemTarPathOnWindows = exports.GnuTarPathOnWindows = exports.SocketTimeout = exports.DefaultRetryDelay = exports.DefaultRetryAttempts = exports.ArchiveToolType = exports.CompressionMethod = exports.CacheFilename = void 0;
 var CacheFilename;
 (function (CacheFilename) {
     CacheFilename["Gzip"] = "cache.tgz";
@@ -2708,6 +3634,7 @@ exports.GnuTarPathOnWindows = `${process.env['PROGRAMFILES']}\\Git\\usr\\bin\\ta
 exports.SystemTarPathOnWindows = `${process.env['SYSTEMDRIVE']}\\Windows\\System32\\tar.exe`;
 exports.TarFilename = 'cache.tar';
 exports.ManifestFilename = 'manifest.txt';
+exports.CacheFileSizeLimit = 10 * Math.pow(1024, 3); // 10GiB per repository
 //# sourceMappingURL=constants.js.map
 
 /***/ }),
@@ -3241,6 +4168,353 @@ exports.retryHttpClientResponse = retryHttpClientResponse;
 
 /***/ }),
 
+/***/ 6819:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.internalCacheTwirpClient = void 0;
+const core_1 = __nccwpck_require__(7484);
+const user_agent_1 = __nccwpck_require__(1899);
+const errors_1 = __nccwpck_require__(263);
+const config_1 = __nccwpck_require__(7606);
+const cacheUtils_1 = __nccwpck_require__(680);
+const auth_1 = __nccwpck_require__(4552);
+const http_client_1 = __nccwpck_require__(4844);
+const cache_twirp_client_1 = __nccwpck_require__(1486);
+const util_1 = __nccwpck_require__(7564);
+/**
+ * This class is a wrapper around the CacheServiceClientJSON class generated by Twirp.
+ *
+ * It adds retry logic to the request method, which is not present in the generated client.
+ *
+ * This class is used to interact with cache service v2.
+ */
+class CacheServiceClient {
+    constructor(userAgent, maxAttempts, baseRetryIntervalMilliseconds, retryMultiplier) {
+        this.maxAttempts = 5;
+        this.baseRetryIntervalMilliseconds = 3000;
+        this.retryMultiplier = 1.5;
+        const token = (0, cacheUtils_1.getRuntimeToken)();
+        this.baseUrl = (0, config_1.getCacheServiceURL)();
+        if (maxAttempts) {
+            this.maxAttempts = maxAttempts;
+        }
+        if (baseRetryIntervalMilliseconds) {
+            this.baseRetryIntervalMilliseconds = baseRetryIntervalMilliseconds;
+        }
+        if (retryMultiplier) {
+            this.retryMultiplier = retryMultiplier;
+        }
+        this.httpClient = new http_client_1.HttpClient(userAgent, [
+            new auth_1.BearerCredentialHandler(token)
+        ]);
+    }
+    // This function satisfies the Rpc interface. It is compatible with the JSON
+    // JSON generated client.
+    request(service, method, contentType, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const url = new URL(`/twirp/${service}/${method}`, this.baseUrl).href;
+            (0, core_1.debug)(`[Request] ${method} ${url}`);
+            const headers = {
+                'Content-Type': contentType
+            };
+            try {
+                const { body } = yield this.retryableRequest(() => __awaiter(this, void 0, void 0, function* () { return this.httpClient.post(url, JSON.stringify(data), headers); }));
+                return body;
+            }
+            catch (error) {
+                throw new Error(`Failed to ${method}: ${error.message}`);
+            }
+        });
+    }
+    retryableRequest(operation) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let attempt = 0;
+            let errorMessage = '';
+            let rawBody = '';
+            while (attempt < this.maxAttempts) {
+                let isRetryable = false;
+                try {
+                    const response = yield operation();
+                    const statusCode = response.message.statusCode;
+                    rawBody = yield response.readBody();
+                    (0, core_1.debug)(`[Response] - ${response.message.statusCode}`);
+                    (0, core_1.debug)(`Headers: ${JSON.stringify(response.message.headers, null, 2)}`);
+                    const body = JSON.parse(rawBody);
+                    (0, util_1.maskSecretUrls)(body);
+                    (0, core_1.debug)(`Body: ${JSON.stringify(body, null, 2)}`);
+                    if (this.isSuccessStatusCode(statusCode)) {
+                        return { response, body };
+                    }
+                    isRetryable = this.isRetryableHttpStatusCode(statusCode);
+                    errorMessage = `Failed request: (${statusCode}) ${response.message.statusMessage}`;
+                    if (body.msg) {
+                        if (errors_1.UsageError.isUsageErrorMessage(body.msg)) {
+                            throw new errors_1.UsageError();
+                        }
+                        errorMessage = `${errorMessage}: ${body.msg}`;
+                    }
+                }
+                catch (error) {
+                    if (error instanceof SyntaxError) {
+                        (0, core_1.debug)(`Raw Body: ${rawBody}`);
+                    }
+                    if (error instanceof errors_1.UsageError) {
+                        throw error;
+                    }
+                    if (errors_1.NetworkError.isNetworkErrorCode(error === null || error === void 0 ? void 0 : error.code)) {
+                        throw new errors_1.NetworkError(error === null || error === void 0 ? void 0 : error.code);
+                    }
+                    isRetryable = true;
+                    errorMessage = error.message;
+                }
+                if (!isRetryable) {
+                    throw new Error(`Received non-retryable error: ${errorMessage}`);
+                }
+                if (attempt + 1 === this.maxAttempts) {
+                    throw new Error(`Failed to make request after ${this.maxAttempts} attempts: ${errorMessage}`);
+                }
+                const retryTimeMilliseconds = this.getExponentialRetryTimeMilliseconds(attempt);
+                (0, core_1.info)(`Attempt ${attempt + 1} of ${this.maxAttempts} failed with error: ${errorMessage}. Retrying request in ${retryTimeMilliseconds} ms...`);
+                yield this.sleep(retryTimeMilliseconds);
+                attempt++;
+            }
+            throw new Error(`Request failed`);
+        });
+    }
+    isSuccessStatusCode(statusCode) {
+        if (!statusCode)
+            return false;
+        return statusCode >= 200 && statusCode < 300;
+    }
+    isRetryableHttpStatusCode(statusCode) {
+        if (!statusCode)
+            return false;
+        const retryableStatusCodes = [
+            http_client_1.HttpCodes.BadGateway,
+            http_client_1.HttpCodes.GatewayTimeout,
+            http_client_1.HttpCodes.InternalServerError,
+            http_client_1.HttpCodes.ServiceUnavailable,
+            http_client_1.HttpCodes.TooManyRequests
+        ];
+        return retryableStatusCodes.includes(statusCode);
+    }
+    sleep(milliseconds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise(resolve => setTimeout(resolve, milliseconds));
+        });
+    }
+    getExponentialRetryTimeMilliseconds(attempt) {
+        if (attempt < 0) {
+            throw new Error('attempt should be a positive integer');
+        }
+        if (attempt === 0) {
+            return this.baseRetryIntervalMilliseconds;
+        }
+        const minTime = this.baseRetryIntervalMilliseconds * Math.pow(this.retryMultiplier, attempt);
+        const maxTime = minTime * this.retryMultiplier;
+        // returns a random number between minTime and maxTime (exclusive)
+        return Math.trunc(Math.random() * (maxTime - minTime) + minTime);
+    }
+}
+function internalCacheTwirpClient(options) {
+    const client = new CacheServiceClient((0, user_agent_1.getUserAgentString)(), options === null || options === void 0 ? void 0 : options.maxAttempts, options === null || options === void 0 ? void 0 : options.retryIntervalMs, options === null || options === void 0 ? void 0 : options.retryMultiplier);
+    return new cache_twirp_client_1.CacheServiceClientJSON(client);
+}
+exports.internalCacheTwirpClient = internalCacheTwirpClient;
+//# sourceMappingURL=cacheTwirpClient.js.map
+
+/***/ }),
+
+/***/ 263:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UsageError = exports.NetworkError = exports.GHESNotSupportedError = exports.CacheNotFoundError = exports.InvalidResponseError = exports.FilesNotFoundError = void 0;
+class FilesNotFoundError extends Error {
+    constructor(files = []) {
+        let message = 'No files were found to upload';
+        if (files.length > 0) {
+            message += `: ${files.join(', ')}`;
+        }
+        super(message);
+        this.files = files;
+        this.name = 'FilesNotFoundError';
+    }
+}
+exports.FilesNotFoundError = FilesNotFoundError;
+class InvalidResponseError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'InvalidResponseError';
+    }
+}
+exports.InvalidResponseError = InvalidResponseError;
+class CacheNotFoundError extends Error {
+    constructor(message = 'Cache not found') {
+        super(message);
+        this.name = 'CacheNotFoundError';
+    }
+}
+exports.CacheNotFoundError = CacheNotFoundError;
+class GHESNotSupportedError extends Error {
+    constructor(message = '@actions/cache v4.1.4+, actions/cache/save@v4+ and actions/cache/restore@v4+ are not currently supported on GHES.') {
+        super(message);
+        this.name = 'GHESNotSupportedError';
+    }
+}
+exports.GHESNotSupportedError = GHESNotSupportedError;
+class NetworkError extends Error {
+    constructor(code) {
+        const message = `Unable to make request: ${code}\nIf you are using self-hosted runners, please make sure your runner has access to all GitHub endpoints: https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners#communication-between-self-hosted-runners-and-github`;
+        super(message);
+        this.code = code;
+        this.name = 'NetworkError';
+    }
+}
+exports.NetworkError = NetworkError;
+NetworkError.isNetworkErrorCode = (code) => {
+    if (!code)
+        return false;
+    return [
+        'ECONNRESET',
+        'ENOTFOUND',
+        'ETIMEDOUT',
+        'ECONNREFUSED',
+        'EHOSTUNREACH'
+    ].includes(code);
+};
+class UsageError extends Error {
+    constructor() {
+        const message = `Cache storage quota has been hit. Unable to upload any new cache entries. Usage is recalculated every 6-12 hours.\nMore info on storage limits: https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#calculating-minute-and-storage-spending`;
+        super(message);
+        this.name = 'UsageError';
+    }
+}
+exports.UsageError = UsageError;
+UsageError.isUsageErrorMessage = (msg) => {
+    if (!msg)
+        return false;
+    return msg.includes('insufficient usage');
+};
+//# sourceMappingURL=errors.js.map
+
+/***/ }),
+
+/***/ 1899:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getUserAgentString = void 0;
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+const packageJson = __nccwpck_require__(4012);
+/**
+ * Ensure that this User Agent String is used in all HTTP calls so that we can monitor telemetry between different versions of this package
+ */
+function getUserAgentString() {
+    return `@actions/cache-${packageJson.version}`;
+}
+exports.getUserAgentString = getUserAgentString;
+//# sourceMappingURL=user-agent.js.map
+
+/***/ }),
+
+/***/ 7564:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.maskSecretUrls = exports.maskSigUrl = void 0;
+const core_1 = __nccwpck_require__(7484);
+/**
+ * Masks the `sig` parameter in a URL and sets it as a secret.
+ *
+ * @param url - The URL containing the signature parameter to mask
+ * @remarks
+ * This function attempts to parse the provided URL and identify the 'sig' query parameter.
+ * If found, it registers both the raw and URL-encoded signature values as secrets using
+ * the Actions `setSecret` API, which prevents them from being displayed in logs.
+ *
+ * The function handles errors gracefully if URL parsing fails, logging them as debug messages.
+ *
+ * @example
+ * ```typescript
+ * // Mask a signature in an Azure SAS token URL
+ * maskSigUrl('https://example.blob.core.windows.net/container/file.txt?sig=abc123&se=2023-01-01');
+ * ```
+ */
+function maskSigUrl(url) {
+    if (!url)
+        return;
+    try {
+        const parsedUrl = new URL(url);
+        const signature = parsedUrl.searchParams.get('sig');
+        if (signature) {
+            (0, core_1.setSecret)(signature);
+            (0, core_1.setSecret)(encodeURIComponent(signature));
+        }
+    }
+    catch (error) {
+        (0, core_1.debug)(`Failed to parse URL: ${url} ${error instanceof Error ? error.message : String(error)}`);
+    }
+}
+exports.maskSigUrl = maskSigUrl;
+/**
+ * Masks sensitive information in URLs containing signature parameters.
+ * Currently supports masking 'sig' parameters in the 'signed_upload_url'
+ * and 'signed_download_url' properties of the provided object.
+ *
+ * @param body - The object should contain a signature
+ * @remarks
+ * This function extracts URLs from the object properties and calls maskSigUrl
+ * on each one to redact sensitive signature information. The function doesn't
+ * modify the original object; it only marks the signatures as secrets for
+ * logging purposes.
+ *
+ * @example
+ * ```typescript
+ * const responseBody = {
+ *   signed_upload_url: 'https://blob.core.windows.net/?sig=abc123',
+ *   signed_download_url: 'https://blob.core/windows.net/?sig=def456'
+ * };
+ * maskSecretUrls(responseBody);
+ * ```
+ */
+function maskSecretUrls(body) {
+    if (typeof body !== 'object' || body === null) {
+        (0, core_1.debug)('body is not an object or is null');
+        return;
+    }
+    if ('signed_upload_url' in body &&
+        typeof body.signed_upload_url === 'string') {
+        maskSigUrl(body.signed_upload_url);
+    }
+    if ('signed_download_url' in body &&
+        typeof body.signed_download_url === 'string') {
+        maskSigUrl(body.signed_download_url);
+    }
+}
+exports.maskSecretUrls = maskSecretUrls;
+//# sourceMappingURL=util.js.map
+
+/***/ }),
+
 /***/ 5321:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -3520,6 +4794,180 @@ exports.createTar = createTar;
 
 /***/ }),
 
+/***/ 5268:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.uploadCacheArchiveSDK = exports.UploadProgress = void 0;
+const core = __importStar(__nccwpck_require__(7484));
+const storage_blob_1 = __nccwpck_require__(1012);
+const errors_1 = __nccwpck_require__(263);
+/**
+ * Class for tracking the upload state and displaying stats.
+ */
+class UploadProgress {
+    constructor(contentLength) {
+        this.contentLength = contentLength;
+        this.sentBytes = 0;
+        this.displayedComplete = false;
+        this.startTime = Date.now();
+    }
+    /**
+     * Sets the number of bytes sent
+     *
+     * @param sentBytes the number of bytes sent
+     */
+    setSentBytes(sentBytes) {
+        this.sentBytes = sentBytes;
+    }
+    /**
+     * Returns the total number of bytes transferred.
+     */
+    getTransferredBytes() {
+        return this.sentBytes;
+    }
+    /**
+     * Returns true if the upload is complete.
+     */
+    isDone() {
+        return this.getTransferredBytes() === this.contentLength;
+    }
+    /**
+     * Prints the current upload stats. Once the upload completes, this will print one
+     * last line and then stop.
+     */
+    display() {
+        if (this.displayedComplete) {
+            return;
+        }
+        const transferredBytes = this.sentBytes;
+        const percentage = (100 * (transferredBytes / this.contentLength)).toFixed(1);
+        const elapsedTime = Date.now() - this.startTime;
+        const uploadSpeed = (transferredBytes /
+            (1024 * 1024) /
+            (elapsedTime / 1000)).toFixed(1);
+        core.info(`Sent ${transferredBytes} of ${this.contentLength} (${percentage}%), ${uploadSpeed} MBs/sec`);
+        if (this.isDone()) {
+            this.displayedComplete = true;
+        }
+    }
+    /**
+     * Returns a function used to handle TransferProgressEvents.
+     */
+    onProgress() {
+        return (progress) => {
+            this.setSentBytes(progress.loadedBytes);
+        };
+    }
+    /**
+     * Starts the timer that displays the stats.
+     *
+     * @param delayInMs the delay between each write
+     */
+    startDisplayTimer(delayInMs = 1000) {
+        const displayCallback = () => {
+            this.display();
+            if (!this.isDone()) {
+                this.timeoutHandle = setTimeout(displayCallback, delayInMs);
+            }
+        };
+        this.timeoutHandle = setTimeout(displayCallback, delayInMs);
+    }
+    /**
+     * Stops the timer that displays the stats. As this typically indicates the upload
+     * is complete, this will display one last line, unless the last line has already
+     * been written.
+     */
+    stopDisplayTimer() {
+        if (this.timeoutHandle) {
+            clearTimeout(this.timeoutHandle);
+            this.timeoutHandle = undefined;
+        }
+        this.display();
+    }
+}
+exports.UploadProgress = UploadProgress;
+/**
+ * Uploads a cache archive directly to Azure Blob Storage using the Azure SDK.
+ * This function will display progress information to the console. Concurrency of the
+ * upload is determined by the calling functions.
+ *
+ * @param signedUploadURL
+ * @param archivePath
+ * @param options
+ * @returns
+ */
+function uploadCacheArchiveSDK(signedUploadURL, archivePath, options) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const blobClient = new storage_blob_1.BlobClient(signedUploadURL);
+        const blockBlobClient = blobClient.getBlockBlobClient();
+        const uploadProgress = new UploadProgress((_a = options === null || options === void 0 ? void 0 : options.archiveSizeBytes) !== null && _a !== void 0 ? _a : 0);
+        // Specify data transfer options
+        const uploadOptions = {
+            blockSize: options === null || options === void 0 ? void 0 : options.uploadChunkSize,
+            concurrency: options === null || options === void 0 ? void 0 : options.uploadConcurrency,
+            maxSingleShotSize: 128 * 1024 * 1024,
+            onProgress: uploadProgress.onProgress()
+        };
+        try {
+            uploadProgress.startDisplayTimer();
+            core.debug(`BlobClient: ${blobClient.name}:${blobClient.accountName}:${blobClient.containerName}`);
+            const response = yield blockBlobClient.uploadFile(archivePath, uploadOptions);
+            // TODO: better management of non-retryable errors
+            if (response._response.status >= 400) {
+                throw new errors_1.InvalidResponseError(`uploadCacheArchiveSDK: upload failed with status code ${response._response.status}`);
+            }
+            return response;
+        }
+        catch (error) {
+            core.warning(`uploadCacheArchiveSDK: internal error uploading cache archive: ${error.message}`);
+            throw error;
+        }
+        finally {
+            uploadProgress.stopDisplayTimer();
+        }
+    });
+}
+exports.uploadCacheArchiveSDK = uploadCacheArchiveSDK;
+//# sourceMappingURL=uploadUtils.js.map
+
+/***/ }),
+
 /***/ 8356:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -3557,11 +5005,16 @@ const core = __importStar(__nccwpck_require__(7484));
  * @param copy the original upload options
  */
 function getUploadOptions(copy) {
+    // Defaults if not overriden
     const result = {
+        useAzureSdk: false,
         uploadConcurrency: 4,
         uploadChunkSize: 32 * 1024 * 1024
     };
     if (copy) {
+        if (typeof copy.useAzureSdk === 'boolean') {
+            result.useAzureSdk = copy.useAzureSdk;
+        }
         if (typeof copy.uploadConcurrency === 'number') {
             result.uploadConcurrency = copy.uploadConcurrency;
         }
@@ -3569,6 +5022,18 @@ function getUploadOptions(copy) {
             result.uploadChunkSize = copy.uploadChunkSize;
         }
     }
+    /**
+     * Add env var overrides
+     */
+    // Cap the uploadConcurrency at 32
+    result.uploadConcurrency = !isNaN(Number(process.env['CACHE_UPLOAD_CONCURRENCY']))
+        ? Math.min(32, Number(process.env['CACHE_UPLOAD_CONCURRENCY']))
+        : result.uploadConcurrency;
+    // Cap the uploadChunkSize at 128MiB
+    result.uploadChunkSize = !isNaN(Number(process.env['CACHE_UPLOAD_CHUNK_SIZE']))
+        ? Math.min(128 * 1024 * 1024, Number(process.env['CACHE_UPLOAD_CHUNK_SIZE']) * 1024 * 1024)
+        : result.uploadChunkSize;
+    core.debug(`Use Azure SDK: ${result.useAzureSdk}`);
     core.debug(`Upload concurrency: ${result.uploadConcurrency}`);
     core.debug(`Upload chunk size: ${result.uploadChunkSize}`);
     return result;
@@ -8228,8 +9693,8 @@ class BaseRequestPolicy {
 
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-const SDK_VERSION = "12.26.0";
-const SERVICE_VERSION = "2025-01-05";
+const SDK_VERSION = "12.27.0";
+const SERVICE_VERSION = "2025-05-05";
 const BLOCK_BLOB_MAX_UPLOAD_BLOB_BYTES = 256 * 1024 * 1024; // 256MB
 const BLOCK_BLOB_MAX_STAGE_BLOCK_BYTES = 4000 * 1024 * 1024; // 4000MB
 const BLOCK_BLOB_MAX_BLOCKS = 50000;
@@ -8244,22 +9709,15 @@ const StorageOAuthScopes = "https://storage.azure.com/.default";
 const URLConstants = {
     Parameters: {
         FORCE_BROWSER_NO_CACHE: "_",
-        SIGNATURE: "sig",
         SNAPSHOT: "snapshot",
         VERSIONID: "versionid",
         TIMEOUT: "timeout",
     },
 };
 const HTTPURLConnection = {
-    HTTP_ACCEPTED: 202,
-    HTTP_CONFLICT: 409,
-    HTTP_NOT_FOUND: 404,
-    HTTP_PRECON_FAILED: 412,
-    HTTP_RANGE_NOT_SATISFIABLE: 416,
-};
+    HTTP_ACCEPTED: 202};
 const HeaderConstants = {
     AUTHORIZATION: "Authorization",
-    AUTHORIZATION_SCHEME: "Bearer",
     CONTENT_ENCODING: "Content-Encoding",
     CONTENT_ID: "Content-ID",
     CONTENT_LANGUAGE: "Content-Language",
@@ -8275,14 +9733,9 @@ const HeaderConstants = {
     IF_UNMODIFIED_SINCE: "if-unmodified-since",
     PREFIX_FOR_STORAGE: "x-ms-",
     RANGE: "Range",
-    USER_AGENT: "User-Agent",
-    X_MS_CLIENT_REQUEST_ID: "x-ms-client-request-id",
-    X_MS_COPY_SOURCE: "x-ms-copy-source",
     X_MS_DATE: "x-ms-date",
     X_MS_ERROR_CODE: "x-ms-error-code",
-    X_MS_VERSION: "x-ms-version",
-    X_MS_CopySourceErrorCode: "x-ms-copy-source-error-code",
-};
+    X_MS_VERSION: "x-ms-version"};
 const ETagNone = "";
 const ETagAny = "*";
 const SIZE_1_MB = 1 * 1024 * 1024;
@@ -8501,8 +9954,8 @@ const PathStylePorts = [
  *
  * We will apply strategy one, and call encodeURIComponent for these parameters like blobName. Because what customers passes in is a plain name instead of a URL.
  *
- * @see https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
- * @see https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-shares--directories--files--and-metadata
+ * @see https://learn.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
+ * @see https://learn.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-shares--directories--files--and-metadata
  *
  * @param url -
  */
@@ -8516,7 +9969,7 @@ function escapeURLPath(url) {
 }
 function getProxyUriFromDevConnString(connectionString) {
     // Development Connection String
-    // https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string#connect-to-the-emulator-account-using-the-well-known-account-name-and-key
+    // https://learn.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string#connect-to-the-emulator-account-using-the-well-known-account-name-and-key
     let proxyUri = "";
     if (connectionString.search("DevelopmentStorageProxyUri=") !== -1) {
         // CONNECTION_STRING=UseDevelopmentStorage=true;DevelopmentStorageProxyUri=http://myProxyUri
@@ -9557,7 +11010,7 @@ class StorageSharedKeyCredentialPolicy extends CredentialPolicy {
     }
     /**
      * Retrieve header value according to shared key sign rules.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/authenticate-with-shared-key
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/authenticate-with-shared-key
      *
      * @param request -
      * @param headerName -
@@ -9569,7 +11022,7 @@ class StorageSharedKeyCredentialPolicy extends CredentialPolicy {
         }
         // When using version 2015-02-21 or later, if Content-Length is zero, then
         // set the Content-Length part of the StringToSign to an empty string.
-        // https://docs.microsoft.com/en-us/rest/api/storageservices/authenticate-with-shared-key
+        // https://learn.microsoft.com/en-us/rest/api/storageservices/authenticate-with-shared-key
         if (headerName === HeaderConstants.CONTENT_LENGTH && value === "0") {
             return "";
         }
@@ -9990,7 +11443,7 @@ function storageSharedKeyCredentialPolicy(options) {
     }
     /**
      * Retrieve header value according to shared key sign rules.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/authenticate-with-shared-key
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/authenticate-with-shared-key
      */
     function getHeaderValueToSign(request, headerName) {
         const value = request.headers.get(headerName);
@@ -9999,7 +11452,7 @@ function storageSharedKeyCredentialPolicy(options) {
         }
         // When using version 2015-02-21 or later, if Content-Length is zero, then
         // set the Content-Length part of the StringToSign to an empty string.
-        // https://docs.microsoft.com/en-us/rest/api/storageservices/authenticate-with-shared-key
+        // https://learn.microsoft.com/en-us/rest/api/storageservices/authenticate-with-shared-key
         if (headerName === HeaderConstants.CONTENT_LENGTH && value === "0") {
             return "";
         }
@@ -18891,7 +20344,7 @@ const timeoutInSeconds = {
 const version = {
     parameterPath: "version",
     mapper: {
-        defaultValue: "2025-01-05",
+        defaultValue: "2025-05-05",
         isConstant: true,
         serializedName: "x-ms-version",
         type: {
@@ -23523,7 +24976,7 @@ let StorageClient$1 = class StorageClient extends coreHttpCompat__namespace.Exte
         const defaults = {
             requestContentType: "application/json; charset=utf-8",
         };
-        const packageDetails = `azsdk-js-azure-storage-blob/12.26.0`;
+        const packageDetails = `azsdk-js-azure-storage-blob/12.27.0`;
         const userAgentPrefix = options.userAgentOptions && options.userAgentOptions.userAgentPrefix
             ? `${options.userAgentOptions.userAgentPrefix} ${packageDetails}`
             : `${packageDetails}`;
@@ -23534,7 +24987,7 @@ let StorageClient$1 = class StorageClient extends coreHttpCompat__namespace.Exte
         // Parameter assignments
         this.url = url;
         // Assigning values to Constant parameters
-        this.version = options.version || "2025-01-05";
+        this.version = options.version || "2025-05-05";
         this.service = new ServiceImpl(this);
         this.container = new ContainerImpl(this);
         this.blob = new BlobImpl(this);
@@ -23966,7 +25419,7 @@ class ContainerSASPermissions {
      * order accepted by the service.
      *
      * The order of the characters should be as specified here to ensure correctness.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
      *
      */
     toString() {
@@ -24020,7 +25473,7 @@ class ContainerSASPermissions {
  * ONLY AVAILABLE IN NODE.JS RUNTIME.
  *
  * UserDelegationKeyCredential is only used for generation of user delegation SAS.
- * @see https://docs.microsoft.com/en-us/rest/api/storageservices/create-user-delegation-sas
+ * @see https://learn.microsoft.com/en-us/rest/api/storageservices/create-user-delegation-sas
  */
 class UserDelegationKeyCredential {
     /**
@@ -24317,7 +25770,7 @@ function generateBlobSASQueryParametersInternal(blobSASSignatureValues, sharedKe
     }
     // Version 2019-12-12 adds support for the blob tags permission.
     // Version 2018-11-09 adds support for the signed resource and signed blob snapshot time fields.
-    // https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas#constructing-the-signature-string
+    // https://learn.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas#constructing-the-signature-string
     if (version >= "2018-11-09") {
         if (sharedKeyCredential !== undefined) {
             return generateBlobSASQueryParameters20181109(blobSASSignatureValues, sharedKeyCredential);
@@ -24904,9 +26357,9 @@ class BlobLeaseClient {
      * Establishes and manages a lock on a container for delete operations, or on a blob
      * for write and delete operations.
      * The lock duration can be 15 to 60 seconds, or can be infinite.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/lease-container
      * and
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/lease-blob
      *
      * @param duration - Must be between 15 to 60 seconds, or infinite (-1)
      * @param options - option to configure lease management operations.
@@ -24933,9 +26386,9 @@ class BlobLeaseClient {
     }
     /**
      * To change the ID of the lease.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/lease-container
      * and
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/lease-blob
      *
      * @param proposedLeaseId - the proposed new lease Id.
      * @param options - option to configure lease management operations.
@@ -24963,9 +26416,9 @@ class BlobLeaseClient {
     /**
      * To free the lease if it is no longer needed so that another client may
      * immediately acquire a lease against the container or the blob.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/lease-container
      * and
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/lease-blob
      *
      * @param options - option to configure lease management operations.
      * @returns Response data for release lease operation.
@@ -24989,9 +26442,9 @@ class BlobLeaseClient {
     }
     /**
      * To renew the lease.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/lease-container
      * and
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/lease-blob
      *
      * @param options - Optional option to configure lease management operations.
      * @returns Response data for renew lease operation.
@@ -25016,9 +26469,9 @@ class BlobLeaseClient {
     /**
      * To end the lease but ensure that another client cannot acquire a new lease
      * until the current lease period has expired.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/lease-container
      * and
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/lease-blob
      *
      * @param breakPeriod - Break period
      * @param options - Optional options to configure lease management operations.
@@ -26628,7 +28081,7 @@ class BlobQueryResponse {
 // Licensed under the MIT License.
 /**
  * Represents the access tier on a blob.
- * For detailed information about block blob level tiering see {@link https://docs.microsoft.com/azure/storage/blobs/storage-blob-storage-tiers|Hot, cool and archive storage tiers.}
+ * For detailed information about block blob level tiering see {@link https://learn.microsoft.com/azure/storage/blobs/storage-blob-storage-tiers|Hot, cool and archive storage tiers.}
  */
 exports.BlockBlobTier = void 0;
 (function (BlockBlobTier) {
@@ -26652,7 +28105,7 @@ exports.BlockBlobTier = void 0;
 })(exports.BlockBlobTier || (exports.BlockBlobTier = {}));
 /**
  * Specifies the page blob tier to set the blob to. This is only applicable to page blobs on premium storage accounts.
- * Please see {@link https://docs.microsoft.com/azure/storage/storage-premium-storage#scalability-and-performance-targets|here}
+ * Please see {@link https://learn.microsoft.com/azure/storage/storage-premium-storage#scalability-and-performance-targets|here}
  * for detailed information on the corresponding IOPS and throughput per PageBlobTier.
  */
 exports.PremiumPageBlobTier = void 0;
@@ -27695,7 +29148,7 @@ class BlobClient extends StorageClient {
      * * In Node.js, data returns in a Readable stream readableStreamBody
      * * In browsers, data returns in a promise blobBody
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/get-blob
      *
      * @param offset - From which position of the blob to download, greater than or equal to 0
      * @param count - How much data to be downloaded, greater than 0. Will download to the end when undefined
@@ -27711,16 +29164,16 @@ class BlobClient extends StorageClient {
      * console.log("Downloaded blob content:", downloaded.toString());
      *
      * async function streamToBuffer(readableStream) {
-     * return new Promise((resolve, reject) => {
-     * const chunks = [];
-     * readableStream.on("data", (data) => {
-     * chunks.push(data instanceof Buffer ? data : Buffer.from(data));
-     * });
-     * readableStream.on("end", () => {
-     * resolve(Buffer.concat(chunks));
-     * });
-     * readableStream.on("error", reject);
-     * });
+     *   return new Promise((resolve, reject) => {
+     *     const chunks = [];
+     *     readableStream.on("data", (data) => {
+     *       chunks.push(typeof data === "string" ? Buffer.from(data) : data);
+     *     });
+     *     readableStream.on("end", () => {
+     *       resolve(Buffer.concat(chunks));
+     *     });
+     *     readableStream.on("error", reject);
+     *   });
      * }
      * ```
      *
@@ -27859,7 +29312,7 @@ class BlobClient extends StorageClient {
     /**
      * Returns all user-defined metadata, standard HTTP properties, and system properties
      * for the blob. It does not return the content of the blob.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob-properties
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/get-blob-properties
      *
      * WARNING: The `metadata` object returned in the response will have its keys in lowercase, even if
      * they originally contained uppercase characters. This differs from the metadata keys returned by
@@ -27888,7 +29341,7 @@ class BlobClient extends StorageClient {
      * during garbage collection. Note that in order to delete a blob, you must delete
      * all of its snapshots. You can delete both at the same time with the Delete
      * Blob operation.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/delete-blob
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/delete-blob
      *
      * @param options - Optional options to Blob Delete operation.
      */
@@ -27910,7 +29363,7 @@ class BlobClient extends StorageClient {
      * during garbage collection. Note that in order to delete a blob, you must delete
      * all of its snapshots. You can delete both at the same time with the Delete
      * Blob operation.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/delete-blob
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/delete-blob
      *
      * @param options - Optional options to Blob Delete operation.
      */
@@ -27933,7 +29386,7 @@ class BlobClient extends StorageClient {
      * Restores the contents and metadata of soft deleted blob and any associated
      * soft deleted snapshots. Undelete Blob is supported only on version 2017-07-29
      * or later.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/undelete-blob
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/undelete-blob
      *
      * @param options - Optional options to Blob Undelete operation.
      */
@@ -27950,7 +29403,7 @@ class BlobClient extends StorageClient {
      *
      * If no value provided, or no value provided for the specified blob HTTP headers,
      * these blob HTTP headers without a value will be cleared.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-properties
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/set-blob-properties
      *
      * @param blobHTTPHeaders - If no value provided, or no value provided for
      *                                                   the specified blob HTTP headers, these blob HTTP
@@ -27980,7 +29433,7 @@ class BlobClient extends StorageClient {
      *
      * If no option provided, or no metadata defined in the parameter, the blob
      * metadata will be removed.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-metadata
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/set-blob-metadata
      *
      * @param metadata - Replace existing metadata with this value.
      *                               If no value provided the existing metadata will be removed.
@@ -28052,7 +29505,7 @@ class BlobClient extends StorageClient {
     }
     /**
      * Creates a read-only snapshot of a blob.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/snapshot-blob
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/snapshot-blob
      *
      * @param options - Optional options to the Blob Create Snapshot operation.
      */
@@ -28086,7 +29539,7 @@ class BlobClient extends StorageClient {
      * an Azure file in any Azure storage account.
      * Only storage accounts created on or after June 7th, 2012 allow the Copy Blob
      * operation to copy from another storage account.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/copy-blob
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/copy-blob
      *
      * Example using automatic polling:
      *
@@ -28166,7 +29619,7 @@ class BlobClient extends StorageClient {
     /**
      * Aborts a pending asynchronous Copy Blob operation, and leaves a destination blob with zero
      * length and full metadata. Version 2012-02-12 and newer.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/abort-copy-blob
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/abort-copy-blob
      *
      * @param copyId - Id of the Copy From URL operation.
      * @param options - Optional options to the Blob Abort Copy From URL operation.
@@ -28183,7 +29636,7 @@ class BlobClient extends StorageClient {
     /**
      * The synchronous Copy From URL operation copies a blob or an internet resource to a new blob. It will not
      * return a response until the copy is complete.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/copy-blob-from-url
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/copy-blob-from-url
      *
      * @param copySource - The source URL to copy from, Shared Access Signature(SAS) maybe needed for authentication
      * @param options -
@@ -28223,7 +29676,7 @@ class BlobClient extends StorageClient {
      * storage only). A premium page blob's tier determines the allowed size, IOPS,
      * and bandwidth of the blob. A block blob's tier determines Hot/Cool/Archive
      * storage type. This operation does not update the blob's ETag.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-tier
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/set-blob-tier
      *
      * @param tier - The tier to be set on the blob. Valid values are Hot, Cool, or Archive.
      * @param options - Optional options to the Blob Set Tier operation.
@@ -28408,7 +29861,7 @@ class BlobClient extends StorageClient {
      * an Azure file in any Azure storage account.
      * Only storage accounts created on or after June 7th, 2012 allow the Copy Blob
      * operation to copy from another storage account.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/copy-blob
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/copy-blob
      *
      * @param copySource - url to the source Azure Blob/File.
      * @param options - Optional options to the Blob Start Copy From URL operation.
@@ -28447,7 +29900,7 @@ class BlobClient extends StorageClient {
      * Generates a Blob Service Shared Access Signature (SAS) URI based on the client properties
      * and parameters passed in. The SAS is signed by the shared key credential of the client.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
      *
      * @param options - Optional parameters.
      * @returns The SAS URI consisting of the URI to the resource represented by this client, followed by the generated SAS token.
@@ -28467,7 +29920,7 @@ class BlobClient extends StorageClient {
      * Generates string to sign for a Blob Service Shared Access Signature (SAS) URI based on
      * the client properties and parameters passed in. The SAS is signed by the shared key credential of the client.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
      *
      * @param options - Optional parameters.
      * @returns The SAS URI consisting of the URI to the resource represented by this client, followed by the generated SAS token.
@@ -28484,7 +29937,7 @@ class BlobClient extends StorageClient {
      * Generates a Blob Service Shared Access Signature (SAS) URI based on
      * the client properties and parameters passed in. The SAS is signed by the input user delegation key.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
      *
      * @param options - Optional parameters.
      * @param userDelegationKey -  Return value of `blobServiceClient.getUserDelegationKey()`
@@ -28502,7 +29955,7 @@ class BlobClient extends StorageClient {
      * Generates string to sign for a Blob Service Shared Access Signature (SAS) URI based on
      * the client properties and parameters passed in. The SAS is signed by the input user delegation key.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
      *
      * @param options - Optional parameters.
      * @param userDelegationKey -  Return value of `blobServiceClient.getUserDelegationKey()`
@@ -28554,7 +30007,7 @@ class BlobClient extends StorageClient {
      * for the specified account.
      * The Get Account Information operation is available on service versions beginning
      * with version 2018-03-28.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/get-account-information
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/get-account-information
      *
      * @param options - Options to the Service Get Account Info operation.
      * @returns Response data for the Service Get Account Info operation.
@@ -28652,7 +30105,7 @@ class AppendBlobClient extends BlobClient {
     }
     /**
      * Creates a 0-length append blob. Call AppendBlock to append data to an append blob.
-     * @see https://docs.microsoft.com/rest/api/storageservices/put-blob
+     * @see https://learn.microsoft.com/rest/api/storageservices/put-blob
      *
      * @param options - Options to the Append Block Create operation.
      *
@@ -28688,7 +30141,7 @@ class AppendBlobClient extends BlobClient {
     /**
      * Creates a 0-length append blob. Call AppendBlock to append data to an append blob.
      * If the blob with the same name already exists, the content of the existing blob will remain unchanged.
-     * @see https://docs.microsoft.com/rest/api/storageservices/put-blob
+     * @see https://learn.microsoft.com/rest/api/storageservices/put-blob
      *
      * @param options -
      */
@@ -28728,7 +30181,7 @@ class AppendBlobClient extends BlobClient {
     }
     /**
      * Commits a new block of data to the end of the existing append blob.
-     * @see https://docs.microsoft.com/rest/api/storageservices/append-block
+     * @see https://learn.microsoft.com/rest/api/storageservices/append-block
      *
      * @param body - Data to be appended.
      * @param contentLength - Length of the body in bytes.
@@ -28774,7 +30227,7 @@ class AppendBlobClient extends BlobClient {
     /**
      * The Append Block operation commits a new block of data to the end of an existing append blob
      * where the contents are read from a source url.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/append-block-from-url
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/append-block-from-url
      *
      * @param sourceURL -
      *                 The url to the blob that will be the source of the copy. A source blob in the same storage account can
@@ -28916,7 +30369,7 @@ class BlockBlobClient extends BlobClient {
      *   return new Promise((resolve, reject) => {
      *     const chunks = [];
      *     readableStream.on("data", (data) => {
-     *       chunks.push(data instanceof Buffer ? data : Buffer.from(data));
+     *       chunks.push(typeof data === "string" ? Buffer.from(data) : data);
      *     });
      *     readableStream.on("end", () => {
      *       resolve(Buffer.concat(chunks));
@@ -28967,7 +30420,7 @@ class BlockBlobClient extends BlobClient {
      * {@link uploadStream} or {@link uploadBrowserData} for better performance
      * with concurrency uploading.
      *
-     * @see https://docs.microsoft.com/rest/api/storageservices/put-blob
+     * @see https://learn.microsoft.com/rest/api/storageservices/put-blob
      *
      * @param body - Blob, string, ArrayBuffer, ArrayBufferView or a function
      *                               which returns a new Readable stream whose offset is from data source beginning.
@@ -29043,7 +30496,7 @@ class BlockBlobClient extends BlobClient {
     /**
      * Uploads the specified block to the block blob's "staging area" to be later
      * committed by a call to commitBlockList.
-     * @see https://docs.microsoft.com/rest/api/storageservices/put-block
+     * @see https://learn.microsoft.com/rest/api/storageservices/put-block
      *
      * @param blockId - A 64-byte value that is base64-encoded
      * @param body - Data to upload to the staging area.
@@ -29072,7 +30525,7 @@ class BlockBlobClient extends BlobClient {
      * The Stage Block From URL operation creates a new block to be committed as part
      * of a blob where the contents are read from a URL.
      * This API is available starting in version 2018-03-28.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/put-block-from-url
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/put-block-from-url
      *
      * @param blockId - A 64-byte value that is base64-encoded
      * @param sourceURL - Specifies the URL of the blob. The value
@@ -29111,7 +30564,7 @@ class BlockBlobClient extends BlobClient {
      * to the server in a prior {@link stageBlock} operation. You can call {@link commitBlockList} to
      * update a blob by uploading only those blocks that have changed, then committing the new and existing
      * blocks together. Any blocks not specified in the block list and permanently deleted.
-     * @see https://docs.microsoft.com/rest/api/storageservices/put-block-list
+     * @see https://learn.microsoft.com/rest/api/storageservices/put-block-list
      *
      * @param blocks -  Array of 64-byte value that is base64-encoded
      * @param options - Options to the Block Blob Commit Block List operation.
@@ -29142,7 +30595,7 @@ class BlockBlobClient extends BlobClient {
     /**
      * Returns the list of blocks that have been uploaded as part of a block blob
      * using the specified block list filter.
-     * @see https://docs.microsoft.com/rest/api/storageservices/get-block-list
+     * @see https://learn.microsoft.com/rest/api/storageservices/get-block-list
      *
      * @param listType - Specifies whether to return the list of committed blocks,
      *                                        the list of uncommitted blocks, or both lists together.
@@ -29476,7 +30929,7 @@ class PageBlobClient extends BlobClient {
     /**
      * Creates a page blob of the specified length. Call uploadPages to upload data
      * data to a page blob.
-     * @see https://docs.microsoft.com/rest/api/storageservices/put-blob
+     * @see https://learn.microsoft.com/rest/api/storageservices/put-blob
      *
      * @param size - size of the page blob.
      * @param options - Options to the Page Blob Create operation.
@@ -29509,7 +30962,7 @@ class PageBlobClient extends BlobClient {
      * Creates a page blob of the specified length. Call uploadPages to upload data
      * data to a page blob. If the blob with the same name already exists, the content
      * of the existing blob will remain unchanged.
-     * @see https://docs.microsoft.com/rest/api/storageservices/put-blob
+     * @see https://learn.microsoft.com/rest/api/storageservices/put-blob
      *
      * @param size - size of the page blob.
      * @param options -
@@ -29532,7 +30985,7 @@ class PageBlobClient extends BlobClient {
     }
     /**
      * Writes 1 or more pages to the page blob. The start and end offsets must be a multiple of 512.
-     * @see https://docs.microsoft.com/rest/api/storageservices/put-page
+     * @see https://learn.microsoft.com/rest/api/storageservices/put-page
      *
      * @param body - Data to upload
      * @param offset - Offset of destination page blob
@@ -29565,7 +31018,7 @@ class PageBlobClient extends BlobClient {
     /**
      * The Upload Pages operation writes a range of pages to a page blob where the
      * contents are read from a URL.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/put-page-from-url
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/put-page-from-url
      *
      * @param sourceURL - Specify a URL to the copy source, Shared Access Signature(SAS) maybe needed for authentication
      * @param sourceOffset - The source offset to copy from. Pass 0 to copy from the beginning of source page blob
@@ -29601,7 +31054,7 @@ class PageBlobClient extends BlobClient {
     }
     /**
      * Frees the specified pages from the page blob.
-     * @see https://docs.microsoft.com/rest/api/storageservices/put-page
+     * @see https://learn.microsoft.com/rest/api/storageservices/put-page
      *
      * @param offset - Starting byte position of the pages to clear.
      * @param count - Number of bytes to clear.
@@ -29626,7 +31079,7 @@ class PageBlobClient extends BlobClient {
     }
     /**
      * Returns the list of valid page ranges for a page blob or snapshot of a page blob.
-     * @see https://docs.microsoft.com/rest/api/storageservices/get-page-ranges
+     * @see https://learn.microsoft.com/rest/api/storageservices/get-page-ranges
      *
      * @param offset - Starting byte position of the page ranges.
      * @param count - Number of bytes to get.
@@ -29652,7 +31105,7 @@ class PageBlobClient extends BlobClient {
      * specified Marker. Use an empty Marker to start enumeration from the beginning.
      * After getting a segment, process it, and then call getPageRangesSegment again
      * (passing the the previously-returned Marker) to get the next segment.
-     * @see https://docs.microsoft.com/rest/api/storageservices/get-page-ranges
+     * @see https://learn.microsoft.com/rest/api/storageservices/get-page-ranges
      *
      * @param offset - Starting byte position of the page ranges.
      * @param count - Number of bytes to get.
@@ -29729,7 +31182,7 @@ class PageBlobClient extends BlobClient {
     }
     /**
      * Returns an async iterable iterator to list of page ranges for a page blob.
-     * @see https://docs.microsoft.com/rest/api/storageservices/get-page-ranges
+     * @see https://learn.microsoft.com/rest/api/storageservices/get-page-ranges
      *
      *  .byPage() returns an async iterable iterator to list of page ranges for a page blob.
      *
@@ -29825,7 +31278,7 @@ class PageBlobClient extends BlobClient {
     }
     /**
      * Gets the collection of page ranges that differ between a specified snapshot and this page blob.
-     * @see https://docs.microsoft.com/rest/api/storageservices/get-page-ranges
+     * @see https://learn.microsoft.com/rest/api/storageservices/get-page-ranges
      *
      * @param offset - Starting byte position of the page blob
      * @param count - Number of bytes to get ranges diff.
@@ -29854,7 +31307,7 @@ class PageBlobClient extends BlobClient {
      * Use an empty Marker to start enumeration from the beginning.
      * After getting a segment, process it, and then call getPageRangesDiffSegment again
      * (passing the the previously-returned Marker) to get the next segment.
-     * @see https://docs.microsoft.com/rest/api/storageservices/get-page-ranges
+     * @see https://learn.microsoft.com/rest/api/storageservices/get-page-ranges
      *
      * @param offset - Starting byte position of the page ranges.
      * @param count - Number of bytes to get.
@@ -29939,7 +31392,7 @@ class PageBlobClient extends BlobClient {
     }
     /**
      * Returns an async iterable iterator to list of page ranges that differ between a specified snapshot and this page blob.
-     * @see https://docs.microsoft.com/rest/api/storageservices/get-page-ranges
+     * @see https://learn.microsoft.com/rest/api/storageservices/get-page-ranges
      *
      *  .byPage() returns an async iterable iterator to list of page ranges that differ between a specified snapshot and this page blob.
      *
@@ -30036,7 +31489,7 @@ class PageBlobClient extends BlobClient {
     }
     /**
      * Gets the collection of page ranges that differ between a specified snapshot and this page blob for managed disks.
-     * @see https://docs.microsoft.com/rest/api/storageservices/get-page-ranges
+     * @see https://learn.microsoft.com/rest/api/storageservices/get-page-ranges
      *
      * @param offset - Starting byte position of the page blob
      * @param count - Number of bytes to get ranges diff.
@@ -30061,7 +31514,7 @@ class PageBlobClient extends BlobClient {
     }
     /**
      * Resizes the page blob to the specified size (which must be a multiple of 512).
-     * @see https://docs.microsoft.com/rest/api/storageservices/set-blob-properties
+     * @see https://learn.microsoft.com/rest/api/storageservices/set-blob-properties
      *
      * @param size - Target size
      * @param options - Options to the Page Blob Resize operation.
@@ -30082,7 +31535,7 @@ class PageBlobClient extends BlobClient {
     }
     /**
      * Sets a page blob's sequence number.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-properties
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/set-blob-properties
      *
      * @param sequenceNumberAction - Indicates how the service should modify the blob's sequence number.
      * @param sequenceNumber - Required if sequenceNumberAction is max or update
@@ -30107,8 +31560,8 @@ class PageBlobClient extends BlobClient {
      * The snapshot is copied such that only the differential changes between the previously
      * copied snapshot are transferred to the destination.
      * The copied snapshots are complete copies of the original snapshot and can be read or copied from as usual.
-     * @see https://docs.microsoft.com/rest/api/storageservices/incremental-copy-blob
-     * @see https://docs.microsoft.com/en-us/azure/virtual-machines/windows/incremental-snapshots
+     * @see https://learn.microsoft.com/rest/api/storageservices/incremental-copy-blob
+     * @see https://learn.microsoft.com/en-us/azure/virtual-machines/windows/incremental-snapshots
      *
      * @param copySource - Specifies the name of the source page blob snapshot. For example,
      *                            https://myaccount.blob.core.windows.net/mycontainer/myblob?snapshot=<DateTime>
@@ -30164,7 +31617,7 @@ class BatchResponseParser {
         this.perResponsePrefix = `--${this.responseBatchBoundary}${HTTP_LINE_ENDING}`;
         this.batchResponseEnding = `--${this.responseBatchBoundary}--`;
     }
-    // For example of response, please refer to https://docs.microsoft.com/en-us/rest/api/storageservices/blob-batch#response
+    // For example of response, please refer to https://learn.microsoft.com/en-us/rest/api/storageservices/blob-batch#response
     async parseBatchResponse() {
         // When logic reach here, suppose batch request has already succeeded with 202, so we can further parse
         // sub request's response.
@@ -30459,7 +31912,7 @@ class BlobBatch {
 }
 /**
  * Inner batch request class which is responsible for assembling and serializing sub requests.
- * See https://docs.microsoft.com/en-us/rest/api/storageservices/blob-batch#request-body for how requests are assembled.
+ * See https://learn.microsoft.com/en-us/rest/api/storageservices/blob-batch#request-body for how requests are assembled.
  */
 class InnerBatchRequest {
     constructor() {
@@ -30594,7 +32047,7 @@ function batchHeaderFilterPolicy() {
 /**
  * A BlobBatchClient allows you to make batched requests to the Azure Storage Blob service.
  *
- * @see https://docs.microsoft.com/en-us/rest/api/storageservices/blob-batch
+ * @see https://learn.microsoft.com/en-us/rest/api/storageservices/blob-batch
  */
 class BlobBatchClient {
     constructor(url, credentialOrPipeline, 
@@ -30689,7 +32142,7 @@ class BlobBatchClient {
      * console.log(batchResp.subResponsesSucceededCount);
      * ```
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/blob-batch
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/blob-batch
      *
      * @param batchRequest - A set of Delete or SetTier operations.
      * @param options -
@@ -30796,7 +32249,7 @@ class ContainerClient extends StorageClient {
     /**
      * Creates a new container under the specified account. If the container with
      * the same name already exists, the operation fails.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/create-container
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/create-container
      * Naming rules: @see https://learn.microsoft.com/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
      *
      * @param options - Options to Container Create operation.
@@ -30818,7 +32271,7 @@ class ContainerClient extends StorageClient {
     /**
      * Creates a new container under the specified account. If the container with
      * the same name already exists, it is not changed.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/create-container
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/create-container
      * Naming rules: @see https://learn.microsoft.com/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
      *
      * @param options -
@@ -30912,7 +32365,7 @@ class ContainerClient extends StorageClient {
     /**
      * Returns all user-defined metadata and system properties for the specified
      * container. The data returned does not include the container's list of blobs.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/get-container-properties
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/get-container-properties
      *
      * WARNING: The `metadata` object returned in the response will have its keys in lowercase, even if
      * they originally contained uppercase characters. This differs from the metadata keys returned by
@@ -30932,7 +32385,7 @@ class ContainerClient extends StorageClient {
     /**
      * Marks the specified container for deletion. The container and any blobs
      * contained within it are later deleted during garbage collection.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/delete-container
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/delete-container
      *
      * @param options - Options to Container Delete operation.
      */
@@ -30952,7 +32405,7 @@ class ContainerClient extends StorageClient {
     /**
      * Marks the specified container for deletion if it exists. The container and any blobs
      * contained within it are later deleted during garbage collection.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/delete-container
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/delete-container
      *
      * @param options - Options to Container Delete operation.
      */
@@ -30977,7 +32430,7 @@ class ContainerClient extends StorageClient {
      * If no option provided, or no metadata defined in the parameter, the container
      * metadata will be removed.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/set-container-metadata
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/set-container-metadata
      *
      * @param metadata - Replace existing metadata with this value.
      *                            If no value provided the existing metadata will be removed.
@@ -31007,7 +32460,7 @@ class ContainerClient extends StorageClient {
      * WARNING: JavaScript Date will potentially lose precision when parsing startsOn and expiresOn strings.
      * For example, new Date("2018-12-31T03:44:23.8827891Z").toISOString() will get "2018-12-31T03:44:23.882Z".
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/get-container-acl
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/get-container-acl
      *
      * @param options - Options to Container Get Access Policy operation.
      */
@@ -31065,7 +32518,7 @@ class ContainerClient extends StorageClient {
      * When you establish a stored access policy on a container, it may take up to 30 seconds to take effect.
      * During this interval, a shared access signature that is associated with the stored access policy will
      * fail with status code 403 (Forbidden), until the access policy becomes active.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/set-container-acl
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/set-container-acl
      *
      * @param access - The level of public access to data in the container.
      * @param containerAcl - Array of elements each having a unique Id and details of the access policy.
@@ -31120,7 +32573,7 @@ class ContainerClient extends StorageClient {
      * {@link BlockBlobClient.uploadStream} or {@link BlockBlobClient.uploadBrowserData} for better
      * performance with concurrency uploading.
      *
-     * @see https://docs.microsoft.com/rest/api/storageservices/put-blob
+     * @see https://learn.microsoft.com/rest/api/storageservices/put-blob
      *
      * @param blobName - Name of the block blob to create or update.
      * @param body - Blob, string, ArrayBuffer, ArrayBufferView or a function
@@ -31145,7 +32598,7 @@ class ContainerClient extends StorageClient {
      * during garbage collection. Note that in order to delete a blob, you must delete
      * all of its snapshots. You can delete both at the same time with the Delete
      * Blob operation.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/delete-blob
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/delete-blob
      *
      * @param blobName -
      * @param options - Options to Blob Delete operation.
@@ -31165,7 +32618,7 @@ class ContainerClient extends StorageClient {
      * specified Marker. Use an empty Marker to start enumeration from the beginning.
      * After getting a segment, process it, and then call listBlobsFlatSegment again
      * (passing the the previously-returned Marker) to get the next segment.
-     * @see https://docs.microsoft.com/rest/api/storageservices/list-blobs
+     * @see https://learn.microsoft.com/rest/api/storageservices/list-blobs
      *
      * @param marker - A string value that identifies the portion of the list to be returned with the next list operation.
      * @param options - Options to Container List Blob Flat Segment operation.
@@ -31185,7 +32638,7 @@ class ContainerClient extends StorageClient {
      * the specified Marker. Use an empty Marker to start enumeration from the
      * beginning. After getting a segment, process it, and then call listBlobsHierarchicalSegment
      * again (passing the the previously-returned Marker) to get the next segment.
-     * @see https://docs.microsoft.com/rest/api/storageservices/list-blobs
+     * @see https://learn.microsoft.com/rest/api/storageservices/list-blobs
      *
      * @param delimiter - The character or string used to define the virtual hierarchy
      * @param marker - A string value that identifies the portion of the list to be returned with the next list operation.
@@ -31787,7 +33240,7 @@ class ContainerClient extends StorageClient {
      * for the specified account.
      * The Get Account Information operation is available on service versions beginning
      * with version 2018-03-28.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/get-account-information
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/get-account-information
      *
      * @param options - Options to the Service Get Account Info operation.
      * @returns Response data for the Service Get Account Info operation.
@@ -31843,7 +33296,7 @@ class ContainerClient extends StorageClient {
      * Generates a Blob Container Service Shared Access Signature (SAS) URI based on the client properties
      * and parameters passed in. The SAS is signed by the shared key credential of the client.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
      *
      * @param options - Optional parameters.
      * @returns The SAS URI consisting of the URI to the resource represented by this client, followed by the generated SAS token.
@@ -31863,7 +33316,7 @@ class ContainerClient extends StorageClient {
      * Generates string to sign for a Blob Container Service Shared Access Signature (SAS) URI
      * based on the client properties and parameters passed in. The SAS is signed by the shared key credential of the client.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
      *
      * @param options - Optional parameters.
      * @returns The SAS URI consisting of the URI to the resource represented by this client, followed by the generated SAS token.
@@ -31879,7 +33332,7 @@ class ContainerClient extends StorageClient {
      * Generates a Blob Container Service Shared Access Signature (SAS) URI based on the client properties
      * and parameters passed in. The SAS is signed by the input user delegation key.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
      *
      * @param options - Optional parameters.
      * @param userDelegationKey -  Return value of `blobServiceClient.getUserDelegationKey()`
@@ -31895,7 +33348,7 @@ class ContainerClient extends StorageClient {
      * Generates string to sign for a Blob Container Service Shared Access Signature (SAS) URI
      * based on the client properties and parameters passed in. The SAS is signed by the input user delegation key.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
      *
      * @param options - Optional parameters.
      * @param userDelegationKey -  Return value of `blobServiceClient.getUserDelegationKey()`
@@ -31907,7 +33360,7 @@ class ContainerClient extends StorageClient {
     /**
      * Creates a BlobBatchClient object to conduct batch operations.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/blob-batch
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/blob-batch
      *
      * @returns A new BlobBatchClient object for this container.
      */
@@ -32092,12 +33545,12 @@ class AccountSASPermissions {
      * Using this method will guarantee the resource types are in
      * an order accepted by the service.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-an-account-sas
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/constructing-an-account-sas
      *
      */
     toString() {
         // The order of the characters should be as specified here to ensure correctness:
-        // https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-an-account-sas
+        // https://learn.microsoft.com/en-us/rest/api/storageservices/constructing-an-account-sas
         // Use a string array instead of string concatenating += operator for performance
         const permissions = [];
         if (this.read) {
@@ -32197,7 +33650,7 @@ class AccountSASResourceTypes {
     /**
      * Converts the given resource types to a string.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-an-account-sas
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/constructing-an-account-sas
      *
      */
     toString() {
@@ -32303,7 +33756,7 @@ class AccountSASServices {
  * Generates a {@link SASQueryParameters} object which contains all SAS query parameters needed to make an actual
  * REST request.
  *
- * @see https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-an-account-sas
+ * @see https://learn.microsoft.com/en-us/rest/api/storageservices/constructing-an-account-sas
  *
  * @param accountSASSignatureValues -
  * @param sharedKeyCredential -
@@ -32468,7 +33921,7 @@ class BlobServiceClient extends StorageClient {
         return new ContainerClient(appendToURLPath(this.url, encodeURIComponent(containerName)), this.pipeline);
     }
     /**
-     * Create a Blob container. @see https://docs.microsoft.com/en-us/rest/api/storageservices/create-container
+     * Create a Blob container. @see https://learn.microsoft.com/en-us/rest/api/storageservices/create-container
      *
      * @param containerName - Name of the container to create.
      * @param options - Options to configure Container Create operation.
@@ -32541,7 +33994,7 @@ class BlobServiceClient extends StorageClient {
     /**
      * Gets the properties of a storage account’s Blob service, including properties
      * for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob-service-properties
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/get-blob-service-properties
      *
      * @param options - Options to the Service Get Properties operation.
      * @returns Response data for the Service Get Properties operation.
@@ -32557,7 +34010,7 @@ class BlobServiceClient extends StorageClient {
     /**
      * Sets properties for a storage account’s Blob service endpoint, including properties
      * for Storage Analytics, CORS (Cross-Origin Resource Sharing) rules and soft delete settings.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-service-properties
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/set-blob-service-properties
      *
      * @param properties -
      * @param options - Options to the Service Set Properties operation.
@@ -32575,7 +34028,7 @@ class BlobServiceClient extends StorageClient {
      * Retrieves statistics related to replication for the Blob service. It is only
      * available on the secondary location endpoint when read-access geo-redundant
      * replication is enabled for the storage account.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob-service-stats
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/get-blob-service-stats
      *
      * @param options - Options to the Service Get Statistics operation.
      * @returns Response data for the Service Get Statistics operation.
@@ -32593,7 +34046,7 @@ class BlobServiceClient extends StorageClient {
      * for the specified account.
      * The Get Account Information operation is available on service versions beginning
      * with version 2018-03-28.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/get-account-information
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/get-account-information
      *
      * @param options - Options to the Service Get Account Info operation.
      * @returns Response data for the Service Get Account Info operation.
@@ -32608,7 +34061,7 @@ class BlobServiceClient extends StorageClient {
     }
     /**
      * Returns a list of the containers under the specified account.
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/list-containers2
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/list-containers2
      *
      * @param marker - A string value that identifies the portion of
      *                        the list of containers to be returned with the next listing operation. The
@@ -32728,7 +34181,7 @@ class BlobServiceClient extends StorageClient {
      *
      * .byPage() returns an async iterable iterator to list the blobs in pages.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob-service-properties
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/get-blob-service-properties
      *
      * Example using `for await` syntax:
      *
@@ -32996,7 +34449,7 @@ class BlobServiceClient extends StorageClient {
      * Retrieves a user delegation key for the Blob service. This is only a valid operation when using
      * bearer token authentication.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/get-user-delegation-key
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/get-user-delegation-key
      *
      * @param startsOn -      The start time for the user delegation SAS. Must be within 7 days of the current time
      * @param expiresOn -     The end time for the user delegation SAS. Must be within 7 days of the current time
@@ -33026,7 +34479,7 @@ class BlobServiceClient extends StorageClient {
     /**
      * Creates a BlobBatchClient object to conduct batch operations.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/blob-batch
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/blob-batch
      *
      * @returns A new BlobBatchClient object for this service.
      */
@@ -33039,7 +34492,7 @@ class BlobServiceClient extends StorageClient {
      * Generates a Blob account Shared Access Signature (SAS) URI based on the client properties
      * and parameters passed in. The SAS is signed by the shared key credential of the client.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/create-account-sas
      *
      * @param expiresOn - Optional. The time at which the shared access signature becomes invalid. Default to an hour later if not provided.
      * @param permissions - Specifies the list of permissions to be associated with the SAS.
@@ -33066,7 +34519,7 @@ class BlobServiceClient extends StorageClient {
      * Generates string to sign for a Blob account Shared Access Signature (SAS) URI based on
      * the client properties and parameters passed in. The SAS is signed by the shared key credential of the client.
      *
-     * @see https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas
+     * @see https://learn.microsoft.com/en-us/rest/api/storageservices/create-account-sas
      *
      * @param expiresOn - Optional. The time at which the shared access signature becomes invalid. Default to an hour later if not provided.
      * @param permissions - Specifies the list of permissions to be associated with the SAS.
@@ -33135,6 +34588,4944 @@ exports.isPipelineLike = isPipelineLike;
 exports.logger = logger;
 exports.newPipeline = newPipeline;
 //# sourceMappingURL=index.js.map
+
+
+/***/ }),
+
+/***/ 7889:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ClientStreamingCall = void 0;
+/**
+ * A client streaming RPC call. This means that the clients sends 0, 1, or
+ * more messages to the server, and the server replies with exactly one
+ * message.
+ */
+class ClientStreamingCall {
+    constructor(method, requestHeaders, request, headers, response, status, trailers) {
+        this.method = method;
+        this.requestHeaders = requestHeaders;
+        this.requests = request;
+        this.headers = headers;
+        this.response = response;
+        this.status = status;
+        this.trailers = trailers;
+    }
+    /**
+     * Instead of awaiting the response status and trailers, you can
+     * just as well await this call itself to receive the server outcome.
+     * Note that it may still be valid to send more request messages.
+     */
+    then(onfulfilled, onrejected) {
+        return this.promiseFinished().then(value => onfulfilled ? Promise.resolve(onfulfilled(value)) : value, reason => onrejected ? Promise.resolve(onrejected(reason)) : Promise.reject(reason));
+    }
+    promiseFinished() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let [headers, response, status, trailers] = yield Promise.all([this.headers, this.response, this.status, this.trailers]);
+            return {
+                method: this.method,
+                requestHeaders: this.requestHeaders,
+                headers,
+                response,
+                status,
+                trailers
+            };
+        });
+    }
+}
+exports.ClientStreamingCall = ClientStreamingCall;
+
+
+/***/ }),
+
+/***/ 1409:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Deferred = exports.DeferredState = void 0;
+var DeferredState;
+(function (DeferredState) {
+    DeferredState[DeferredState["PENDING"] = 0] = "PENDING";
+    DeferredState[DeferredState["REJECTED"] = 1] = "REJECTED";
+    DeferredState[DeferredState["RESOLVED"] = 2] = "RESOLVED";
+})(DeferredState = exports.DeferredState || (exports.DeferredState = {}));
+/**
+ * A deferred promise. This is a "controller" for a promise, which lets you
+ * pass a promise around and reject or resolve it from the outside.
+ *
+ * Warning: This class is to be used with care. Using it can make code very
+ * difficult to read. It is intended for use in library code that exposes
+ * promises, not for regular business logic.
+ */
+class Deferred {
+    /**
+     * @param preventUnhandledRejectionWarning - prevents the warning
+     * "Unhandled Promise rejection" by adding a noop rejection handler.
+     * Working with calls returned from the runtime-rpc package in an
+     * async function usually means awaiting one call property after
+     * the other. This means that the "status" is not being awaited when
+     * an earlier await for the "headers" is rejected. This causes the
+     * "unhandled promise reject" warning. A more correct behaviour for
+     * calls might be to become aware whether at least one of the
+     * promises is handled and swallow the rejection warning for the
+     * others.
+     */
+    constructor(preventUnhandledRejectionWarning = true) {
+        this._state = DeferredState.PENDING;
+        this._promise = new Promise((resolve, reject) => {
+            this._resolve = resolve;
+            this._reject = reject;
+        });
+        if (preventUnhandledRejectionWarning) {
+            this._promise.catch(_ => { });
+        }
+    }
+    /**
+     * Get the current state of the promise.
+     */
+    get state() {
+        return this._state;
+    }
+    /**
+     * Get the deferred promise.
+     */
+    get promise() {
+        return this._promise;
+    }
+    /**
+     * Resolve the promise. Throws if the promise is already resolved or rejected.
+     */
+    resolve(value) {
+        if (this.state !== DeferredState.PENDING)
+            throw new Error(`cannot resolve ${DeferredState[this.state].toLowerCase()}`);
+        this._resolve(value);
+        this._state = DeferredState.RESOLVED;
+    }
+    /**
+     * Reject the promise. Throws if the promise is already resolved or rejected.
+     */
+    reject(reason) {
+        if (this.state !== DeferredState.PENDING)
+            throw new Error(`cannot reject ${DeferredState[this.state].toLowerCase()}`);
+        this._reject(reason);
+        this._state = DeferredState.REJECTED;
+    }
+    /**
+     * Resolve the promise. Ignore if not pending.
+     */
+    resolvePending(val) {
+        if (this._state === DeferredState.PENDING)
+            this.resolve(val);
+    }
+    /**
+     * Reject the promise. Ignore if not pending.
+     */
+    rejectPending(reason) {
+        if (this._state === DeferredState.PENDING)
+            this.reject(reason);
+    }
+}
+exports.Deferred = Deferred;
+
+
+/***/ }),
+
+/***/ 6826:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DuplexStreamingCall = void 0;
+/**
+ * A duplex streaming RPC call. This means that the clients sends an
+ * arbitrary amount of messages to the server, while at the same time,
+ * the server sends an arbitrary amount of messages to the client.
+ */
+class DuplexStreamingCall {
+    constructor(method, requestHeaders, request, headers, response, status, trailers) {
+        this.method = method;
+        this.requestHeaders = requestHeaders;
+        this.requests = request;
+        this.headers = headers;
+        this.responses = response;
+        this.status = status;
+        this.trailers = trailers;
+    }
+    /**
+     * Instead of awaiting the response status and trailers, you can
+     * just as well await this call itself to receive the server outcome.
+     * Note that it may still be valid to send more request messages.
+     */
+    then(onfulfilled, onrejected) {
+        return this.promiseFinished().then(value => onfulfilled ? Promise.resolve(onfulfilled(value)) : value, reason => onrejected ? Promise.resolve(onrejected(reason)) : Promise.reject(reason));
+    }
+    promiseFinished() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let [headers, status, trailers] = yield Promise.all([this.headers, this.status, this.trailers]);
+            return {
+                method: this.method,
+                requestHeaders: this.requestHeaders,
+                headers,
+                status,
+                trailers,
+            };
+        });
+    }
+}
+exports.DuplexStreamingCall = DuplexStreamingCall;
+
+
+/***/ }),
+
+/***/ 4420:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+// Public API of the rpc runtime.
+// Note: we do not use `export * from ...` to help tree shakers,
+// webpack verbose output hints that this should be useful
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var service_type_1 = __nccwpck_require__(6892);
+Object.defineProperty(exports, "ServiceType", ({ enumerable: true, get: function () { return service_type_1.ServiceType; } }));
+var reflection_info_1 = __nccwpck_require__(2496);
+Object.defineProperty(exports, "readMethodOptions", ({ enumerable: true, get: function () { return reflection_info_1.readMethodOptions; } }));
+Object.defineProperty(exports, "readMethodOption", ({ enumerable: true, get: function () { return reflection_info_1.readMethodOption; } }));
+Object.defineProperty(exports, "readServiceOption", ({ enumerable: true, get: function () { return reflection_info_1.readServiceOption; } }));
+var rpc_error_1 = __nccwpck_require__(8636);
+Object.defineProperty(exports, "RpcError", ({ enumerable: true, get: function () { return rpc_error_1.RpcError; } }));
+var rpc_options_1 = __nccwpck_require__(8576);
+Object.defineProperty(exports, "mergeRpcOptions", ({ enumerable: true, get: function () { return rpc_options_1.mergeRpcOptions; } }));
+var rpc_output_stream_1 = __nccwpck_require__(2726);
+Object.defineProperty(exports, "RpcOutputStreamController", ({ enumerable: true, get: function () { return rpc_output_stream_1.RpcOutputStreamController; } }));
+var test_transport_1 = __nccwpck_require__(9122);
+Object.defineProperty(exports, "TestTransport", ({ enumerable: true, get: function () { return test_transport_1.TestTransport; } }));
+var deferred_1 = __nccwpck_require__(1409);
+Object.defineProperty(exports, "Deferred", ({ enumerable: true, get: function () { return deferred_1.Deferred; } }));
+Object.defineProperty(exports, "DeferredState", ({ enumerable: true, get: function () { return deferred_1.DeferredState; } }));
+var duplex_streaming_call_1 = __nccwpck_require__(6826);
+Object.defineProperty(exports, "DuplexStreamingCall", ({ enumerable: true, get: function () { return duplex_streaming_call_1.DuplexStreamingCall; } }));
+var client_streaming_call_1 = __nccwpck_require__(7889);
+Object.defineProperty(exports, "ClientStreamingCall", ({ enumerable: true, get: function () { return client_streaming_call_1.ClientStreamingCall; } }));
+var server_streaming_call_1 = __nccwpck_require__(6173);
+Object.defineProperty(exports, "ServerStreamingCall", ({ enumerable: true, get: function () { return server_streaming_call_1.ServerStreamingCall; } }));
+var unary_call_1 = __nccwpck_require__(9288);
+Object.defineProperty(exports, "UnaryCall", ({ enumerable: true, get: function () { return unary_call_1.UnaryCall; } }));
+var rpc_interceptor_1 = __nccwpck_require__(2849);
+Object.defineProperty(exports, "stackIntercept", ({ enumerable: true, get: function () { return rpc_interceptor_1.stackIntercept; } }));
+Object.defineProperty(exports, "stackDuplexStreamingInterceptors", ({ enumerable: true, get: function () { return rpc_interceptor_1.stackDuplexStreamingInterceptors; } }));
+Object.defineProperty(exports, "stackClientStreamingInterceptors", ({ enumerable: true, get: function () { return rpc_interceptor_1.stackClientStreamingInterceptors; } }));
+Object.defineProperty(exports, "stackServerStreamingInterceptors", ({ enumerable: true, get: function () { return rpc_interceptor_1.stackServerStreamingInterceptors; } }));
+Object.defineProperty(exports, "stackUnaryInterceptors", ({ enumerable: true, get: function () { return rpc_interceptor_1.stackUnaryInterceptors; } }));
+var server_call_context_1 = __nccwpck_require__(3352);
+Object.defineProperty(exports, "ServerCallContextController", ({ enumerable: true, get: function () { return server_call_context_1.ServerCallContextController; } }));
+
+
+/***/ }),
+
+/***/ 2496:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.readServiceOption = exports.readMethodOption = exports.readMethodOptions = exports.normalizeMethodInfo = void 0;
+const runtime_1 = __nccwpck_require__(8886);
+/**
+ * Turns PartialMethodInfo into MethodInfo.
+ */
+function normalizeMethodInfo(method, service) {
+    var _a, _b, _c;
+    let m = method;
+    m.service = service;
+    m.localName = (_a = m.localName) !== null && _a !== void 0 ? _a : runtime_1.lowerCamelCase(m.name);
+    // noinspection PointlessBooleanExpressionJS
+    m.serverStreaming = !!m.serverStreaming;
+    // noinspection PointlessBooleanExpressionJS
+    m.clientStreaming = !!m.clientStreaming;
+    m.options = (_b = m.options) !== null && _b !== void 0 ? _b : {};
+    m.idempotency = (_c = m.idempotency) !== null && _c !== void 0 ? _c : undefined;
+    return m;
+}
+exports.normalizeMethodInfo = normalizeMethodInfo;
+/**
+ * Read custom method options from a generated service client.
+ *
+ * @deprecated use readMethodOption()
+ */
+function readMethodOptions(service, methodName, extensionName, extensionType) {
+    var _a;
+    const options = (_a = service.methods.find((m, i) => m.localName === methodName || i === methodName)) === null || _a === void 0 ? void 0 : _a.options;
+    return options && options[extensionName] ? extensionType.fromJson(options[extensionName]) : undefined;
+}
+exports.readMethodOptions = readMethodOptions;
+function readMethodOption(service, methodName, extensionName, extensionType) {
+    var _a;
+    const options = (_a = service.methods.find((m, i) => m.localName === methodName || i === methodName)) === null || _a === void 0 ? void 0 : _a.options;
+    if (!options) {
+        return undefined;
+    }
+    const optionVal = options[extensionName];
+    if (optionVal === undefined) {
+        return optionVal;
+    }
+    return extensionType ? extensionType.fromJson(optionVal) : optionVal;
+}
+exports.readMethodOption = readMethodOption;
+function readServiceOption(service, extensionName, extensionType) {
+    const options = service.options;
+    if (!options) {
+        return undefined;
+    }
+    const optionVal = options[extensionName];
+    if (optionVal === undefined) {
+        return optionVal;
+    }
+    return extensionType ? extensionType.fromJson(optionVal) : optionVal;
+}
+exports.readServiceOption = readServiceOption;
+
+
+/***/ }),
+
+/***/ 8636:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RpcError = void 0;
+/**
+ * An error that occurred while calling a RPC method.
+ */
+class RpcError extends Error {
+    constructor(message, code = 'UNKNOWN', meta) {
+        super(message);
+        this.name = 'RpcError';
+        // see https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#example
+        Object.setPrototypeOf(this, new.target.prototype);
+        this.code = code;
+        this.meta = meta !== null && meta !== void 0 ? meta : {};
+    }
+    toString() {
+        const l = [this.name + ': ' + this.message];
+        if (this.code) {
+            l.push('');
+            l.push('Code: ' + this.code);
+        }
+        if (this.serviceName && this.methodName) {
+            l.push('Method: ' + this.serviceName + '/' + this.methodName);
+        }
+        let m = Object.entries(this.meta);
+        if (m.length) {
+            l.push('');
+            l.push('Meta:');
+            for (let [k, v] of m) {
+                l.push(`  ${k}: ${v}`);
+            }
+        }
+        return l.join('\n');
+    }
+}
+exports.RpcError = RpcError;
+
+
+/***/ }),
+
+/***/ 2849:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.stackDuplexStreamingInterceptors = exports.stackClientStreamingInterceptors = exports.stackServerStreamingInterceptors = exports.stackUnaryInterceptors = exports.stackIntercept = void 0;
+const runtime_1 = __nccwpck_require__(8886);
+/**
+ * Creates a "stack" of of all interceptors specified in the given `RpcOptions`.
+ * Used by generated client implementations.
+ * @internal
+ */
+function stackIntercept(kind, transport, method, options, input) {
+    var _a, _b, _c, _d;
+    if (kind == "unary") {
+        let tail = (mtd, inp, opt) => transport.unary(mtd, inp, opt);
+        for (const curr of ((_a = options.interceptors) !== null && _a !== void 0 ? _a : []).filter(i => i.interceptUnary).reverse()) {
+            const next = tail;
+            tail = (mtd, inp, opt) => curr.interceptUnary(next, mtd, inp, opt);
+        }
+        return tail(method, input, options);
+    }
+    if (kind == "serverStreaming") {
+        let tail = (mtd, inp, opt) => transport.serverStreaming(mtd, inp, opt);
+        for (const curr of ((_b = options.interceptors) !== null && _b !== void 0 ? _b : []).filter(i => i.interceptServerStreaming).reverse()) {
+            const next = tail;
+            tail = (mtd, inp, opt) => curr.interceptServerStreaming(next, mtd, inp, opt);
+        }
+        return tail(method, input, options);
+    }
+    if (kind == "clientStreaming") {
+        let tail = (mtd, opt) => transport.clientStreaming(mtd, opt);
+        for (const curr of ((_c = options.interceptors) !== null && _c !== void 0 ? _c : []).filter(i => i.interceptClientStreaming).reverse()) {
+            const next = tail;
+            tail = (mtd, opt) => curr.interceptClientStreaming(next, mtd, opt);
+        }
+        return tail(method, options);
+    }
+    if (kind == "duplex") {
+        let tail = (mtd, opt) => transport.duplex(mtd, opt);
+        for (const curr of ((_d = options.interceptors) !== null && _d !== void 0 ? _d : []).filter(i => i.interceptDuplex).reverse()) {
+            const next = tail;
+            tail = (mtd, opt) => curr.interceptDuplex(next, mtd, opt);
+        }
+        return tail(method, options);
+    }
+    runtime_1.assertNever(kind);
+}
+exports.stackIntercept = stackIntercept;
+/**
+ * @deprecated replaced by `stackIntercept()`, still here to support older generated code
+ */
+function stackUnaryInterceptors(transport, method, input, options) {
+    return stackIntercept("unary", transport, method, options, input);
+}
+exports.stackUnaryInterceptors = stackUnaryInterceptors;
+/**
+ * @deprecated replaced by `stackIntercept()`, still here to support older generated code
+ */
+function stackServerStreamingInterceptors(transport, method, input, options) {
+    return stackIntercept("serverStreaming", transport, method, options, input);
+}
+exports.stackServerStreamingInterceptors = stackServerStreamingInterceptors;
+/**
+ * @deprecated replaced by `stackIntercept()`, still here to support older generated code
+ */
+function stackClientStreamingInterceptors(transport, method, options) {
+    return stackIntercept("clientStreaming", transport, method, options);
+}
+exports.stackClientStreamingInterceptors = stackClientStreamingInterceptors;
+/**
+ * @deprecated replaced by `stackIntercept()`, still here to support older generated code
+ */
+function stackDuplexStreamingInterceptors(transport, method, options) {
+    return stackIntercept("duplex", transport, method, options);
+}
+exports.stackDuplexStreamingInterceptors = stackDuplexStreamingInterceptors;
+
+
+/***/ }),
+
+/***/ 8576:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.mergeRpcOptions = void 0;
+const runtime_1 = __nccwpck_require__(8886);
+/**
+ * Merges custom RPC options with defaults. Returns a new instance and keeps
+ * the "defaults" and the "options" unmodified.
+ *
+ * Merges `RpcMetadata` "meta", overwriting values from "defaults" with
+ * values from "options". Does not append values to existing entries.
+ *
+ * Merges "jsonOptions", including "jsonOptions.typeRegistry", by creating
+ * a new array that contains types from "options.jsonOptions.typeRegistry"
+ * first, then types from "defaults.jsonOptions.typeRegistry".
+ *
+ * Merges "binaryOptions".
+ *
+ * Merges "interceptors" by creating a new array that contains interceptors
+ * from "defaults" first, then interceptors from "options".
+ *
+ * Works with objects that extend `RpcOptions`, but only if the added
+ * properties are of type Date, primitive like string, boolean, or Array
+ * of primitives. If you have other property types, you have to merge them
+ * yourself.
+ */
+function mergeRpcOptions(defaults, options) {
+    if (!options)
+        return defaults;
+    let o = {};
+    copy(defaults, o);
+    copy(options, o);
+    for (let key of Object.keys(options)) {
+        let val = options[key];
+        switch (key) {
+            case "jsonOptions":
+                o.jsonOptions = runtime_1.mergeJsonOptions(defaults.jsonOptions, o.jsonOptions);
+                break;
+            case "binaryOptions":
+                o.binaryOptions = runtime_1.mergeBinaryOptions(defaults.binaryOptions, o.binaryOptions);
+                break;
+            case "meta":
+                o.meta = {};
+                copy(defaults.meta, o.meta);
+                copy(options.meta, o.meta);
+                break;
+            case "interceptors":
+                o.interceptors = defaults.interceptors ? defaults.interceptors.concat(val) : val.concat();
+                break;
+        }
+    }
+    return o;
+}
+exports.mergeRpcOptions = mergeRpcOptions;
+function copy(a, into) {
+    if (!a)
+        return;
+    let c = into;
+    for (let [k, v] of Object.entries(a)) {
+        if (v instanceof Date)
+            c[k] = new Date(v.getTime());
+        else if (Array.isArray(v))
+            c[k] = v.concat();
+        else
+            c[k] = v;
+    }
+}
+
+
+/***/ }),
+
+/***/ 2726:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RpcOutputStreamController = void 0;
+const deferred_1 = __nccwpck_require__(1409);
+const runtime_1 = __nccwpck_require__(8886);
+/**
+ * A `RpcOutputStream` that you control.
+ */
+class RpcOutputStreamController {
+    constructor() {
+        this._lis = {
+            nxt: [],
+            msg: [],
+            err: [],
+            cmp: [],
+        };
+        this._closed = false;
+    }
+    // --- RpcOutputStream callback API
+    onNext(callback) {
+        return this.addLis(callback, this._lis.nxt);
+    }
+    onMessage(callback) {
+        return this.addLis(callback, this._lis.msg);
+    }
+    onError(callback) {
+        return this.addLis(callback, this._lis.err);
+    }
+    onComplete(callback) {
+        return this.addLis(callback, this._lis.cmp);
+    }
+    addLis(callback, list) {
+        list.push(callback);
+        return () => {
+            let i = list.indexOf(callback);
+            if (i >= 0)
+                list.splice(i, 1);
+        };
+    }
+    // remove all listeners
+    clearLis() {
+        for (let l of Object.values(this._lis))
+            l.splice(0, l.length);
+    }
+    // --- Controller API
+    /**
+     * Is this stream already closed by a completion or error?
+     */
+    get closed() {
+        return this._closed !== false;
+    }
+    /**
+     * Emit message, close with error, or close successfully, but only one
+     * at a time.
+     * Can be used to wrap a stream by using the other stream's `onNext`.
+     */
+    notifyNext(message, error, complete) {
+        runtime_1.assert((message ? 1 : 0) + (error ? 1 : 0) + (complete ? 1 : 0) <= 1, 'only one emission at a time');
+        if (message)
+            this.notifyMessage(message);
+        if (error)
+            this.notifyError(error);
+        if (complete)
+            this.notifyComplete();
+    }
+    /**
+     * Emits a new message. Throws if stream is closed.
+     *
+     * Triggers onNext and onMessage callbacks.
+     */
+    notifyMessage(message) {
+        runtime_1.assert(!this.closed, 'stream is closed');
+        this.pushIt({ value: message, done: false });
+        this._lis.msg.forEach(l => l(message));
+        this._lis.nxt.forEach(l => l(message, undefined, false));
+    }
+    /**
+     * Closes the stream with an error. Throws if stream is closed.
+     *
+     * Triggers onNext and onError callbacks.
+     */
+    notifyError(error) {
+        runtime_1.assert(!this.closed, 'stream is closed');
+        this._closed = error;
+        this.pushIt(error);
+        this._lis.err.forEach(l => l(error));
+        this._lis.nxt.forEach(l => l(undefined, error, false));
+        this.clearLis();
+    }
+    /**
+     * Closes the stream successfully. Throws if stream is closed.
+     *
+     * Triggers onNext and onComplete callbacks.
+     */
+    notifyComplete() {
+        runtime_1.assert(!this.closed, 'stream is closed');
+        this._closed = true;
+        this.pushIt({ value: null, done: true });
+        this._lis.cmp.forEach(l => l());
+        this._lis.nxt.forEach(l => l(undefined, undefined, true));
+        this.clearLis();
+    }
+    /**
+     * Creates an async iterator (that can be used with `for await {...}`)
+     * to consume the stream.
+     *
+     * Some things to note:
+     * - If an error occurs, the `for await` will throw it.
+     * - If an error occurred before the `for await` was started, `for await`
+     *   will re-throw it.
+     * - If the stream is already complete, the `for await` will be empty.
+     * - If your `for await` consumes slower than the stream produces,
+     *   for example because you are relaying messages in a slow operation,
+     *   messages are queued.
+     */
+    [Symbol.asyncIterator]() {
+        // init the iterator state, enabling pushIt()
+        if (!this._itState) {
+            this._itState = { q: [] };
+        }
+        // if we are closed, we are definitely not receiving any more messages.
+        // but we can't let the iterator get stuck. we want to either:
+        // a) finish the new iterator immediately, because we are completed
+        // b) reject the new iterator, because we errored
+        if (this._closed === true)
+            this.pushIt({ value: null, done: true });
+        else if (this._closed !== false)
+            this.pushIt(this._closed);
+        // the async iterator
+        return {
+            next: () => {
+                let state = this._itState;
+                runtime_1.assert(state, "bad state"); // if we don't have a state here, code is broken
+                // there should be no pending result.
+                // did the consumer call next() before we resolved our previous result promise?
+                runtime_1.assert(!state.p, "iterator contract broken");
+                // did we produce faster than the iterator consumed?
+                // return the oldest result from the queue.
+                let first = state.q.shift();
+                if (first)
+                    return ("value" in first) ? Promise.resolve(first) : Promise.reject(first);
+                // we have no result ATM, but we promise one.
+                // as soon as we have a result, we must resolve promise.
+                state.p = new deferred_1.Deferred();
+                return state.p.promise;
+            },
+        };
+    }
+    // "push" a new iterator result.
+    // this either resolves a pending promise, or enqueues the result.
+    pushIt(result) {
+        let state = this._itState;
+        if (!state)
+            return;
+        // is the consumer waiting for us?
+        if (state.p) {
+            // yes, consumer is waiting for this promise.
+            const p = state.p;
+            runtime_1.assert(p.state == deferred_1.DeferredState.PENDING, "iterator contract broken");
+            // resolve the promise
+            ("value" in result) ? p.resolve(result) : p.reject(result);
+            // must cleanup, otherwise iterator.next() would pick it up again.
+            delete state.p;
+        }
+        else {
+            // we are producing faster than the iterator consumes.
+            // push result onto queue.
+            state.q.push(result);
+        }
+    }
+}
+exports.RpcOutputStreamController = RpcOutputStreamController;
+
+
+/***/ }),
+
+/***/ 3352:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ServerCallContextController = void 0;
+class ServerCallContextController {
+    constructor(method, headers, deadline, sendResponseHeadersFn, defaultStatus = { code: 'OK', detail: '' }) {
+        this._cancelled = false;
+        this._listeners = [];
+        this.method = method;
+        this.headers = headers;
+        this.deadline = deadline;
+        this.trailers = {};
+        this._sendRH = sendResponseHeadersFn;
+        this.status = defaultStatus;
+    }
+    /**
+     * Set the call cancelled.
+     *
+     * Invokes all callbacks registered with onCancel() and
+     * sets `cancelled = true`.
+     */
+    notifyCancelled() {
+        if (!this._cancelled) {
+            this._cancelled = true;
+            for (let l of this._listeners) {
+                l();
+            }
+        }
+    }
+    /**
+     * Send response headers.
+     */
+    sendResponseHeaders(data) {
+        this._sendRH(data);
+    }
+    /**
+     * Is the call cancelled?
+     *
+     * When the client closes the connection before the server
+     * is done, the call is cancelled.
+     *
+     * If you want to cancel a request on the server, throw a
+     * RpcError with the CANCELLED status code.
+     */
+    get cancelled() {
+        return this._cancelled;
+    }
+    /**
+     * Add a callback for cancellation.
+     */
+    onCancel(callback) {
+        const l = this._listeners;
+        l.push(callback);
+        return () => {
+            let i = l.indexOf(callback);
+            if (i >= 0)
+                l.splice(i, 1);
+        };
+    }
+}
+exports.ServerCallContextController = ServerCallContextController;
+
+
+/***/ }),
+
+/***/ 6173:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ServerStreamingCall = void 0;
+/**
+ * A server streaming RPC call. The client provides exactly one input message
+ * but the server may respond with 0, 1, or more messages.
+ */
+class ServerStreamingCall {
+    constructor(method, requestHeaders, request, headers, response, status, trailers) {
+        this.method = method;
+        this.requestHeaders = requestHeaders;
+        this.request = request;
+        this.headers = headers;
+        this.responses = response;
+        this.status = status;
+        this.trailers = trailers;
+    }
+    /**
+     * Instead of awaiting the response status and trailers, you can
+     * just as well await this call itself to receive the server outcome.
+     * You should first setup some listeners to the `request` to
+     * see the actual messages the server replied with.
+     */
+    then(onfulfilled, onrejected) {
+        return this.promiseFinished().then(value => onfulfilled ? Promise.resolve(onfulfilled(value)) : value, reason => onrejected ? Promise.resolve(onrejected(reason)) : Promise.reject(reason));
+    }
+    promiseFinished() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let [headers, status, trailers] = yield Promise.all([this.headers, this.status, this.trailers]);
+            return {
+                method: this.method,
+                requestHeaders: this.requestHeaders,
+                request: this.request,
+                headers,
+                status,
+                trailers,
+            };
+        });
+    }
+}
+exports.ServerStreamingCall = ServerStreamingCall;
+
+
+/***/ }),
+
+/***/ 6892:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ServiceType = void 0;
+const reflection_info_1 = __nccwpck_require__(2496);
+class ServiceType {
+    constructor(typeName, methods, options) {
+        this.typeName = typeName;
+        this.methods = methods.map(i => reflection_info_1.normalizeMethodInfo(i, this));
+        this.options = options !== null && options !== void 0 ? options : {};
+    }
+}
+exports.ServiceType = ServiceType;
+
+
+/***/ }),
+
+/***/ 9122:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestTransport = void 0;
+const rpc_error_1 = __nccwpck_require__(8636);
+const runtime_1 = __nccwpck_require__(8886);
+const rpc_output_stream_1 = __nccwpck_require__(2726);
+const rpc_options_1 = __nccwpck_require__(8576);
+const unary_call_1 = __nccwpck_require__(9288);
+const server_streaming_call_1 = __nccwpck_require__(6173);
+const client_streaming_call_1 = __nccwpck_require__(7889);
+const duplex_streaming_call_1 = __nccwpck_require__(6826);
+/**
+ * Transport for testing.
+ */
+class TestTransport {
+    /**
+     * Initialize with mock data. Omitted fields have default value.
+     */
+    constructor(data) {
+        /**
+         * Suppress warning / error about uncaught rejections of
+         * "status" and "trailers".
+         */
+        this.suppressUncaughtRejections = true;
+        this.headerDelay = 10;
+        this.responseDelay = 50;
+        this.betweenResponseDelay = 10;
+        this.afterResponseDelay = 10;
+        this.data = data !== null && data !== void 0 ? data : {};
+    }
+    /**
+     * Sent message(s) during the last operation.
+     */
+    get sentMessages() {
+        if (this.lastInput instanceof TestInputStream) {
+            return this.lastInput.sent;
+        }
+        else if (typeof this.lastInput == "object") {
+            return [this.lastInput.single];
+        }
+        return [];
+    }
+    /**
+     * Sending message(s) completed?
+     */
+    get sendComplete() {
+        if (this.lastInput instanceof TestInputStream) {
+            return this.lastInput.completed;
+        }
+        else if (typeof this.lastInput == "object") {
+            return true;
+        }
+        return false;
+    }
+    // Creates a promise for response headers from the mock data.
+    promiseHeaders() {
+        var _a;
+        const headers = (_a = this.data.headers) !== null && _a !== void 0 ? _a : TestTransport.defaultHeaders;
+        return headers instanceof rpc_error_1.RpcError
+            ? Promise.reject(headers)
+            : Promise.resolve(headers);
+    }
+    // Creates a promise for a single, valid, message from the mock data.
+    promiseSingleResponse(method) {
+        if (this.data.response instanceof rpc_error_1.RpcError) {
+            return Promise.reject(this.data.response);
+        }
+        let r;
+        if (Array.isArray(this.data.response)) {
+            runtime_1.assert(this.data.response.length > 0);
+            r = this.data.response[0];
+        }
+        else if (this.data.response !== undefined) {
+            r = this.data.response;
+        }
+        else {
+            r = method.O.create();
+        }
+        runtime_1.assert(method.O.is(r));
+        return Promise.resolve(r);
+    }
+    /**
+     * Pushes response messages from the mock data to the output stream.
+     * If an error response, status or trailers are mocked, the stream is
+     * closed with the respective error.
+     * Otherwise, stream is completed successfully.
+     *
+     * The returned promise resolves when the stream is closed. It should
+     * not reject. If it does, code is broken.
+     */
+    streamResponses(method, stream, abort) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // normalize "data.response" into an array of valid output messages
+            const messages = [];
+            if (this.data.response === undefined) {
+                messages.push(method.O.create());
+            }
+            else if (Array.isArray(this.data.response)) {
+                for (let msg of this.data.response) {
+                    runtime_1.assert(method.O.is(msg));
+                    messages.push(msg);
+                }
+            }
+            else if (!(this.data.response instanceof rpc_error_1.RpcError)) {
+                runtime_1.assert(method.O.is(this.data.response));
+                messages.push(this.data.response);
+            }
+            // start the stream with an initial delay.
+            // if the request is cancelled, notify() error and exit.
+            try {
+                yield delay(this.responseDelay, abort)(undefined);
+            }
+            catch (error) {
+                stream.notifyError(error);
+                return;
+            }
+            // if error response was mocked, notify() error (stream is now closed with error) and exit.
+            if (this.data.response instanceof rpc_error_1.RpcError) {
+                stream.notifyError(this.data.response);
+                return;
+            }
+            // regular response messages were mocked. notify() them.
+            for (let msg of messages) {
+                stream.notifyMessage(msg);
+                // add a short delay between responses
+                // if the request is cancelled, notify() error and exit.
+                try {
+                    yield delay(this.betweenResponseDelay, abort)(undefined);
+                }
+                catch (error) {
+                    stream.notifyError(error);
+                    return;
+                }
+            }
+            // error status was mocked, notify() error (stream is now closed with error) and exit.
+            if (this.data.status instanceof rpc_error_1.RpcError) {
+                stream.notifyError(this.data.status);
+                return;
+            }
+            // error trailers were mocked, notify() error (stream is now closed with error) and exit.
+            if (this.data.trailers instanceof rpc_error_1.RpcError) {
+                stream.notifyError(this.data.trailers);
+                return;
+            }
+            // stream completed successfully
+            stream.notifyComplete();
+        });
+    }
+    // Creates a promise for response status from the mock data.
+    promiseStatus() {
+        var _a;
+        const status = (_a = this.data.status) !== null && _a !== void 0 ? _a : TestTransport.defaultStatus;
+        return status instanceof rpc_error_1.RpcError
+            ? Promise.reject(status)
+            : Promise.resolve(status);
+    }
+    // Creates a promise for response trailers from the mock data.
+    promiseTrailers() {
+        var _a;
+        const trailers = (_a = this.data.trailers) !== null && _a !== void 0 ? _a : TestTransport.defaultTrailers;
+        return trailers instanceof rpc_error_1.RpcError
+            ? Promise.reject(trailers)
+            : Promise.resolve(trailers);
+    }
+    maybeSuppressUncaught(...promise) {
+        if (this.suppressUncaughtRejections) {
+            for (let p of promise) {
+                p.catch(() => {
+                });
+            }
+        }
+    }
+    mergeOptions(options) {
+        return rpc_options_1.mergeRpcOptions({}, options);
+    }
+    unary(method, input, options) {
+        var _a;
+        const requestHeaders = (_a = options.meta) !== null && _a !== void 0 ? _a : {}, headersPromise = this.promiseHeaders()
+            .then(delay(this.headerDelay, options.abort)), responsePromise = headersPromise
+            .catch(_ => {
+        })
+            .then(delay(this.responseDelay, options.abort))
+            .then(_ => this.promiseSingleResponse(method)), statusPromise = responsePromise
+            .catch(_ => {
+        })
+            .then(delay(this.afterResponseDelay, options.abort))
+            .then(_ => this.promiseStatus()), trailersPromise = responsePromise
+            .catch(_ => {
+        })
+            .then(delay(this.afterResponseDelay, options.abort))
+            .then(_ => this.promiseTrailers());
+        this.maybeSuppressUncaught(statusPromise, trailersPromise);
+        this.lastInput = { single: input };
+        return new unary_call_1.UnaryCall(method, requestHeaders, input, headersPromise, responsePromise, statusPromise, trailersPromise);
+    }
+    serverStreaming(method, input, options) {
+        var _a;
+        const requestHeaders = (_a = options.meta) !== null && _a !== void 0 ? _a : {}, headersPromise = this.promiseHeaders()
+            .then(delay(this.headerDelay, options.abort)), outputStream = new rpc_output_stream_1.RpcOutputStreamController(), responseStreamClosedPromise = headersPromise
+            .then(delay(this.responseDelay, options.abort))
+            .catch(() => {
+        })
+            .then(() => this.streamResponses(method, outputStream, options.abort))
+            .then(delay(this.afterResponseDelay, options.abort)), statusPromise = responseStreamClosedPromise
+            .then(() => this.promiseStatus()), trailersPromise = responseStreamClosedPromise
+            .then(() => this.promiseTrailers());
+        this.maybeSuppressUncaught(statusPromise, trailersPromise);
+        this.lastInput = { single: input };
+        return new server_streaming_call_1.ServerStreamingCall(method, requestHeaders, input, headersPromise, outputStream, statusPromise, trailersPromise);
+    }
+    clientStreaming(method, options) {
+        var _a;
+        const requestHeaders = (_a = options.meta) !== null && _a !== void 0 ? _a : {}, headersPromise = this.promiseHeaders()
+            .then(delay(this.headerDelay, options.abort)), responsePromise = headersPromise
+            .catch(_ => {
+        })
+            .then(delay(this.responseDelay, options.abort))
+            .then(_ => this.promiseSingleResponse(method)), statusPromise = responsePromise
+            .catch(_ => {
+        })
+            .then(delay(this.afterResponseDelay, options.abort))
+            .then(_ => this.promiseStatus()), trailersPromise = responsePromise
+            .catch(_ => {
+        })
+            .then(delay(this.afterResponseDelay, options.abort))
+            .then(_ => this.promiseTrailers());
+        this.maybeSuppressUncaught(statusPromise, trailersPromise);
+        this.lastInput = new TestInputStream(this.data, options.abort);
+        return new client_streaming_call_1.ClientStreamingCall(method, requestHeaders, this.lastInput, headersPromise, responsePromise, statusPromise, trailersPromise);
+    }
+    duplex(method, options) {
+        var _a;
+        const requestHeaders = (_a = options.meta) !== null && _a !== void 0 ? _a : {}, headersPromise = this.promiseHeaders()
+            .then(delay(this.headerDelay, options.abort)), outputStream = new rpc_output_stream_1.RpcOutputStreamController(), responseStreamClosedPromise = headersPromise
+            .then(delay(this.responseDelay, options.abort))
+            .catch(() => {
+        })
+            .then(() => this.streamResponses(method, outputStream, options.abort))
+            .then(delay(this.afterResponseDelay, options.abort)), statusPromise = responseStreamClosedPromise
+            .then(() => this.promiseStatus()), trailersPromise = responseStreamClosedPromise
+            .then(() => this.promiseTrailers());
+        this.maybeSuppressUncaught(statusPromise, trailersPromise);
+        this.lastInput = new TestInputStream(this.data, options.abort);
+        return new duplex_streaming_call_1.DuplexStreamingCall(method, requestHeaders, this.lastInput, headersPromise, outputStream, statusPromise, trailersPromise);
+    }
+}
+exports.TestTransport = TestTransport;
+TestTransport.defaultHeaders = {
+    responseHeader: "test"
+};
+TestTransport.defaultStatus = {
+    code: "OK", detail: "all good"
+};
+TestTransport.defaultTrailers = {
+    responseTrailer: "test"
+};
+function delay(ms, abort) {
+    return (v) => new Promise((resolve, reject) => {
+        if (abort === null || abort === void 0 ? void 0 : abort.aborted) {
+            reject(new rpc_error_1.RpcError("user cancel", "CANCELLED"));
+        }
+        else {
+            const id = setTimeout(() => resolve(v), ms);
+            if (abort) {
+                abort.addEventListener("abort", ev => {
+                    clearTimeout(id);
+                    reject(new rpc_error_1.RpcError("user cancel", "CANCELLED"));
+                });
+            }
+        }
+    });
+}
+class TestInputStream {
+    constructor(data, abort) {
+        this._completed = false;
+        this._sent = [];
+        this.data = data;
+        this.abort = abort;
+    }
+    get sent() {
+        return this._sent;
+    }
+    get completed() {
+        return this._completed;
+    }
+    send(message) {
+        if (this.data.inputMessage instanceof rpc_error_1.RpcError) {
+            return Promise.reject(this.data.inputMessage);
+        }
+        const delayMs = this.data.inputMessage === undefined
+            ? 10
+            : this.data.inputMessage;
+        return Promise.resolve(undefined)
+            .then(() => {
+            this._sent.push(message);
+        })
+            .then(delay(delayMs, this.abort));
+    }
+    complete() {
+        if (this.data.inputComplete instanceof rpc_error_1.RpcError) {
+            return Promise.reject(this.data.inputComplete);
+        }
+        const delayMs = this.data.inputComplete === undefined
+            ? 10
+            : this.data.inputComplete;
+        return Promise.resolve(undefined)
+            .then(() => {
+            this._completed = true;
+        })
+            .then(delay(delayMs, this.abort));
+    }
+}
+
+
+/***/ }),
+
+/***/ 9288:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UnaryCall = void 0;
+/**
+ * A unary RPC call. Unary means there is exactly one input message and
+ * exactly one output message unless an error occurred.
+ */
+class UnaryCall {
+    constructor(method, requestHeaders, request, headers, response, status, trailers) {
+        this.method = method;
+        this.requestHeaders = requestHeaders;
+        this.request = request;
+        this.headers = headers;
+        this.response = response;
+        this.status = status;
+        this.trailers = trailers;
+    }
+    /**
+     * If you are only interested in the final outcome of this call,
+     * you can await it to receive a `FinishedUnaryCall`.
+     */
+    then(onfulfilled, onrejected) {
+        return this.promiseFinished().then(value => onfulfilled ? Promise.resolve(onfulfilled(value)) : value, reason => onrejected ? Promise.resolve(onrejected(reason)) : Promise.reject(reason));
+    }
+    promiseFinished() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let [headers, response, status, trailers] = yield Promise.all([this.headers, this.response, this.status, this.trailers]);
+            return {
+                method: this.method,
+                requestHeaders: this.requestHeaders,
+                request: this.request,
+                headers,
+                response,
+                status,
+                trailers
+            };
+        });
+    }
+}
+exports.UnaryCall = UnaryCall;
+
+
+/***/ }),
+
+/***/ 8602:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.assertFloat32 = exports.assertUInt32 = exports.assertInt32 = exports.assertNever = exports.assert = void 0;
+/**
+ * assert that condition is true or throw error (with message)
+ */
+function assert(condition, msg) {
+    if (!condition) {
+        throw new Error(msg);
+    }
+}
+exports.assert = assert;
+/**
+ * assert that value cannot exist = type `never`. throw runtime error if it does.
+ */
+function assertNever(value, msg) {
+    throw new Error(msg !== null && msg !== void 0 ? msg : 'Unexpected object: ' + value);
+}
+exports.assertNever = assertNever;
+const FLOAT32_MAX = 3.4028234663852886e+38, FLOAT32_MIN = -3.4028234663852886e+38, UINT32_MAX = 0xFFFFFFFF, INT32_MAX = 0X7FFFFFFF, INT32_MIN = -0X80000000;
+function assertInt32(arg) {
+    if (typeof arg !== "number")
+        throw new Error('invalid int 32: ' + typeof arg);
+    if (!Number.isInteger(arg) || arg > INT32_MAX || arg < INT32_MIN)
+        throw new Error('invalid int 32: ' + arg);
+}
+exports.assertInt32 = assertInt32;
+function assertUInt32(arg) {
+    if (typeof arg !== "number")
+        throw new Error('invalid uint 32: ' + typeof arg);
+    if (!Number.isInteger(arg) || arg > UINT32_MAX || arg < 0)
+        throw new Error('invalid uint 32: ' + arg);
+}
+exports.assertUInt32 = assertUInt32;
+function assertFloat32(arg) {
+    if (typeof arg !== "number")
+        throw new Error('invalid float 32: ' + typeof arg);
+    if (!Number.isFinite(arg))
+        return;
+    if (arg > FLOAT32_MAX || arg < FLOAT32_MIN)
+        throw new Error('invalid float 32: ' + arg);
+}
+exports.assertFloat32 = assertFloat32;
+
+
+/***/ }),
+
+/***/ 6335:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.base64encode = exports.base64decode = void 0;
+// lookup table from base64 character to byte
+let encTable = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.split('');
+// lookup table from base64 character *code* to byte because lookup by number is fast
+let decTable = [];
+for (let i = 0; i < encTable.length; i++)
+    decTable[encTable[i].charCodeAt(0)] = i;
+// support base64url variants
+decTable["-".charCodeAt(0)] = encTable.indexOf("+");
+decTable["_".charCodeAt(0)] = encTable.indexOf("/");
+/**
+ * Decodes a base64 string to a byte array.
+ *
+ * - ignores white-space, including line breaks and tabs
+ * - allows inner padding (can decode concatenated base64 strings)
+ * - does not require padding
+ * - understands base64url encoding:
+ *   "-" instead of "+",
+ *   "_" instead of "/",
+ *   no padding
+ */
+function base64decode(base64Str) {
+    // estimate byte size, not accounting for inner padding and whitespace
+    let es = base64Str.length * 3 / 4;
+    // if (es % 3 !== 0)
+    // throw new Error('invalid base64 string');
+    if (base64Str[base64Str.length - 2] == '=')
+        es -= 2;
+    else if (base64Str[base64Str.length - 1] == '=')
+        es -= 1;
+    let bytes = new Uint8Array(es), bytePos = 0, // position in byte array
+    groupPos = 0, // position in base64 group
+    b, // current byte
+    p = 0 // previous byte
+    ;
+    for (let i = 0; i < base64Str.length; i++) {
+        b = decTable[base64Str.charCodeAt(i)];
+        if (b === undefined) {
+            // noinspection FallThroughInSwitchStatementJS
+            switch (base64Str[i]) {
+                case '=':
+                    groupPos = 0; // reset state when padding found
+                case '\n':
+                case '\r':
+                case '\t':
+                case ' ':
+                    continue; // skip white-space, and padding
+                default:
+                    throw Error(`invalid base64 string.`);
+            }
+        }
+        switch (groupPos) {
+            case 0:
+                p = b;
+                groupPos = 1;
+                break;
+            case 1:
+                bytes[bytePos++] = p << 2 | (b & 48) >> 4;
+                p = b;
+                groupPos = 2;
+                break;
+            case 2:
+                bytes[bytePos++] = (p & 15) << 4 | (b & 60) >> 2;
+                p = b;
+                groupPos = 3;
+                break;
+            case 3:
+                bytes[bytePos++] = (p & 3) << 6 | b;
+                groupPos = 0;
+                break;
+        }
+    }
+    if (groupPos == 1)
+        throw Error(`invalid base64 string.`);
+    return bytes.subarray(0, bytePos);
+}
+exports.base64decode = base64decode;
+/**
+ * Encodes a byte array to a base64 string.
+ * Adds padding at the end.
+ * Does not insert newlines.
+ */
+function base64encode(bytes) {
+    let base64 = '', groupPos = 0, // position in base64 group
+    b, // current byte
+    p = 0; // carry over from previous byte
+    for (let i = 0; i < bytes.length; i++) {
+        b = bytes[i];
+        switch (groupPos) {
+            case 0:
+                base64 += encTable[b >> 2];
+                p = (b & 3) << 4;
+                groupPos = 1;
+                break;
+            case 1:
+                base64 += encTable[p | b >> 4];
+                p = (b & 15) << 2;
+                groupPos = 2;
+                break;
+            case 2:
+                base64 += encTable[p | b >> 6];
+                base64 += encTable[b & 63];
+                groupPos = 0;
+                break;
+        }
+    }
+    // padding required?
+    if (groupPos) {
+        base64 += encTable[p];
+        base64 += '=';
+        if (groupPos == 1)
+            base64 += '=';
+    }
+    return base64;
+}
+exports.base64encode = base64encode;
+
+
+/***/ }),
+
+/***/ 4816:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.WireType = exports.mergeBinaryOptions = exports.UnknownFieldHandler = void 0;
+/**
+ * This handler implements the default behaviour for unknown fields.
+ * When reading data, unknown fields are stored on the message, in a
+ * symbol property.
+ * When writing data, the symbol property is queried and unknown fields
+ * are serialized into the output again.
+ */
+var UnknownFieldHandler;
+(function (UnknownFieldHandler) {
+    /**
+     * The symbol used to store unknown fields for a message.
+     * The property must conform to `UnknownFieldContainer`.
+     */
+    UnknownFieldHandler.symbol = Symbol.for("protobuf-ts/unknown");
+    /**
+     * Store an unknown field during binary read directly on the message.
+     * This method is compatible with `BinaryReadOptions.readUnknownField`.
+     */
+    UnknownFieldHandler.onRead = (typeName, message, fieldNo, wireType, data) => {
+        let container = is(message) ? message[UnknownFieldHandler.symbol] : message[UnknownFieldHandler.symbol] = [];
+        container.push({ no: fieldNo, wireType, data });
+    };
+    /**
+     * Write unknown fields stored for the message to the writer.
+     * This method is compatible with `BinaryWriteOptions.writeUnknownFields`.
+     */
+    UnknownFieldHandler.onWrite = (typeName, message, writer) => {
+        for (let { no, wireType, data } of UnknownFieldHandler.list(message))
+            writer.tag(no, wireType).raw(data);
+    };
+    /**
+     * List unknown fields stored for the message.
+     * Note that there may be multiples fields with the same number.
+     */
+    UnknownFieldHandler.list = (message, fieldNo) => {
+        if (is(message)) {
+            let all = message[UnknownFieldHandler.symbol];
+            return fieldNo ? all.filter(uf => uf.no == fieldNo) : all;
+        }
+        return [];
+    };
+    /**
+     * Returns the last unknown field by field number.
+     */
+    UnknownFieldHandler.last = (message, fieldNo) => UnknownFieldHandler.list(message, fieldNo).slice(-1)[0];
+    const is = (message) => message && Array.isArray(message[UnknownFieldHandler.symbol]);
+})(UnknownFieldHandler = exports.UnknownFieldHandler || (exports.UnknownFieldHandler = {}));
+/**
+ * Merges binary write or read options. Later values override earlier values.
+ */
+function mergeBinaryOptions(a, b) {
+    return Object.assign(Object.assign({}, a), b);
+}
+exports.mergeBinaryOptions = mergeBinaryOptions;
+/**
+ * Protobuf binary format wire types.
+ *
+ * A wire type provides just enough information to find the length of the
+ * following value.
+ *
+ * See https://developers.google.com/protocol-buffers/docs/encoding#structure
+ */
+var WireType;
+(function (WireType) {
+    /**
+     * Used for int32, int64, uint32, uint64, sint32, sint64, bool, enum
+     */
+    WireType[WireType["Varint"] = 0] = "Varint";
+    /**
+     * Used for fixed64, sfixed64, double.
+     * Always 8 bytes with little-endian byte order.
+     */
+    WireType[WireType["Bit64"] = 1] = "Bit64";
+    /**
+     * Used for string, bytes, embedded messages, packed repeated fields
+     *
+     * Only repeated numeric types (types which use the varint, 32-bit,
+     * or 64-bit wire types) can be packed. In proto3, such fields are
+     * packed by default.
+     */
+    WireType[WireType["LengthDelimited"] = 2] = "LengthDelimited";
+    /**
+     * Used for groups
+     * @deprecated
+     */
+    WireType[WireType["StartGroup"] = 3] = "StartGroup";
+    /**
+     * Used for groups
+     * @deprecated
+     */
+    WireType[WireType["EndGroup"] = 4] = "EndGroup";
+    /**
+     * Used for fixed32, sfixed32, float.
+     * Always 4 bytes with little-endian byte order.
+     */
+    WireType[WireType["Bit32"] = 5] = "Bit32";
+})(WireType = exports.WireType || (exports.WireType = {}));
+
+
+/***/ }),
+
+/***/ 2889:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BinaryReader = exports.binaryReadOptions = void 0;
+const binary_format_contract_1 = __nccwpck_require__(4816);
+const pb_long_1 = __nccwpck_require__(1753);
+const goog_varint_1 = __nccwpck_require__(3223);
+const defaultsRead = {
+    readUnknownField: true,
+    readerFactory: bytes => new BinaryReader(bytes),
+};
+/**
+ * Make options for reading binary data form partial options.
+ */
+function binaryReadOptions(options) {
+    return options ? Object.assign(Object.assign({}, defaultsRead), options) : defaultsRead;
+}
+exports.binaryReadOptions = binaryReadOptions;
+class BinaryReader {
+    constructor(buf, textDecoder) {
+        this.varint64 = goog_varint_1.varint64read; // dirty cast for `this`
+        /**
+         * Read a `uint32` field, an unsigned 32 bit varint.
+         */
+        this.uint32 = goog_varint_1.varint32read; // dirty cast for `this` and access to protected `buf`
+        this.buf = buf;
+        this.len = buf.length;
+        this.pos = 0;
+        this.view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+        this.textDecoder = textDecoder !== null && textDecoder !== void 0 ? textDecoder : new TextDecoder("utf-8", {
+            fatal: true,
+            ignoreBOM: true,
+        });
+    }
+    /**
+     * Reads a tag - field number and wire type.
+     */
+    tag() {
+        let tag = this.uint32(), fieldNo = tag >>> 3, wireType = tag & 7;
+        if (fieldNo <= 0 || wireType < 0 || wireType > 5)
+            throw new Error("illegal tag: field no " + fieldNo + " wire type " + wireType);
+        return [fieldNo, wireType];
+    }
+    /**
+     * Skip one element on the wire and return the skipped data.
+     * Supports WireType.StartGroup since v2.0.0-alpha.23.
+     */
+    skip(wireType) {
+        let start = this.pos;
+        // noinspection FallThroughInSwitchStatementJS
+        switch (wireType) {
+            case binary_format_contract_1.WireType.Varint:
+                while (this.buf[this.pos++] & 0x80) {
+                    // ignore
+                }
+                break;
+            case binary_format_contract_1.WireType.Bit64:
+                this.pos += 4;
+            case binary_format_contract_1.WireType.Bit32:
+                this.pos += 4;
+                break;
+            case binary_format_contract_1.WireType.LengthDelimited:
+                let len = this.uint32();
+                this.pos += len;
+                break;
+            case binary_format_contract_1.WireType.StartGroup:
+                // From descriptor.proto: Group type is deprecated, not supported in proto3.
+                // But we must still be able to parse and treat as unknown.
+                let t;
+                while ((t = this.tag()[1]) !== binary_format_contract_1.WireType.EndGroup) {
+                    this.skip(t);
+                }
+                break;
+            default:
+                throw new Error("cant skip wire type " + wireType);
+        }
+        this.assertBounds();
+        return this.buf.subarray(start, this.pos);
+    }
+    /**
+     * Throws error if position in byte array is out of range.
+     */
+    assertBounds() {
+        if (this.pos > this.len)
+            throw new RangeError("premature EOF");
+    }
+    /**
+     * Read a `int32` field, a signed 32 bit varint.
+     */
+    int32() {
+        return this.uint32() | 0;
+    }
+    /**
+     * Read a `sint32` field, a signed, zigzag-encoded 32-bit varint.
+     */
+    sint32() {
+        let zze = this.uint32();
+        // decode zigzag
+        return (zze >>> 1) ^ -(zze & 1);
+    }
+    /**
+     * Read a `int64` field, a signed 64-bit varint.
+     */
+    int64() {
+        return new pb_long_1.PbLong(...this.varint64());
+    }
+    /**
+     * Read a `uint64` field, an unsigned 64-bit varint.
+     */
+    uint64() {
+        return new pb_long_1.PbULong(...this.varint64());
+    }
+    /**
+     * Read a `sint64` field, a signed, zig-zag-encoded 64-bit varint.
+     */
+    sint64() {
+        let [lo, hi] = this.varint64();
+        // decode zig zag
+        let s = -(lo & 1);
+        lo = ((lo >>> 1 | (hi & 1) << 31) ^ s);
+        hi = (hi >>> 1 ^ s);
+        return new pb_long_1.PbLong(lo, hi);
+    }
+    /**
+     * Read a `bool` field, a variant.
+     */
+    bool() {
+        let [lo, hi] = this.varint64();
+        return lo !== 0 || hi !== 0;
+    }
+    /**
+     * Read a `fixed32` field, an unsigned, fixed-length 32-bit integer.
+     */
+    fixed32() {
+        return this.view.getUint32((this.pos += 4) - 4, true);
+    }
+    /**
+     * Read a `sfixed32` field, a signed, fixed-length 32-bit integer.
+     */
+    sfixed32() {
+        return this.view.getInt32((this.pos += 4) - 4, true);
+    }
+    /**
+     * Read a `fixed64` field, an unsigned, fixed-length 64 bit integer.
+     */
+    fixed64() {
+        return new pb_long_1.PbULong(this.sfixed32(), this.sfixed32());
+    }
+    /**
+     * Read a `fixed64` field, a signed, fixed-length 64-bit integer.
+     */
+    sfixed64() {
+        return new pb_long_1.PbLong(this.sfixed32(), this.sfixed32());
+    }
+    /**
+     * Read a `float` field, 32-bit floating point number.
+     */
+    float() {
+        return this.view.getFloat32((this.pos += 4) - 4, true);
+    }
+    /**
+     * Read a `double` field, a 64-bit floating point number.
+     */
+    double() {
+        return this.view.getFloat64((this.pos += 8) - 8, true);
+    }
+    /**
+     * Read a `bytes` field, length-delimited arbitrary data.
+     */
+    bytes() {
+        let len = this.uint32();
+        let start = this.pos;
+        this.pos += len;
+        this.assertBounds();
+        return this.buf.subarray(start, start + len);
+    }
+    /**
+     * Read a `string` field, length-delimited data converted to UTF-8 text.
+     */
+    string() {
+        return this.textDecoder.decode(this.bytes());
+    }
+}
+exports.BinaryReader = BinaryReader;
+
+
+/***/ }),
+
+/***/ 3957:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BinaryWriter = exports.binaryWriteOptions = void 0;
+const pb_long_1 = __nccwpck_require__(1753);
+const goog_varint_1 = __nccwpck_require__(3223);
+const assert_1 = __nccwpck_require__(8602);
+const defaultsWrite = {
+    writeUnknownFields: true,
+    writerFactory: () => new BinaryWriter(),
+};
+/**
+ * Make options for writing binary data form partial options.
+ */
+function binaryWriteOptions(options) {
+    return options ? Object.assign(Object.assign({}, defaultsWrite), options) : defaultsWrite;
+}
+exports.binaryWriteOptions = binaryWriteOptions;
+class BinaryWriter {
+    constructor(textEncoder) {
+        /**
+         * Previous fork states.
+         */
+        this.stack = [];
+        this.textEncoder = textEncoder !== null && textEncoder !== void 0 ? textEncoder : new TextEncoder();
+        this.chunks = [];
+        this.buf = [];
+    }
+    /**
+     * Return all bytes written and reset this writer.
+     */
+    finish() {
+        this.chunks.push(new Uint8Array(this.buf)); // flush the buffer
+        let len = 0;
+        for (let i = 0; i < this.chunks.length; i++)
+            len += this.chunks[i].length;
+        let bytes = new Uint8Array(len);
+        let offset = 0;
+        for (let i = 0; i < this.chunks.length; i++) {
+            bytes.set(this.chunks[i], offset);
+            offset += this.chunks[i].length;
+        }
+        this.chunks = [];
+        return bytes;
+    }
+    /**
+     * Start a new fork for length-delimited data like a message
+     * or a packed repeated field.
+     *
+     * Must be joined later with `join()`.
+     */
+    fork() {
+        this.stack.push({ chunks: this.chunks, buf: this.buf });
+        this.chunks = [];
+        this.buf = [];
+        return this;
+    }
+    /**
+     * Join the last fork. Write its length and bytes, then
+     * return to the previous state.
+     */
+    join() {
+        // get chunk of fork
+        let chunk = this.finish();
+        // restore previous state
+        let prev = this.stack.pop();
+        if (!prev)
+            throw new Error('invalid state, fork stack empty');
+        this.chunks = prev.chunks;
+        this.buf = prev.buf;
+        // write length of chunk as varint
+        this.uint32(chunk.byteLength);
+        return this.raw(chunk);
+    }
+    /**
+     * Writes a tag (field number and wire type).
+     *
+     * Equivalent to `uint32( (fieldNo << 3 | type) >>> 0 )`.
+     *
+     * Generated code should compute the tag ahead of time and call `uint32()`.
+     */
+    tag(fieldNo, type) {
+        return this.uint32((fieldNo << 3 | type) >>> 0);
+    }
+    /**
+     * Write a chunk of raw bytes.
+     */
+    raw(chunk) {
+        if (this.buf.length) {
+            this.chunks.push(new Uint8Array(this.buf));
+            this.buf = [];
+        }
+        this.chunks.push(chunk);
+        return this;
+    }
+    /**
+     * Write a `uint32` value, an unsigned 32 bit varint.
+     */
+    uint32(value) {
+        assert_1.assertUInt32(value);
+        // write value as varint 32, inlined for speed
+        while (value > 0x7f) {
+            this.buf.push((value & 0x7f) | 0x80);
+            value = value >>> 7;
+        }
+        this.buf.push(value);
+        return this;
+    }
+    /**
+     * Write a `int32` value, a signed 32 bit varint.
+     */
+    int32(value) {
+        assert_1.assertInt32(value);
+        goog_varint_1.varint32write(value, this.buf);
+        return this;
+    }
+    /**
+     * Write a `bool` value, a variant.
+     */
+    bool(value) {
+        this.buf.push(value ? 1 : 0);
+        return this;
+    }
+    /**
+     * Write a `bytes` value, length-delimited arbitrary data.
+     */
+    bytes(value) {
+        this.uint32(value.byteLength); // write length of chunk as varint
+        return this.raw(value);
+    }
+    /**
+     * Write a `string` value, length-delimited data converted to UTF-8 text.
+     */
+    string(value) {
+        let chunk = this.textEncoder.encode(value);
+        this.uint32(chunk.byteLength); // write length of chunk as varint
+        return this.raw(chunk);
+    }
+    /**
+     * Write a `float` value, 32-bit floating point number.
+     */
+    float(value) {
+        assert_1.assertFloat32(value);
+        let chunk = new Uint8Array(4);
+        new DataView(chunk.buffer).setFloat32(0, value, true);
+        return this.raw(chunk);
+    }
+    /**
+     * Write a `double` value, a 64-bit floating point number.
+     */
+    double(value) {
+        let chunk = new Uint8Array(8);
+        new DataView(chunk.buffer).setFloat64(0, value, true);
+        return this.raw(chunk);
+    }
+    /**
+     * Write a `fixed32` value, an unsigned, fixed-length 32-bit integer.
+     */
+    fixed32(value) {
+        assert_1.assertUInt32(value);
+        let chunk = new Uint8Array(4);
+        new DataView(chunk.buffer).setUint32(0, value, true);
+        return this.raw(chunk);
+    }
+    /**
+     * Write a `sfixed32` value, a signed, fixed-length 32-bit integer.
+     */
+    sfixed32(value) {
+        assert_1.assertInt32(value);
+        let chunk = new Uint8Array(4);
+        new DataView(chunk.buffer).setInt32(0, value, true);
+        return this.raw(chunk);
+    }
+    /**
+     * Write a `sint32` value, a signed, zigzag-encoded 32-bit varint.
+     */
+    sint32(value) {
+        assert_1.assertInt32(value);
+        // zigzag encode
+        value = ((value << 1) ^ (value >> 31)) >>> 0;
+        goog_varint_1.varint32write(value, this.buf);
+        return this;
+    }
+    /**
+     * Write a `fixed64` value, a signed, fixed-length 64-bit integer.
+     */
+    sfixed64(value) {
+        let chunk = new Uint8Array(8);
+        let view = new DataView(chunk.buffer);
+        let long = pb_long_1.PbLong.from(value);
+        view.setInt32(0, long.lo, true);
+        view.setInt32(4, long.hi, true);
+        return this.raw(chunk);
+    }
+    /**
+     * Write a `fixed64` value, an unsigned, fixed-length 64 bit integer.
+     */
+    fixed64(value) {
+        let chunk = new Uint8Array(8);
+        let view = new DataView(chunk.buffer);
+        let long = pb_long_1.PbULong.from(value);
+        view.setInt32(0, long.lo, true);
+        view.setInt32(4, long.hi, true);
+        return this.raw(chunk);
+    }
+    /**
+     * Write a `int64` value, a signed 64-bit varint.
+     */
+    int64(value) {
+        let long = pb_long_1.PbLong.from(value);
+        goog_varint_1.varint64write(long.lo, long.hi, this.buf);
+        return this;
+    }
+    /**
+     * Write a `sint64` value, a signed, zig-zag-encoded 64-bit varint.
+     */
+    sint64(value) {
+        let long = pb_long_1.PbLong.from(value), 
+        // zigzag encode
+        sign = long.hi >> 31, lo = (long.lo << 1) ^ sign, hi = ((long.hi << 1) | (long.lo >>> 31)) ^ sign;
+        goog_varint_1.varint64write(lo, hi, this.buf);
+        return this;
+    }
+    /**
+     * Write a `uint64` value, an unsigned 64-bit varint.
+     */
+    uint64(value) {
+        let long = pb_long_1.PbULong.from(value);
+        goog_varint_1.varint64write(long.lo, long.hi, this.buf);
+        return this;
+    }
+}
+exports.BinaryWriter = BinaryWriter;
+
+
+/***/ }),
+
+/***/ 257:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.listEnumNumbers = exports.listEnumNames = exports.listEnumValues = exports.isEnumObject = void 0;
+/**
+ * Is this a lookup object generated by Typescript, for a Typescript enum
+ * generated by protobuf-ts?
+ *
+ * - No `const enum` (enum must not be inlined, we need reverse mapping).
+ * - No string enum (we need int32 for protobuf).
+ * - Must have a value for 0 (otherwise, we would need to support custom default values).
+ */
+function isEnumObject(arg) {
+    if (typeof arg != 'object' || arg === null) {
+        return false;
+    }
+    if (!arg.hasOwnProperty(0)) {
+        return false;
+    }
+    for (let k of Object.keys(arg)) {
+        let num = parseInt(k);
+        if (!Number.isNaN(num)) {
+            // is there a name for the number?
+            let nam = arg[num];
+            if (nam === undefined)
+                return false;
+            // does the name resolve back to the number?
+            if (arg[nam] !== num)
+                return false;
+        }
+        else {
+            // is there a number for the name?
+            let num = arg[k];
+            if (num === undefined)
+                return false;
+            // is it a string enum?
+            if (typeof num !== 'number')
+                return false;
+            // do we know the number?
+            if (arg[num] === undefined)
+                return false;
+        }
+    }
+    return true;
+}
+exports.isEnumObject = isEnumObject;
+/**
+ * Lists all values of a Typescript enum, as an array of objects with a "name"
+ * property and a "number" property.
+ *
+ * Note that it is possible that a number appears more than once, because it is
+ * possible to have aliases in an enum.
+ *
+ * Throws if the enum does not adhere to the rules of enums generated by
+ * protobuf-ts. See `isEnumObject()`.
+ */
+function listEnumValues(enumObject) {
+    if (!isEnumObject(enumObject))
+        throw new Error("not a typescript enum object");
+    let values = [];
+    for (let [name, number] of Object.entries(enumObject))
+        if (typeof number == "number")
+            values.push({ name, number });
+    return values;
+}
+exports.listEnumValues = listEnumValues;
+/**
+ * Lists the names of a Typescript enum.
+ *
+ * Throws if the enum does not adhere to the rules of enums generated by
+ * protobuf-ts. See `isEnumObject()`.
+ */
+function listEnumNames(enumObject) {
+    return listEnumValues(enumObject).map(val => val.name);
+}
+exports.listEnumNames = listEnumNames;
+/**
+ * Lists the numbers of a Typescript enum.
+ *
+ * Throws if the enum does not adhere to the rules of enums generated by
+ * protobuf-ts. See `isEnumObject()`.
+ */
+function listEnumNumbers(enumObject) {
+    return listEnumValues(enumObject)
+        .map(val => val.number)
+        .filter((num, index, arr) => arr.indexOf(num) == index);
+}
+exports.listEnumNumbers = listEnumNumbers;
+
+
+/***/ }),
+
+/***/ 3223:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+// Copyright 2008 Google Inc.  All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+// * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+// * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+// * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// Code generated by the Protocol Buffer compiler is owned by the owner
+// of the input file used when generating it.  This code is not
+// standalone and requires a support library to be linked with it.  This
+// support library is itself covered by the above license.
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.varint32read = exports.varint32write = exports.int64toString = exports.int64fromString = exports.varint64write = exports.varint64read = void 0;
+/**
+ * Read a 64 bit varint as two JS numbers.
+ *
+ * Returns tuple:
+ * [0]: low bits
+ * [0]: high bits
+ *
+ * Copyright 2008 Google Inc.  All rights reserved.
+ *
+ * See https://github.com/protocolbuffers/protobuf/blob/8a71927d74a4ce34efe2d8769fda198f52d20d12/js/experimental/runtime/kernel/buffer_decoder.js#L175
+ */
+function varint64read() {
+    let lowBits = 0;
+    let highBits = 0;
+    for (let shift = 0; shift < 28; shift += 7) {
+        let b = this.buf[this.pos++];
+        lowBits |= (b & 0x7F) << shift;
+        if ((b & 0x80) == 0) {
+            this.assertBounds();
+            return [lowBits, highBits];
+        }
+    }
+    let middleByte = this.buf[this.pos++];
+    // last four bits of the first 32 bit number
+    lowBits |= (middleByte & 0x0F) << 28;
+    // 3 upper bits are part of the next 32 bit number
+    highBits = (middleByte & 0x70) >> 4;
+    if ((middleByte & 0x80) == 0) {
+        this.assertBounds();
+        return [lowBits, highBits];
+    }
+    for (let shift = 3; shift <= 31; shift += 7) {
+        let b = this.buf[this.pos++];
+        highBits |= (b & 0x7F) << shift;
+        if ((b & 0x80) == 0) {
+            this.assertBounds();
+            return [lowBits, highBits];
+        }
+    }
+    throw new Error('invalid varint');
+}
+exports.varint64read = varint64read;
+/**
+ * Write a 64 bit varint, given as two JS numbers, to the given bytes array.
+ *
+ * Copyright 2008 Google Inc.  All rights reserved.
+ *
+ * See https://github.com/protocolbuffers/protobuf/blob/8a71927d74a4ce34efe2d8769fda198f52d20d12/js/experimental/runtime/kernel/writer.js#L344
+ */
+function varint64write(lo, hi, bytes) {
+    for (let i = 0; i < 28; i = i + 7) {
+        const shift = lo >>> i;
+        const hasNext = !((shift >>> 7) == 0 && hi == 0);
+        const byte = (hasNext ? shift | 0x80 : shift) & 0xFF;
+        bytes.push(byte);
+        if (!hasNext) {
+            return;
+        }
+    }
+    const splitBits = ((lo >>> 28) & 0x0F) | ((hi & 0x07) << 4);
+    const hasMoreBits = !((hi >> 3) == 0);
+    bytes.push((hasMoreBits ? splitBits | 0x80 : splitBits) & 0xFF);
+    if (!hasMoreBits) {
+        return;
+    }
+    for (let i = 3; i < 31; i = i + 7) {
+        const shift = hi >>> i;
+        const hasNext = !((shift >>> 7) == 0);
+        const byte = (hasNext ? shift | 0x80 : shift) & 0xFF;
+        bytes.push(byte);
+        if (!hasNext) {
+            return;
+        }
+    }
+    bytes.push((hi >>> 31) & 0x01);
+}
+exports.varint64write = varint64write;
+// constants for binary math
+const TWO_PWR_32_DBL = (1 << 16) * (1 << 16);
+/**
+ * Parse decimal string of 64 bit integer value as two JS numbers.
+ *
+ * Returns tuple:
+ * [0]: minus sign?
+ * [1]: low bits
+ * [2]: high bits
+ *
+ * Copyright 2008 Google Inc.
+ */
+function int64fromString(dec) {
+    // Check for minus sign.
+    let minus = dec[0] == '-';
+    if (minus)
+        dec = dec.slice(1);
+    // Work 6 decimal digits at a time, acting like we're converting base 1e6
+    // digits to binary. This is safe to do with floating point math because
+    // Number.isSafeInteger(ALL_32_BITS * 1e6) == true.
+    const base = 1e6;
+    let lowBits = 0;
+    let highBits = 0;
+    function add1e6digit(begin, end) {
+        // Note: Number('') is 0.
+        const digit1e6 = Number(dec.slice(begin, end));
+        highBits *= base;
+        lowBits = lowBits * base + digit1e6;
+        // Carry bits from lowBits to highBits
+        if (lowBits >= TWO_PWR_32_DBL) {
+            highBits = highBits + ((lowBits / TWO_PWR_32_DBL) | 0);
+            lowBits = lowBits % TWO_PWR_32_DBL;
+        }
+    }
+    add1e6digit(-24, -18);
+    add1e6digit(-18, -12);
+    add1e6digit(-12, -6);
+    add1e6digit(-6);
+    return [minus, lowBits, highBits];
+}
+exports.int64fromString = int64fromString;
+/**
+ * Format 64 bit integer value (as two JS numbers) to decimal string.
+ *
+ * Copyright 2008 Google Inc.
+ */
+function int64toString(bitsLow, bitsHigh) {
+    // Skip the expensive conversion if the number is small enough to use the
+    // built-in conversions.
+    if ((bitsHigh >>> 0) <= 0x1FFFFF) {
+        return '' + (TWO_PWR_32_DBL * bitsHigh + (bitsLow >>> 0));
+    }
+    // What this code is doing is essentially converting the input number from
+    // base-2 to base-1e7, which allows us to represent the 64-bit range with
+    // only 3 (very large) digits. Those digits are then trivial to convert to
+    // a base-10 string.
+    // The magic numbers used here are -
+    // 2^24 = 16777216 = (1,6777216) in base-1e7.
+    // 2^48 = 281474976710656 = (2,8147497,6710656) in base-1e7.
+    // Split 32:32 representation into 16:24:24 representation so our
+    // intermediate digits don't overflow.
+    let low = bitsLow & 0xFFFFFF;
+    let mid = (((bitsLow >>> 24) | (bitsHigh << 8)) >>> 0) & 0xFFFFFF;
+    let high = (bitsHigh >> 16) & 0xFFFF;
+    // Assemble our three base-1e7 digits, ignoring carries. The maximum
+    // value in a digit at this step is representable as a 48-bit integer, which
+    // can be stored in a 64-bit floating point number.
+    let digitA = low + (mid * 6777216) + (high * 6710656);
+    let digitB = mid + (high * 8147497);
+    let digitC = (high * 2);
+    // Apply carries from A to B and from B to C.
+    let base = 10000000;
+    if (digitA >= base) {
+        digitB += Math.floor(digitA / base);
+        digitA %= base;
+    }
+    if (digitB >= base) {
+        digitC += Math.floor(digitB / base);
+        digitB %= base;
+    }
+    // Convert base-1e7 digits to base-10, with optional leading zeroes.
+    function decimalFrom1e7(digit1e7, needLeadingZeros) {
+        let partial = digit1e7 ? String(digit1e7) : '';
+        if (needLeadingZeros) {
+            return '0000000'.slice(partial.length) + partial;
+        }
+        return partial;
+    }
+    return decimalFrom1e7(digitC, /*needLeadingZeros=*/ 0) +
+        decimalFrom1e7(digitB, /*needLeadingZeros=*/ digitC) +
+        // If the final 1e7 digit didn't need leading zeros, we would have
+        // returned via the trivial code path at the top.
+        decimalFrom1e7(digitA, /*needLeadingZeros=*/ 1);
+}
+exports.int64toString = int64toString;
+/**
+ * Write a 32 bit varint, signed or unsigned. Same as `varint64write(0, value, bytes)`
+ *
+ * Copyright 2008 Google Inc.  All rights reserved.
+ *
+ * See https://github.com/protocolbuffers/protobuf/blob/1b18833f4f2a2f681f4e4a25cdf3b0a43115ec26/js/binary/encoder.js#L144
+ */
+function varint32write(value, bytes) {
+    if (value >= 0) {
+        // write value as varint 32
+        while (value > 0x7f) {
+            bytes.push((value & 0x7f) | 0x80);
+            value = value >>> 7;
+        }
+        bytes.push(value);
+    }
+    else {
+        for (let i = 0; i < 9; i++) {
+            bytes.push(value & 127 | 128);
+            value = value >> 7;
+        }
+        bytes.push(1);
+    }
+}
+exports.varint32write = varint32write;
+/**
+ * Read an unsigned 32 bit varint.
+ *
+ * See https://github.com/protocolbuffers/protobuf/blob/8a71927d74a4ce34efe2d8769fda198f52d20d12/js/experimental/runtime/kernel/buffer_decoder.js#L220
+ */
+function varint32read() {
+    let b = this.buf[this.pos++];
+    let result = b & 0x7F;
+    if ((b & 0x80) == 0) {
+        this.assertBounds();
+        return result;
+    }
+    b = this.buf[this.pos++];
+    result |= (b & 0x7F) << 7;
+    if ((b & 0x80) == 0) {
+        this.assertBounds();
+        return result;
+    }
+    b = this.buf[this.pos++];
+    result |= (b & 0x7F) << 14;
+    if ((b & 0x80) == 0) {
+        this.assertBounds();
+        return result;
+    }
+    b = this.buf[this.pos++];
+    result |= (b & 0x7F) << 21;
+    if ((b & 0x80) == 0) {
+        this.assertBounds();
+        return result;
+    }
+    // Extract only last 4 bits
+    b = this.buf[this.pos++];
+    result |= (b & 0x0F) << 28;
+    for (let readBytes = 5; ((b & 0x80) !== 0) && readBytes < 10; readBytes++)
+        b = this.buf[this.pos++];
+    if ((b & 0x80) != 0)
+        throw new Error('invalid varint');
+    this.assertBounds();
+    // Result can have 32 bits, convert it to unsigned
+    return result >>> 0;
+}
+exports.varint32read = varint32read;
+
+
+/***/ }),
+
+/***/ 8886:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+// Public API of the protobuf-ts runtime.
+// Note: we do not use `export * from ...` to help tree shakers,
+// webpack verbose output hints that this should be useful
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+// Convenience JSON typings and corresponding type guards
+var json_typings_1 = __nccwpck_require__(9999);
+Object.defineProperty(exports, "typeofJsonValue", ({ enumerable: true, get: function () { return json_typings_1.typeofJsonValue; } }));
+Object.defineProperty(exports, "isJsonObject", ({ enumerable: true, get: function () { return json_typings_1.isJsonObject; } }));
+// Base 64 encoding
+var base64_1 = __nccwpck_require__(6335);
+Object.defineProperty(exports, "base64decode", ({ enumerable: true, get: function () { return base64_1.base64decode; } }));
+Object.defineProperty(exports, "base64encode", ({ enumerable: true, get: function () { return base64_1.base64encode; } }));
+// UTF8 encoding
+var protobufjs_utf8_1 = __nccwpck_require__(8950);
+Object.defineProperty(exports, "utf8read", ({ enumerable: true, get: function () { return protobufjs_utf8_1.utf8read; } }));
+// Binary format contracts, options for reading and writing, for example
+var binary_format_contract_1 = __nccwpck_require__(4816);
+Object.defineProperty(exports, "WireType", ({ enumerable: true, get: function () { return binary_format_contract_1.WireType; } }));
+Object.defineProperty(exports, "mergeBinaryOptions", ({ enumerable: true, get: function () { return binary_format_contract_1.mergeBinaryOptions; } }));
+Object.defineProperty(exports, "UnknownFieldHandler", ({ enumerable: true, get: function () { return binary_format_contract_1.UnknownFieldHandler; } }));
+// Standard IBinaryReader implementation
+var binary_reader_1 = __nccwpck_require__(2889);
+Object.defineProperty(exports, "BinaryReader", ({ enumerable: true, get: function () { return binary_reader_1.BinaryReader; } }));
+Object.defineProperty(exports, "binaryReadOptions", ({ enumerable: true, get: function () { return binary_reader_1.binaryReadOptions; } }));
+// Standard IBinaryWriter implementation
+var binary_writer_1 = __nccwpck_require__(3957);
+Object.defineProperty(exports, "BinaryWriter", ({ enumerable: true, get: function () { return binary_writer_1.BinaryWriter; } }));
+Object.defineProperty(exports, "binaryWriteOptions", ({ enumerable: true, get: function () { return binary_writer_1.binaryWriteOptions; } }));
+// Int64 and UInt64 implementations required for the binary format
+var pb_long_1 = __nccwpck_require__(1753);
+Object.defineProperty(exports, "PbLong", ({ enumerable: true, get: function () { return pb_long_1.PbLong; } }));
+Object.defineProperty(exports, "PbULong", ({ enumerable: true, get: function () { return pb_long_1.PbULong; } }));
+// JSON format contracts, options for reading and writing, for example
+var json_format_contract_1 = __nccwpck_require__(9367);
+Object.defineProperty(exports, "jsonReadOptions", ({ enumerable: true, get: function () { return json_format_contract_1.jsonReadOptions; } }));
+Object.defineProperty(exports, "jsonWriteOptions", ({ enumerable: true, get: function () { return json_format_contract_1.jsonWriteOptions; } }));
+Object.defineProperty(exports, "mergeJsonOptions", ({ enumerable: true, get: function () { return json_format_contract_1.mergeJsonOptions; } }));
+// Message type contract
+var message_type_contract_1 = __nccwpck_require__(3785);
+Object.defineProperty(exports, "MESSAGE_TYPE", ({ enumerable: true, get: function () { return message_type_contract_1.MESSAGE_TYPE; } }));
+// Message type implementation via reflection
+var message_type_1 = __nccwpck_require__(5106);
+Object.defineProperty(exports, "MessageType", ({ enumerable: true, get: function () { return message_type_1.MessageType; } }));
+// Reflection info, generated by the plugin, exposed to the user, used by reflection ops
+var reflection_info_1 = __nccwpck_require__(7910);
+Object.defineProperty(exports, "ScalarType", ({ enumerable: true, get: function () { return reflection_info_1.ScalarType; } }));
+Object.defineProperty(exports, "LongType", ({ enumerable: true, get: function () { return reflection_info_1.LongType; } }));
+Object.defineProperty(exports, "RepeatType", ({ enumerable: true, get: function () { return reflection_info_1.RepeatType; } }));
+Object.defineProperty(exports, "normalizeFieldInfo", ({ enumerable: true, get: function () { return reflection_info_1.normalizeFieldInfo; } }));
+Object.defineProperty(exports, "readFieldOptions", ({ enumerable: true, get: function () { return reflection_info_1.readFieldOptions; } }));
+Object.defineProperty(exports, "readFieldOption", ({ enumerable: true, get: function () { return reflection_info_1.readFieldOption; } }));
+Object.defineProperty(exports, "readMessageOption", ({ enumerable: true, get: function () { return reflection_info_1.readMessageOption; } }));
+// Message operations via reflection
+var reflection_type_check_1 = __nccwpck_require__(5167);
+Object.defineProperty(exports, "ReflectionTypeCheck", ({ enumerable: true, get: function () { return reflection_type_check_1.ReflectionTypeCheck; } }));
+var reflection_create_1 = __nccwpck_require__(5726);
+Object.defineProperty(exports, "reflectionCreate", ({ enumerable: true, get: function () { return reflection_create_1.reflectionCreate; } }));
+var reflection_scalar_default_1 = __nccwpck_require__(9526);
+Object.defineProperty(exports, "reflectionScalarDefault", ({ enumerable: true, get: function () { return reflection_scalar_default_1.reflectionScalarDefault; } }));
+var reflection_merge_partial_1 = __nccwpck_require__(8044);
+Object.defineProperty(exports, "reflectionMergePartial", ({ enumerable: true, get: function () { return reflection_merge_partial_1.reflectionMergePartial; } }));
+var reflection_equals_1 = __nccwpck_require__(4827);
+Object.defineProperty(exports, "reflectionEquals", ({ enumerable: true, get: function () { return reflection_equals_1.reflectionEquals; } }));
+var reflection_binary_reader_1 = __nccwpck_require__(9611);
+Object.defineProperty(exports, "ReflectionBinaryReader", ({ enumerable: true, get: function () { return reflection_binary_reader_1.ReflectionBinaryReader; } }));
+var reflection_binary_writer_1 = __nccwpck_require__(6907);
+Object.defineProperty(exports, "ReflectionBinaryWriter", ({ enumerable: true, get: function () { return reflection_binary_writer_1.ReflectionBinaryWriter; } }));
+var reflection_json_reader_1 = __nccwpck_require__(6790);
+Object.defineProperty(exports, "ReflectionJsonReader", ({ enumerable: true, get: function () { return reflection_json_reader_1.ReflectionJsonReader; } }));
+var reflection_json_writer_1 = __nccwpck_require__(1094);
+Object.defineProperty(exports, "ReflectionJsonWriter", ({ enumerable: true, get: function () { return reflection_json_writer_1.ReflectionJsonWriter; } }));
+var reflection_contains_message_type_1 = __nccwpck_require__(9946);
+Object.defineProperty(exports, "containsMessageType", ({ enumerable: true, get: function () { return reflection_contains_message_type_1.containsMessageType; } }));
+// Oneof helpers
+var oneof_1 = __nccwpck_require__(8063);
+Object.defineProperty(exports, "isOneofGroup", ({ enumerable: true, get: function () { return oneof_1.isOneofGroup; } }));
+Object.defineProperty(exports, "setOneofValue", ({ enumerable: true, get: function () { return oneof_1.setOneofValue; } }));
+Object.defineProperty(exports, "getOneofValue", ({ enumerable: true, get: function () { return oneof_1.getOneofValue; } }));
+Object.defineProperty(exports, "clearOneofValue", ({ enumerable: true, get: function () { return oneof_1.clearOneofValue; } }));
+Object.defineProperty(exports, "getSelectedOneofValue", ({ enumerable: true, get: function () { return oneof_1.getSelectedOneofValue; } }));
+// Enum object type guard and reflection util, may be interesting to the user.
+var enum_object_1 = __nccwpck_require__(257);
+Object.defineProperty(exports, "listEnumValues", ({ enumerable: true, get: function () { return enum_object_1.listEnumValues; } }));
+Object.defineProperty(exports, "listEnumNames", ({ enumerable: true, get: function () { return enum_object_1.listEnumNames; } }));
+Object.defineProperty(exports, "listEnumNumbers", ({ enumerable: true, get: function () { return enum_object_1.listEnumNumbers; } }));
+Object.defineProperty(exports, "isEnumObject", ({ enumerable: true, get: function () { return enum_object_1.isEnumObject; } }));
+// lowerCamelCase() is exported for plugin, rpc-runtime and other rpc packages
+var lower_camel_case_1 = __nccwpck_require__(4073);
+Object.defineProperty(exports, "lowerCamelCase", ({ enumerable: true, get: function () { return lower_camel_case_1.lowerCamelCase; } }));
+// assertion functions are exported for plugin, may also be useful to user
+var assert_1 = __nccwpck_require__(8602);
+Object.defineProperty(exports, "assert", ({ enumerable: true, get: function () { return assert_1.assert; } }));
+Object.defineProperty(exports, "assertNever", ({ enumerable: true, get: function () { return assert_1.assertNever; } }));
+Object.defineProperty(exports, "assertInt32", ({ enumerable: true, get: function () { return assert_1.assertInt32; } }));
+Object.defineProperty(exports, "assertUInt32", ({ enumerable: true, get: function () { return assert_1.assertUInt32; } }));
+Object.defineProperty(exports, "assertFloat32", ({ enumerable: true, get: function () { return assert_1.assertFloat32; } }));
+
+
+/***/ }),
+
+/***/ 9367:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.mergeJsonOptions = exports.jsonWriteOptions = exports.jsonReadOptions = void 0;
+const defaultsWrite = {
+    emitDefaultValues: false,
+    enumAsInteger: false,
+    useProtoFieldName: false,
+    prettySpaces: 0,
+}, defaultsRead = {
+    ignoreUnknownFields: false,
+};
+/**
+ * Make options for reading JSON data from partial options.
+ */
+function jsonReadOptions(options) {
+    return options ? Object.assign(Object.assign({}, defaultsRead), options) : defaultsRead;
+}
+exports.jsonReadOptions = jsonReadOptions;
+/**
+ * Make options for writing JSON data from partial options.
+ */
+function jsonWriteOptions(options) {
+    return options ? Object.assign(Object.assign({}, defaultsWrite), options) : defaultsWrite;
+}
+exports.jsonWriteOptions = jsonWriteOptions;
+/**
+ * Merges JSON write or read options. Later values override earlier values. Type registries are merged.
+ */
+function mergeJsonOptions(a, b) {
+    var _a, _b;
+    let c = Object.assign(Object.assign({}, a), b);
+    c.typeRegistry = [...((_a = a === null || a === void 0 ? void 0 : a.typeRegistry) !== null && _a !== void 0 ? _a : []), ...((_b = b === null || b === void 0 ? void 0 : b.typeRegistry) !== null && _b !== void 0 ? _b : [])];
+    return c;
+}
+exports.mergeJsonOptions = mergeJsonOptions;
+
+
+/***/ }),
+
+/***/ 9999:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.isJsonObject = exports.typeofJsonValue = void 0;
+/**
+ * Get the type of a JSON value.
+ * Distinguishes between array, null and object.
+ */
+function typeofJsonValue(value) {
+    let t = typeof value;
+    if (t == "object") {
+        if (Array.isArray(value))
+            return "array";
+        if (value === null)
+            return "null";
+    }
+    return t;
+}
+exports.typeofJsonValue = typeofJsonValue;
+/**
+ * Is this a JSON object (instead of an array or null)?
+ */
+function isJsonObject(value) {
+    return value !== null && typeof value == "object" && !Array.isArray(value);
+}
+exports.isJsonObject = isJsonObject;
+
+
+/***/ }),
+
+/***/ 4073:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.lowerCamelCase = void 0;
+/**
+ * Converts snake_case to lowerCamelCase.
+ *
+ * Should behave like protoc:
+ * https://github.com/protocolbuffers/protobuf/blob/e8ae137c96444ea313485ed1118c5e43b2099cf1/src/google/protobuf/compiler/java/java_helpers.cc#L118
+ */
+function lowerCamelCase(snakeCase) {
+    let capNext = false;
+    const sb = [];
+    for (let i = 0; i < snakeCase.length; i++) {
+        let next = snakeCase.charAt(i);
+        if (next == '_') {
+            capNext = true;
+        }
+        else if (/\d/.test(next)) {
+            sb.push(next);
+            capNext = true;
+        }
+        else if (capNext) {
+            sb.push(next.toUpperCase());
+            capNext = false;
+        }
+        else if (i == 0) {
+            sb.push(next.toLowerCase());
+        }
+        else {
+            sb.push(next);
+        }
+    }
+    return sb.join('');
+}
+exports.lowerCamelCase = lowerCamelCase;
+
+
+/***/ }),
+
+/***/ 3785:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MESSAGE_TYPE = void 0;
+/**
+ * The symbol used as a key on message objects to store the message type.
+ *
+ * Note that this is an experimental feature - it is here to stay, but
+ * implementation details may change without notice.
+ */
+exports.MESSAGE_TYPE = Symbol.for("protobuf-ts/message-type");
+
+
+/***/ }),
+
+/***/ 5106:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MessageType = void 0;
+const message_type_contract_1 = __nccwpck_require__(3785);
+const reflection_info_1 = __nccwpck_require__(7910);
+const reflection_type_check_1 = __nccwpck_require__(5167);
+const reflection_json_reader_1 = __nccwpck_require__(6790);
+const reflection_json_writer_1 = __nccwpck_require__(1094);
+const reflection_binary_reader_1 = __nccwpck_require__(9611);
+const reflection_binary_writer_1 = __nccwpck_require__(6907);
+const reflection_create_1 = __nccwpck_require__(5726);
+const reflection_merge_partial_1 = __nccwpck_require__(8044);
+const json_typings_1 = __nccwpck_require__(9999);
+const json_format_contract_1 = __nccwpck_require__(9367);
+const reflection_equals_1 = __nccwpck_require__(4827);
+const binary_writer_1 = __nccwpck_require__(3957);
+const binary_reader_1 = __nccwpck_require__(2889);
+const baseDescriptors = Object.getOwnPropertyDescriptors(Object.getPrototypeOf({}));
+/**
+ * This standard message type provides reflection-based
+ * operations to work with a message.
+ */
+class MessageType {
+    constructor(name, fields, options) {
+        this.defaultCheckDepth = 16;
+        this.typeName = name;
+        this.fields = fields.map(reflection_info_1.normalizeFieldInfo);
+        this.options = options !== null && options !== void 0 ? options : {};
+        this.messagePrototype = Object.create(null, Object.assign(Object.assign({}, baseDescriptors), { [message_type_contract_1.MESSAGE_TYPE]: { value: this } }));
+        this.refTypeCheck = new reflection_type_check_1.ReflectionTypeCheck(this);
+        this.refJsonReader = new reflection_json_reader_1.ReflectionJsonReader(this);
+        this.refJsonWriter = new reflection_json_writer_1.ReflectionJsonWriter(this);
+        this.refBinReader = new reflection_binary_reader_1.ReflectionBinaryReader(this);
+        this.refBinWriter = new reflection_binary_writer_1.ReflectionBinaryWriter(this);
+    }
+    create(value) {
+        let message = reflection_create_1.reflectionCreate(this);
+        if (value !== undefined) {
+            reflection_merge_partial_1.reflectionMergePartial(this, message, value);
+        }
+        return message;
+    }
+    /**
+     * Clone the message.
+     *
+     * Unknown fields are discarded.
+     */
+    clone(message) {
+        let copy = this.create();
+        reflection_merge_partial_1.reflectionMergePartial(this, copy, message);
+        return copy;
+    }
+    /**
+     * Determines whether two message of the same type have the same field values.
+     * Checks for deep equality, traversing repeated fields, oneof groups, maps
+     * and messages recursively.
+     * Will also return true if both messages are `undefined`.
+     */
+    equals(a, b) {
+        return reflection_equals_1.reflectionEquals(this, a, b);
+    }
+    /**
+     * Is the given value assignable to our message type
+     * and contains no [excess properties](https://www.typescriptlang.org/docs/handbook/interfaces.html#excess-property-checks)?
+     */
+    is(arg, depth = this.defaultCheckDepth) {
+        return this.refTypeCheck.is(arg, depth, false);
+    }
+    /**
+     * Is the given value assignable to our message type,
+     * regardless of [excess properties](https://www.typescriptlang.org/docs/handbook/interfaces.html#excess-property-checks)?
+     */
+    isAssignable(arg, depth = this.defaultCheckDepth) {
+        return this.refTypeCheck.is(arg, depth, true);
+    }
+    /**
+     * Copy partial data into the target message.
+     */
+    mergePartial(target, source) {
+        reflection_merge_partial_1.reflectionMergePartial(this, target, source);
+    }
+    /**
+     * Create a new message from binary format.
+     */
+    fromBinary(data, options) {
+        let opt = binary_reader_1.binaryReadOptions(options);
+        return this.internalBinaryRead(opt.readerFactory(data), data.byteLength, opt);
+    }
+    /**
+     * Read a new message from a JSON value.
+     */
+    fromJson(json, options) {
+        return this.internalJsonRead(json, json_format_contract_1.jsonReadOptions(options));
+    }
+    /**
+     * Read a new message from a JSON string.
+     * This is equivalent to `T.fromJson(JSON.parse(json))`.
+     */
+    fromJsonString(json, options) {
+        let value = JSON.parse(json);
+        return this.fromJson(value, options);
+    }
+    /**
+     * Write the message to canonical JSON value.
+     */
+    toJson(message, options) {
+        return this.internalJsonWrite(message, json_format_contract_1.jsonWriteOptions(options));
+    }
+    /**
+     * Convert the message to canonical JSON string.
+     * This is equivalent to `JSON.stringify(T.toJson(t))`
+     */
+    toJsonString(message, options) {
+        var _a;
+        let value = this.toJson(message, options);
+        return JSON.stringify(value, null, (_a = options === null || options === void 0 ? void 0 : options.prettySpaces) !== null && _a !== void 0 ? _a : 0);
+    }
+    /**
+     * Write the message to binary format.
+     */
+    toBinary(message, options) {
+        let opt = binary_writer_1.binaryWriteOptions(options);
+        return this.internalBinaryWrite(message, opt.writerFactory(), opt).finish();
+    }
+    /**
+     * This is an internal method. If you just want to read a message from
+     * JSON, use `fromJson()` or `fromJsonString()`.
+     *
+     * Reads JSON value and merges the fields into the target
+     * according to protobuf rules. If the target is omitted,
+     * a new instance is created first.
+     */
+    internalJsonRead(json, options, target) {
+        if (json !== null && typeof json == "object" && !Array.isArray(json)) {
+            let message = target !== null && target !== void 0 ? target : this.create();
+            this.refJsonReader.read(json, message, options);
+            return message;
+        }
+        throw new Error(`Unable to parse message ${this.typeName} from JSON ${json_typings_1.typeofJsonValue(json)}.`);
+    }
+    /**
+     * This is an internal method. If you just want to write a message
+     * to JSON, use `toJson()` or `toJsonString().
+     *
+     * Writes JSON value and returns it.
+     */
+    internalJsonWrite(message, options) {
+        return this.refJsonWriter.write(message, options);
+    }
+    /**
+     * This is an internal method. If you just want to write a message
+     * in binary format, use `toBinary()`.
+     *
+     * Serializes the message in binary format and appends it to the given
+     * writer. Returns passed writer.
+     */
+    internalBinaryWrite(message, writer, options) {
+        this.refBinWriter.write(message, writer, options);
+        return writer;
+    }
+    /**
+     * This is an internal method. If you just want to read a message from
+     * binary data, use `fromBinary()`.
+     *
+     * Reads data from binary format and merges the fields into
+     * the target according to protobuf rules. If the target is
+     * omitted, a new instance is created first.
+     */
+    internalBinaryRead(reader, length, options, target) {
+        let message = target !== null && target !== void 0 ? target : this.create();
+        this.refBinReader.read(reader, message, options, length);
+        return message;
+    }
+}
+exports.MessageType = MessageType;
+
+
+/***/ }),
+
+/***/ 8063:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getSelectedOneofValue = exports.clearOneofValue = exports.setUnknownOneofValue = exports.setOneofValue = exports.getOneofValue = exports.isOneofGroup = void 0;
+/**
+ * Is the given value a valid oneof group?
+ *
+ * We represent protobuf `oneof` as algebraic data types (ADT) in generated
+ * code. But when working with messages of unknown type, the ADT does not
+ * help us.
+ *
+ * This type guard checks if the given object adheres to the ADT rules, which
+ * are as follows:
+ *
+ * 1) Must be an object.
+ *
+ * 2) Must have a "oneofKind" discriminator property.
+ *
+ * 3) If "oneofKind" is `undefined`, no member field is selected. The object
+ * must not have any other properties.
+ *
+ * 4) If "oneofKind" is a `string`, the member field with this name is
+ * selected.
+ *
+ * 5) If a member field is selected, the object must have a second property
+ * with this name. The property must not be `undefined`.
+ *
+ * 6) No extra properties are allowed. The object has either one property
+ * (no selection) or two properties (selection).
+ *
+ */
+function isOneofGroup(any) {
+    if (typeof any != 'object' || any === null || !any.hasOwnProperty('oneofKind')) {
+        return false;
+    }
+    switch (typeof any.oneofKind) {
+        case "string":
+            if (any[any.oneofKind] === undefined)
+                return false;
+            return Object.keys(any).length == 2;
+        case "undefined":
+            return Object.keys(any).length == 1;
+        default:
+            return false;
+    }
+}
+exports.isOneofGroup = isOneofGroup;
+/**
+ * Returns the value of the given field in a oneof group.
+ */
+function getOneofValue(oneof, kind) {
+    return oneof[kind];
+}
+exports.getOneofValue = getOneofValue;
+function setOneofValue(oneof, kind, value) {
+    if (oneof.oneofKind !== undefined) {
+        delete oneof[oneof.oneofKind];
+    }
+    oneof.oneofKind = kind;
+    if (value !== undefined) {
+        oneof[kind] = value;
+    }
+}
+exports.setOneofValue = setOneofValue;
+function setUnknownOneofValue(oneof, kind, value) {
+    if (oneof.oneofKind !== undefined) {
+        delete oneof[oneof.oneofKind];
+    }
+    oneof.oneofKind = kind;
+    if (value !== undefined && kind !== undefined) {
+        oneof[kind] = value;
+    }
+}
+exports.setUnknownOneofValue = setUnknownOneofValue;
+/**
+ * Removes the selected field in a oneof group.
+ *
+ * Note that the recommended way to modify a oneof group is to set
+ * a new object:
+ *
+ * ```ts
+ * message.result = { oneofKind: undefined };
+ * ```
+ */
+function clearOneofValue(oneof) {
+    if (oneof.oneofKind !== undefined) {
+        delete oneof[oneof.oneofKind];
+    }
+    oneof.oneofKind = undefined;
+}
+exports.clearOneofValue = clearOneofValue;
+/**
+ * Returns the selected value of the given oneof group.
+ *
+ * Not that the recommended way to access a oneof group is to check
+ * the "oneofKind" property and let TypeScript narrow down the union
+ * type for you:
+ *
+ * ```ts
+ * if (message.result.oneofKind === "error") {
+ *   message.result.error; // string
+ * }
+ * ```
+ *
+ * In the rare case you just need the value, and do not care about
+ * which protobuf field is selected, you can use this function
+ * for convenience.
+ */
+function getSelectedOneofValue(oneof) {
+    if (oneof.oneofKind === undefined) {
+        return undefined;
+    }
+    return oneof[oneof.oneofKind];
+}
+exports.getSelectedOneofValue = getSelectedOneofValue;
+
+
+/***/ }),
+
+/***/ 1753:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PbLong = exports.PbULong = exports.detectBi = void 0;
+const goog_varint_1 = __nccwpck_require__(3223);
+let BI;
+function detectBi() {
+    const dv = new DataView(new ArrayBuffer(8));
+    const ok = globalThis.BigInt !== undefined
+        && typeof dv.getBigInt64 === "function"
+        && typeof dv.getBigUint64 === "function"
+        && typeof dv.setBigInt64 === "function"
+        && typeof dv.setBigUint64 === "function";
+    BI = ok ? {
+        MIN: BigInt("-9223372036854775808"),
+        MAX: BigInt("9223372036854775807"),
+        UMIN: BigInt("0"),
+        UMAX: BigInt("18446744073709551615"),
+        C: BigInt,
+        V: dv,
+    } : undefined;
+}
+exports.detectBi = detectBi;
+detectBi();
+function assertBi(bi) {
+    if (!bi)
+        throw new Error("BigInt unavailable, see https://github.com/timostamm/protobuf-ts/blob/v1.0.8/MANUAL.md#bigint-support");
+}
+// used to validate from(string) input (when bigint is unavailable)
+const RE_DECIMAL_STR = /^-?[0-9]+$/;
+// constants for binary math
+const TWO_PWR_32_DBL = 0x100000000;
+const HALF_2_PWR_32 = 0x080000000;
+// base class for PbLong and PbULong provides shared code
+class SharedPbLong {
+    /**
+     * Create a new instance with the given bits.
+     */
+    constructor(lo, hi) {
+        this.lo = lo | 0;
+        this.hi = hi | 0;
+    }
+    /**
+     * Is this instance equal to 0?
+     */
+    isZero() {
+        return this.lo == 0 && this.hi == 0;
+    }
+    /**
+     * Convert to a native number.
+     */
+    toNumber() {
+        let result = this.hi * TWO_PWR_32_DBL + (this.lo >>> 0);
+        if (!Number.isSafeInteger(result))
+            throw new Error("cannot convert to safe number");
+        return result;
+    }
+}
+/**
+ * 64-bit unsigned integer as two 32-bit values.
+ * Converts between `string`, `number` and `bigint` representations.
+ */
+class PbULong extends SharedPbLong {
+    /**
+     * Create instance from a `string`, `number` or `bigint`.
+     */
+    static from(value) {
+        if (BI)
+            // noinspection FallThroughInSwitchStatementJS
+            switch (typeof value) {
+                case "string":
+                    if (value == "0")
+                        return this.ZERO;
+                    if (value == "")
+                        throw new Error('string is no integer');
+                    value = BI.C(value);
+                case "number":
+                    if (value === 0)
+                        return this.ZERO;
+                    value = BI.C(value);
+                case "bigint":
+                    if (!value)
+                        return this.ZERO;
+                    if (value < BI.UMIN)
+                        throw new Error('signed value for ulong');
+                    if (value > BI.UMAX)
+                        throw new Error('ulong too large');
+                    BI.V.setBigUint64(0, value, true);
+                    return new PbULong(BI.V.getInt32(0, true), BI.V.getInt32(4, true));
+            }
+        else
+            switch (typeof value) {
+                case "string":
+                    if (value == "0")
+                        return this.ZERO;
+                    value = value.trim();
+                    if (!RE_DECIMAL_STR.test(value))
+                        throw new Error('string is no integer');
+                    let [minus, lo, hi] = goog_varint_1.int64fromString(value);
+                    if (minus)
+                        throw new Error('signed value for ulong');
+                    return new PbULong(lo, hi);
+                case "number":
+                    if (value == 0)
+                        return this.ZERO;
+                    if (!Number.isSafeInteger(value))
+                        throw new Error('number is no integer');
+                    if (value < 0)
+                        throw new Error('signed value for ulong');
+                    return new PbULong(value, value / TWO_PWR_32_DBL);
+            }
+        throw new Error('unknown value ' + typeof value);
+    }
+    /**
+     * Convert to decimal string.
+     */
+    toString() {
+        return BI ? this.toBigInt().toString() : goog_varint_1.int64toString(this.lo, this.hi);
+    }
+    /**
+     * Convert to native bigint.
+     */
+    toBigInt() {
+        assertBi(BI);
+        BI.V.setInt32(0, this.lo, true);
+        BI.V.setInt32(4, this.hi, true);
+        return BI.V.getBigUint64(0, true);
+    }
+}
+exports.PbULong = PbULong;
+/**
+ * ulong 0 singleton.
+ */
+PbULong.ZERO = new PbULong(0, 0);
+/**
+ * 64-bit signed integer as two 32-bit values.
+ * Converts between `string`, `number` and `bigint` representations.
+ */
+class PbLong extends SharedPbLong {
+    /**
+     * Create instance from a `string`, `number` or `bigint`.
+     */
+    static from(value) {
+        if (BI)
+            // noinspection FallThroughInSwitchStatementJS
+            switch (typeof value) {
+                case "string":
+                    if (value == "0")
+                        return this.ZERO;
+                    if (value == "")
+                        throw new Error('string is no integer');
+                    value = BI.C(value);
+                case "number":
+                    if (value === 0)
+                        return this.ZERO;
+                    value = BI.C(value);
+                case "bigint":
+                    if (!value)
+                        return this.ZERO;
+                    if (value < BI.MIN)
+                        throw new Error('signed long too small');
+                    if (value > BI.MAX)
+                        throw new Error('signed long too large');
+                    BI.V.setBigInt64(0, value, true);
+                    return new PbLong(BI.V.getInt32(0, true), BI.V.getInt32(4, true));
+            }
+        else
+            switch (typeof value) {
+                case "string":
+                    if (value == "0")
+                        return this.ZERO;
+                    value = value.trim();
+                    if (!RE_DECIMAL_STR.test(value))
+                        throw new Error('string is no integer');
+                    let [minus, lo, hi] = goog_varint_1.int64fromString(value);
+                    if (minus) {
+                        if (hi > HALF_2_PWR_32 || (hi == HALF_2_PWR_32 && lo != 0))
+                            throw new Error('signed long too small');
+                    }
+                    else if (hi >= HALF_2_PWR_32)
+                        throw new Error('signed long too large');
+                    let pbl = new PbLong(lo, hi);
+                    return minus ? pbl.negate() : pbl;
+                case "number":
+                    if (value == 0)
+                        return this.ZERO;
+                    if (!Number.isSafeInteger(value))
+                        throw new Error('number is no integer');
+                    return value > 0
+                        ? new PbLong(value, value / TWO_PWR_32_DBL)
+                        : new PbLong(-value, -value / TWO_PWR_32_DBL).negate();
+            }
+        throw new Error('unknown value ' + typeof value);
+    }
+    /**
+     * Do we have a minus sign?
+     */
+    isNegative() {
+        return (this.hi & HALF_2_PWR_32) !== 0;
+    }
+    /**
+     * Negate two's complement.
+     * Invert all the bits and add one to the result.
+     */
+    negate() {
+        let hi = ~this.hi, lo = this.lo;
+        if (lo)
+            lo = ~lo + 1;
+        else
+            hi += 1;
+        return new PbLong(lo, hi);
+    }
+    /**
+     * Convert to decimal string.
+     */
+    toString() {
+        if (BI)
+            return this.toBigInt().toString();
+        if (this.isNegative()) {
+            let n = this.negate();
+            return '-' + goog_varint_1.int64toString(n.lo, n.hi);
+        }
+        return goog_varint_1.int64toString(this.lo, this.hi);
+    }
+    /**
+     * Convert to native bigint.
+     */
+    toBigInt() {
+        assertBi(BI);
+        BI.V.setInt32(0, this.lo, true);
+        BI.V.setInt32(4, this.hi, true);
+        return BI.V.getBigInt64(0, true);
+    }
+}
+exports.PbLong = PbLong;
+/**
+ * long 0 singleton.
+ */
+PbLong.ZERO = new PbLong(0, 0);
+
+
+/***/ }),
+
+/***/ 8950:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+// Copyright (c) 2016, Daniel Wirtz  All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+// * Redistributions of source code must retain the above copyright
+//   notice, this list of conditions and the following disclaimer.
+// * Redistributions in binary form must reproduce the above copyright
+//   notice, this list of conditions and the following disclaimer in the
+//   documentation and/or other materials provided with the distribution.
+// * Neither the name of its author, nor the names of its contributors
+//   may be used to endorse or promote products derived from this software
+//   without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.utf8read = void 0;
+const fromCharCodes = (chunk) => String.fromCharCode.apply(String, chunk);
+/**
+ * @deprecated This function will no longer be exported with the next major
+ * release, since protobuf-ts has switch to TextDecoder API. If you need this
+ * function, please migrate to @protobufjs/utf8. For context, see
+ * https://github.com/timostamm/protobuf-ts/issues/184
+ *
+ * Reads UTF8 bytes as a string.
+ *
+ * See [protobufjs / utf8](https://github.com/protobufjs/protobuf.js/blob/9893e35b854621cce64af4bf6be2cff4fb892796/lib/utf8/index.js#L40)
+ *
+ * Copyright (c) 2016, Daniel Wirtz
+ */
+function utf8read(bytes) {
+    if (bytes.length < 1)
+        return "";
+    let pos = 0, // position in bytes
+    parts = [], chunk = [], i = 0, // char offset
+    t; // temporary
+    let len = bytes.length;
+    while (pos < len) {
+        t = bytes[pos++];
+        if (t < 128)
+            chunk[i++] = t;
+        else if (t > 191 && t < 224)
+            chunk[i++] = (t & 31) << 6 | bytes[pos++] & 63;
+        else if (t > 239 && t < 365) {
+            t = ((t & 7) << 18 | (bytes[pos++] & 63) << 12 | (bytes[pos++] & 63) << 6 | bytes[pos++] & 63) - 0x10000;
+            chunk[i++] = 0xD800 + (t >> 10);
+            chunk[i++] = 0xDC00 + (t & 1023);
+        }
+        else
+            chunk[i++] = (t & 15) << 12 | (bytes[pos++] & 63) << 6 | bytes[pos++] & 63;
+        if (i > 8191) {
+            parts.push(fromCharCodes(chunk));
+            i = 0;
+        }
+    }
+    if (parts.length) {
+        if (i)
+            parts.push(fromCharCodes(chunk.slice(0, i)));
+        return parts.join("");
+    }
+    return fromCharCodes(chunk.slice(0, i));
+}
+exports.utf8read = utf8read;
+
+
+/***/ }),
+
+/***/ 9611:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ReflectionBinaryReader = void 0;
+const binary_format_contract_1 = __nccwpck_require__(4816);
+const reflection_info_1 = __nccwpck_require__(7910);
+const reflection_long_convert_1 = __nccwpck_require__(3402);
+const reflection_scalar_default_1 = __nccwpck_require__(9526);
+/**
+ * Reads proto3 messages in binary format using reflection information.
+ *
+ * https://developers.google.com/protocol-buffers/docs/encoding
+ */
+class ReflectionBinaryReader {
+    constructor(info) {
+        this.info = info;
+    }
+    prepare() {
+        var _a;
+        if (!this.fieldNoToField) {
+            const fieldsInput = (_a = this.info.fields) !== null && _a !== void 0 ? _a : [];
+            this.fieldNoToField = new Map(fieldsInput.map(field => [field.no, field]));
+        }
+    }
+    /**
+     * Reads a message from binary format into the target message.
+     *
+     * Repeated fields are appended. Map entries are added, overwriting
+     * existing keys.
+     *
+     * If a message field is already present, it will be merged with the
+     * new data.
+     */
+    read(reader, message, options, length) {
+        this.prepare();
+        const end = length === undefined ? reader.len : reader.pos + length;
+        while (reader.pos < end) {
+            // read the tag and find the field
+            const [fieldNo, wireType] = reader.tag(), field = this.fieldNoToField.get(fieldNo);
+            if (!field) {
+                let u = options.readUnknownField;
+                if (u == "throw")
+                    throw new Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.info.typeName}`);
+                let d = reader.skip(wireType);
+                if (u !== false)
+                    (u === true ? binary_format_contract_1.UnknownFieldHandler.onRead : u)(this.info.typeName, message, fieldNo, wireType, d);
+                continue;
+            }
+            // target object for the field we are reading
+            let target = message, repeated = field.repeat, localName = field.localName;
+            // if field is member of oneof ADT, use ADT as target
+            if (field.oneof) {
+                target = target[field.oneof];
+                // if other oneof member selected, set new ADT
+                if (target.oneofKind !== localName)
+                    target = message[field.oneof] = {
+                        oneofKind: localName
+                    };
+            }
+            // we have handled oneof above, we just have read the value into `target[localName]`
+            switch (field.kind) {
+                case "scalar":
+                case "enum":
+                    let T = field.kind == "enum" ? reflection_info_1.ScalarType.INT32 : field.T;
+                    let L = field.kind == "scalar" ? field.L : undefined;
+                    if (repeated) {
+                        let arr = target[localName]; // safe to assume presence of array, oneof cannot contain repeated values
+                        if (wireType == binary_format_contract_1.WireType.LengthDelimited && T != reflection_info_1.ScalarType.STRING && T != reflection_info_1.ScalarType.BYTES) {
+                            let e = reader.uint32() + reader.pos;
+                            while (reader.pos < e)
+                                arr.push(this.scalar(reader, T, L));
+                        }
+                        else
+                            arr.push(this.scalar(reader, T, L));
+                    }
+                    else
+                        target[localName] = this.scalar(reader, T, L);
+                    break;
+                case "message":
+                    if (repeated) {
+                        let arr = target[localName]; // safe to assume presence of array, oneof cannot contain repeated values
+                        let msg = field.T().internalBinaryRead(reader, reader.uint32(), options);
+                        arr.push(msg);
+                    }
+                    else
+                        target[localName] = field.T().internalBinaryRead(reader, reader.uint32(), options, target[localName]);
+                    break;
+                case "map":
+                    let [mapKey, mapVal] = this.mapEntry(field, reader, options);
+                    // safe to assume presence of map object, oneof cannot contain repeated values
+                    target[localName][mapKey] = mapVal;
+                    break;
+            }
+        }
+    }
+    /**
+     * Read a map field, expecting key field = 1, value field = 2
+     */
+    mapEntry(field, reader, options) {
+        let length = reader.uint32();
+        let end = reader.pos + length;
+        let key = undefined; // javascript only allows number or string for object properties
+        let val = undefined;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case 1:
+                    if (field.K == reflection_info_1.ScalarType.BOOL)
+                        key = reader.bool().toString();
+                    else
+                        // long types are read as string, number types are okay as number
+                        key = this.scalar(reader, field.K, reflection_info_1.LongType.STRING);
+                    break;
+                case 2:
+                    switch (field.V.kind) {
+                        case "scalar":
+                            val = this.scalar(reader, field.V.T, field.V.L);
+                            break;
+                        case "enum":
+                            val = reader.int32();
+                            break;
+                        case "message":
+                            val = field.V.T().internalBinaryRead(reader, reader.uint32(), options);
+                            break;
+                    }
+                    break;
+                default:
+                    throw new Error(`Unknown field ${fieldNo} (wire type ${wireType}) in map entry for ${this.info.typeName}#${field.name}`);
+            }
+        }
+        if (key === undefined) {
+            let keyRaw = reflection_scalar_default_1.reflectionScalarDefault(field.K);
+            key = field.K == reflection_info_1.ScalarType.BOOL ? keyRaw.toString() : keyRaw;
+        }
+        if (val === undefined)
+            switch (field.V.kind) {
+                case "scalar":
+                    val = reflection_scalar_default_1.reflectionScalarDefault(field.V.T, field.V.L);
+                    break;
+                case "enum":
+                    val = 0;
+                    break;
+                case "message":
+                    val = field.V.T().create();
+                    break;
+            }
+        return [key, val];
+    }
+    scalar(reader, type, longType) {
+        switch (type) {
+            case reflection_info_1.ScalarType.INT32:
+                return reader.int32();
+            case reflection_info_1.ScalarType.STRING:
+                return reader.string();
+            case reflection_info_1.ScalarType.BOOL:
+                return reader.bool();
+            case reflection_info_1.ScalarType.DOUBLE:
+                return reader.double();
+            case reflection_info_1.ScalarType.FLOAT:
+                return reader.float();
+            case reflection_info_1.ScalarType.INT64:
+                return reflection_long_convert_1.reflectionLongConvert(reader.int64(), longType);
+            case reflection_info_1.ScalarType.UINT64:
+                return reflection_long_convert_1.reflectionLongConvert(reader.uint64(), longType);
+            case reflection_info_1.ScalarType.FIXED64:
+                return reflection_long_convert_1.reflectionLongConvert(reader.fixed64(), longType);
+            case reflection_info_1.ScalarType.FIXED32:
+                return reader.fixed32();
+            case reflection_info_1.ScalarType.BYTES:
+                return reader.bytes();
+            case reflection_info_1.ScalarType.UINT32:
+                return reader.uint32();
+            case reflection_info_1.ScalarType.SFIXED32:
+                return reader.sfixed32();
+            case reflection_info_1.ScalarType.SFIXED64:
+                return reflection_long_convert_1.reflectionLongConvert(reader.sfixed64(), longType);
+            case reflection_info_1.ScalarType.SINT32:
+                return reader.sint32();
+            case reflection_info_1.ScalarType.SINT64:
+                return reflection_long_convert_1.reflectionLongConvert(reader.sint64(), longType);
+        }
+    }
+}
+exports.ReflectionBinaryReader = ReflectionBinaryReader;
+
+
+/***/ }),
+
+/***/ 6907:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ReflectionBinaryWriter = void 0;
+const binary_format_contract_1 = __nccwpck_require__(4816);
+const reflection_info_1 = __nccwpck_require__(7910);
+const assert_1 = __nccwpck_require__(8602);
+const pb_long_1 = __nccwpck_require__(1753);
+/**
+ * Writes proto3 messages in binary format using reflection information.
+ *
+ * https://developers.google.com/protocol-buffers/docs/encoding
+ */
+class ReflectionBinaryWriter {
+    constructor(info) {
+        this.info = info;
+    }
+    prepare() {
+        if (!this.fields) {
+            const fieldsInput = this.info.fields ? this.info.fields.concat() : [];
+            this.fields = fieldsInput.sort((a, b) => a.no - b.no);
+        }
+    }
+    /**
+     * Writes the message to binary format.
+     */
+    write(message, writer, options) {
+        this.prepare();
+        for (const field of this.fields) {
+            let value, // this will be our field value, whether it is member of a oneof or not
+            emitDefault, // whether we emit the default value (only true for oneof members)
+            repeated = field.repeat, localName = field.localName;
+            // handle oneof ADT
+            if (field.oneof) {
+                const group = message[field.oneof];
+                if (group.oneofKind !== localName)
+                    continue; // if field is not selected, skip
+                value = group[localName];
+                emitDefault = true;
+            }
+            else {
+                value = message[localName];
+                emitDefault = false;
+            }
+            // we have handled oneof above. we just have to honor `emitDefault`.
+            switch (field.kind) {
+                case "scalar":
+                case "enum":
+                    let T = field.kind == "enum" ? reflection_info_1.ScalarType.INT32 : field.T;
+                    if (repeated) {
+                        assert_1.assert(Array.isArray(value));
+                        if (repeated == reflection_info_1.RepeatType.PACKED)
+                            this.packed(writer, T, field.no, value);
+                        else
+                            for (const item of value)
+                                this.scalar(writer, T, field.no, item, true);
+                    }
+                    else if (value === undefined)
+                        assert_1.assert(field.opt);
+                    else
+                        this.scalar(writer, T, field.no, value, emitDefault || field.opt);
+                    break;
+                case "message":
+                    if (repeated) {
+                        assert_1.assert(Array.isArray(value));
+                        for (const item of value)
+                            this.message(writer, options, field.T(), field.no, item);
+                    }
+                    else {
+                        this.message(writer, options, field.T(), field.no, value);
+                    }
+                    break;
+                case "map":
+                    assert_1.assert(typeof value == 'object' && value !== null);
+                    for (const [key, val] of Object.entries(value))
+                        this.mapEntry(writer, options, field, key, val);
+                    break;
+            }
+        }
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u === true ? binary_format_contract_1.UnknownFieldHandler.onWrite : u)(this.info.typeName, message, writer);
+    }
+    mapEntry(writer, options, field, key, value) {
+        writer.tag(field.no, binary_format_contract_1.WireType.LengthDelimited);
+        writer.fork();
+        // javascript only allows number or string for object properties
+        // we convert from our representation to the protobuf type
+        let keyValue = key;
+        switch (field.K) {
+            case reflection_info_1.ScalarType.INT32:
+            case reflection_info_1.ScalarType.FIXED32:
+            case reflection_info_1.ScalarType.UINT32:
+            case reflection_info_1.ScalarType.SFIXED32:
+            case reflection_info_1.ScalarType.SINT32:
+                keyValue = Number.parseInt(key);
+                break;
+            case reflection_info_1.ScalarType.BOOL:
+                assert_1.assert(key == 'true' || key == 'false');
+                keyValue = key == 'true';
+                break;
+        }
+        // write key, expecting key field number = 1
+        this.scalar(writer, field.K, 1, keyValue, true);
+        // write value, expecting value field number = 2
+        switch (field.V.kind) {
+            case 'scalar':
+                this.scalar(writer, field.V.T, 2, value, true);
+                break;
+            case 'enum':
+                this.scalar(writer, reflection_info_1.ScalarType.INT32, 2, value, true);
+                break;
+            case 'message':
+                this.message(writer, options, field.V.T(), 2, value);
+                break;
+        }
+        writer.join();
+    }
+    message(writer, options, handler, fieldNo, value) {
+        if (value === undefined)
+            return;
+        handler.internalBinaryWrite(value, writer.tag(fieldNo, binary_format_contract_1.WireType.LengthDelimited).fork(), options);
+        writer.join();
+    }
+    /**
+     * Write a single scalar value.
+     */
+    scalar(writer, type, fieldNo, value, emitDefault) {
+        let [wireType, method, isDefault] = this.scalarInfo(type, value);
+        if (!isDefault || emitDefault) {
+            writer.tag(fieldNo, wireType);
+            writer[method](value);
+        }
+    }
+    /**
+     * Write an array of scalar values in packed format.
+     */
+    packed(writer, type, fieldNo, value) {
+        if (!value.length)
+            return;
+        assert_1.assert(type !== reflection_info_1.ScalarType.BYTES && type !== reflection_info_1.ScalarType.STRING);
+        // write tag
+        writer.tag(fieldNo, binary_format_contract_1.WireType.LengthDelimited);
+        // begin length-delimited
+        writer.fork();
+        // write values without tags
+        let [, method,] = this.scalarInfo(type);
+        for (let i = 0; i < value.length; i++)
+            writer[method](value[i]);
+        // end length delimited
+        writer.join();
+    }
+    /**
+     * Get information for writing a scalar value.
+     *
+     * Returns tuple:
+     * [0]: appropriate WireType
+     * [1]: name of the appropriate method of IBinaryWriter
+     * [2]: whether the given value is a default value
+     *
+     * If argument `value` is omitted, [2] is always false.
+     */
+    scalarInfo(type, value) {
+        let t = binary_format_contract_1.WireType.Varint;
+        let m;
+        let i = value === undefined;
+        let d = value === 0;
+        switch (type) {
+            case reflection_info_1.ScalarType.INT32:
+                m = "int32";
+                break;
+            case reflection_info_1.ScalarType.STRING:
+                d = i || !value.length;
+                t = binary_format_contract_1.WireType.LengthDelimited;
+                m = "string";
+                break;
+            case reflection_info_1.ScalarType.BOOL:
+                d = value === false;
+                m = "bool";
+                break;
+            case reflection_info_1.ScalarType.UINT32:
+                m = "uint32";
+                break;
+            case reflection_info_1.ScalarType.DOUBLE:
+                t = binary_format_contract_1.WireType.Bit64;
+                m = "double";
+                break;
+            case reflection_info_1.ScalarType.FLOAT:
+                t = binary_format_contract_1.WireType.Bit32;
+                m = "float";
+                break;
+            case reflection_info_1.ScalarType.INT64:
+                d = i || pb_long_1.PbLong.from(value).isZero();
+                m = "int64";
+                break;
+            case reflection_info_1.ScalarType.UINT64:
+                d = i || pb_long_1.PbULong.from(value).isZero();
+                m = "uint64";
+                break;
+            case reflection_info_1.ScalarType.FIXED64:
+                d = i || pb_long_1.PbULong.from(value).isZero();
+                t = binary_format_contract_1.WireType.Bit64;
+                m = "fixed64";
+                break;
+            case reflection_info_1.ScalarType.BYTES:
+                d = i || !value.byteLength;
+                t = binary_format_contract_1.WireType.LengthDelimited;
+                m = "bytes";
+                break;
+            case reflection_info_1.ScalarType.FIXED32:
+                t = binary_format_contract_1.WireType.Bit32;
+                m = "fixed32";
+                break;
+            case reflection_info_1.ScalarType.SFIXED32:
+                t = binary_format_contract_1.WireType.Bit32;
+                m = "sfixed32";
+                break;
+            case reflection_info_1.ScalarType.SFIXED64:
+                d = i || pb_long_1.PbLong.from(value).isZero();
+                t = binary_format_contract_1.WireType.Bit64;
+                m = "sfixed64";
+                break;
+            case reflection_info_1.ScalarType.SINT32:
+                m = "sint32";
+                break;
+            case reflection_info_1.ScalarType.SINT64:
+                d = i || pb_long_1.PbLong.from(value).isZero();
+                m = "sint64";
+                break;
+        }
+        return [t, m, i || d];
+    }
+}
+exports.ReflectionBinaryWriter = ReflectionBinaryWriter;
+
+
+/***/ }),
+
+/***/ 9946:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.containsMessageType = void 0;
+const message_type_contract_1 = __nccwpck_require__(3785);
+/**
+ * Check if the provided object is a proto message.
+ *
+ * Note that this is an experimental feature - it is here to stay, but
+ * implementation details may change without notice.
+ */
+function containsMessageType(msg) {
+    return msg[message_type_contract_1.MESSAGE_TYPE] != null;
+}
+exports.containsMessageType = containsMessageType;
+
+
+/***/ }),
+
+/***/ 5726:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.reflectionCreate = void 0;
+const reflection_scalar_default_1 = __nccwpck_require__(9526);
+const message_type_contract_1 = __nccwpck_require__(3785);
+/**
+ * Creates an instance of the generic message, using the field
+ * information.
+ */
+function reflectionCreate(type) {
+    /**
+     * This ternary can be removed in the next major version.
+     * The `Object.create()` code path utilizes a new `messagePrototype`
+     * property on the `IMessageType` which has this same `MESSAGE_TYPE`
+     * non-enumerable property on it. Doing it this way means that we only
+     * pay the cost of `Object.defineProperty()` once per `IMessageType`
+     * class of once per "instance". The falsy code path is only provided
+     * for backwards compatibility in cases where the runtime library is
+     * updated without also updating the generated code.
+     */
+    const msg = type.messagePrototype
+        ? Object.create(type.messagePrototype)
+        : Object.defineProperty({}, message_type_contract_1.MESSAGE_TYPE, { value: type });
+    for (let field of type.fields) {
+        let name = field.localName;
+        if (field.opt)
+            continue;
+        if (field.oneof)
+            msg[field.oneof] = { oneofKind: undefined };
+        else if (field.repeat)
+            msg[name] = [];
+        else
+            switch (field.kind) {
+                case "scalar":
+                    msg[name] = reflection_scalar_default_1.reflectionScalarDefault(field.T, field.L);
+                    break;
+                case "enum":
+                    // we require 0 to be default value for all enums
+                    msg[name] = 0;
+                    break;
+                case "map":
+                    msg[name] = {};
+                    break;
+            }
+    }
+    return msg;
+}
+exports.reflectionCreate = reflectionCreate;
+
+
+/***/ }),
+
+/***/ 4827:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.reflectionEquals = void 0;
+const reflection_info_1 = __nccwpck_require__(7910);
+/**
+ * Determines whether two message of the same type have the same field values.
+ * Checks for deep equality, traversing repeated fields, oneof groups, maps
+ * and messages recursively.
+ * Will also return true if both messages are `undefined`.
+ */
+function reflectionEquals(info, a, b) {
+    if (a === b)
+        return true;
+    if (!a || !b)
+        return false;
+    for (let field of info.fields) {
+        let localName = field.localName;
+        let val_a = field.oneof ? a[field.oneof][localName] : a[localName];
+        let val_b = field.oneof ? b[field.oneof][localName] : b[localName];
+        switch (field.kind) {
+            case "enum":
+            case "scalar":
+                let t = field.kind == "enum" ? reflection_info_1.ScalarType.INT32 : field.T;
+                if (!(field.repeat
+                    ? repeatedPrimitiveEq(t, val_a, val_b)
+                    : primitiveEq(t, val_a, val_b)))
+                    return false;
+                break;
+            case "map":
+                if (!(field.V.kind == "message"
+                    ? repeatedMsgEq(field.V.T(), objectValues(val_a), objectValues(val_b))
+                    : repeatedPrimitiveEq(field.V.kind == "enum" ? reflection_info_1.ScalarType.INT32 : field.V.T, objectValues(val_a), objectValues(val_b))))
+                    return false;
+                break;
+            case "message":
+                let T = field.T();
+                if (!(field.repeat
+                    ? repeatedMsgEq(T, val_a, val_b)
+                    : T.equals(val_a, val_b)))
+                    return false;
+                break;
+        }
+    }
+    return true;
+}
+exports.reflectionEquals = reflectionEquals;
+const objectValues = Object.values;
+function primitiveEq(type, a, b) {
+    if (a === b)
+        return true;
+    if (type !== reflection_info_1.ScalarType.BYTES)
+        return false;
+    let ba = a;
+    let bb = b;
+    if (ba.length !== bb.length)
+        return false;
+    for (let i = 0; i < ba.length; i++)
+        if (ba[i] != bb[i])
+            return false;
+    return true;
+}
+function repeatedPrimitiveEq(type, a, b) {
+    if (a.length !== b.length)
+        return false;
+    for (let i = 0; i < a.length; i++)
+        if (!primitiveEq(type, a[i], b[i]))
+            return false;
+    return true;
+}
+function repeatedMsgEq(type, a, b) {
+    if (a.length !== b.length)
+        return false;
+    for (let i = 0; i < a.length; i++)
+        if (!type.equals(a[i], b[i]))
+            return false;
+    return true;
+}
+
+
+/***/ }),
+
+/***/ 7910:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.readMessageOption = exports.readFieldOption = exports.readFieldOptions = exports.normalizeFieldInfo = exports.RepeatType = exports.LongType = exports.ScalarType = void 0;
+const lower_camel_case_1 = __nccwpck_require__(4073);
+/**
+ * Scalar value types. This is a subset of field types declared by protobuf
+ * enum google.protobuf.FieldDescriptorProto.Type The types GROUP and MESSAGE
+ * are omitted, but the numerical values are identical.
+ */
+var ScalarType;
+(function (ScalarType) {
+    // 0 is reserved for errors.
+    // Order is weird for historical reasons.
+    ScalarType[ScalarType["DOUBLE"] = 1] = "DOUBLE";
+    ScalarType[ScalarType["FLOAT"] = 2] = "FLOAT";
+    // Not ZigZag encoded.  Negative numbers take 10 bytes.  Use TYPE_SINT64 if
+    // negative values are likely.
+    ScalarType[ScalarType["INT64"] = 3] = "INT64";
+    ScalarType[ScalarType["UINT64"] = 4] = "UINT64";
+    // Not ZigZag encoded.  Negative numbers take 10 bytes.  Use TYPE_SINT32 if
+    // negative values are likely.
+    ScalarType[ScalarType["INT32"] = 5] = "INT32";
+    ScalarType[ScalarType["FIXED64"] = 6] = "FIXED64";
+    ScalarType[ScalarType["FIXED32"] = 7] = "FIXED32";
+    ScalarType[ScalarType["BOOL"] = 8] = "BOOL";
+    ScalarType[ScalarType["STRING"] = 9] = "STRING";
+    // Tag-delimited aggregate.
+    // Group type is deprecated and not supported in proto3. However, Proto3
+    // implementations should still be able to parse the group wire format and
+    // treat group fields as unknown fields.
+    // TYPE_GROUP = 10,
+    // TYPE_MESSAGE = 11,  // Length-delimited aggregate.
+    // New in version 2.
+    ScalarType[ScalarType["BYTES"] = 12] = "BYTES";
+    ScalarType[ScalarType["UINT32"] = 13] = "UINT32";
+    // TYPE_ENUM = 14,
+    ScalarType[ScalarType["SFIXED32"] = 15] = "SFIXED32";
+    ScalarType[ScalarType["SFIXED64"] = 16] = "SFIXED64";
+    ScalarType[ScalarType["SINT32"] = 17] = "SINT32";
+    ScalarType[ScalarType["SINT64"] = 18] = "SINT64";
+})(ScalarType = exports.ScalarType || (exports.ScalarType = {}));
+/**
+ * JavaScript representation of 64 bit integral types. Equivalent to the
+ * field option "jstype".
+ *
+ * By default, protobuf-ts represents 64 bit types as `bigint`.
+ *
+ * You can change the default behaviour by enabling the plugin parameter
+ * `long_type_string`, which will represent 64 bit types as `string`.
+ *
+ * Alternatively, you can change the behaviour for individual fields
+ * with the field option "jstype":
+ *
+ * ```protobuf
+ * uint64 my_field = 1 [jstype = JS_STRING];
+ * uint64 other_field = 2 [jstype = JS_NUMBER];
+ * ```
+ */
+var LongType;
+(function (LongType) {
+    /**
+     * Use JavaScript `bigint`.
+     *
+     * Field option `[jstype = JS_NORMAL]`.
+     */
+    LongType[LongType["BIGINT"] = 0] = "BIGINT";
+    /**
+     * Use JavaScript `string`.
+     *
+     * Field option `[jstype = JS_STRING]`.
+     */
+    LongType[LongType["STRING"] = 1] = "STRING";
+    /**
+     * Use JavaScript `number`.
+     *
+     * Large values will loose precision.
+     *
+     * Field option `[jstype = JS_NUMBER]`.
+     */
+    LongType[LongType["NUMBER"] = 2] = "NUMBER";
+})(LongType = exports.LongType || (exports.LongType = {}));
+/**
+ * Protobuf 2.1.0 introduced packed repeated fields.
+ * Setting the field option `[packed = true]` enables packing.
+ *
+ * In proto3, all repeated fields are packed by default.
+ * Setting the field option `[packed = false]` disables packing.
+ *
+ * Packed repeated fields are encoded with a single tag,
+ * then a length-delimiter, then the element values.
+ *
+ * Unpacked repeated fields are encoded with a tag and
+ * value for each element.
+ *
+ * `bytes` and `string` cannot be packed.
+ */
+var RepeatType;
+(function (RepeatType) {
+    /**
+     * The field is not repeated.
+     */
+    RepeatType[RepeatType["NO"] = 0] = "NO";
+    /**
+     * The field is repeated and should be packed.
+     * Invalid for `bytes` and `string`, they cannot be packed.
+     */
+    RepeatType[RepeatType["PACKED"] = 1] = "PACKED";
+    /**
+     * The field is repeated but should not be packed.
+     * The only valid repeat type for repeated `bytes` and `string`.
+     */
+    RepeatType[RepeatType["UNPACKED"] = 2] = "UNPACKED";
+})(RepeatType = exports.RepeatType || (exports.RepeatType = {}));
+/**
+ * Turns PartialFieldInfo into FieldInfo.
+ */
+function normalizeFieldInfo(field) {
+    var _a, _b, _c, _d;
+    field.localName = (_a = field.localName) !== null && _a !== void 0 ? _a : lower_camel_case_1.lowerCamelCase(field.name);
+    field.jsonName = (_b = field.jsonName) !== null && _b !== void 0 ? _b : lower_camel_case_1.lowerCamelCase(field.name);
+    field.repeat = (_c = field.repeat) !== null && _c !== void 0 ? _c : RepeatType.NO;
+    field.opt = (_d = field.opt) !== null && _d !== void 0 ? _d : (field.repeat ? false : field.oneof ? false : field.kind == "message");
+    return field;
+}
+exports.normalizeFieldInfo = normalizeFieldInfo;
+/**
+ * Read custom field options from a generated message type.
+ *
+ * @deprecated use readFieldOption()
+ */
+function readFieldOptions(messageType, fieldName, extensionName, extensionType) {
+    var _a;
+    const options = (_a = messageType.fields.find((m, i) => m.localName == fieldName || i == fieldName)) === null || _a === void 0 ? void 0 : _a.options;
+    return options && options[extensionName] ? extensionType.fromJson(options[extensionName]) : undefined;
+}
+exports.readFieldOptions = readFieldOptions;
+function readFieldOption(messageType, fieldName, extensionName, extensionType) {
+    var _a;
+    const options = (_a = messageType.fields.find((m, i) => m.localName == fieldName || i == fieldName)) === null || _a === void 0 ? void 0 : _a.options;
+    if (!options) {
+        return undefined;
+    }
+    const optionVal = options[extensionName];
+    if (optionVal === undefined) {
+        return optionVal;
+    }
+    return extensionType ? extensionType.fromJson(optionVal) : optionVal;
+}
+exports.readFieldOption = readFieldOption;
+function readMessageOption(messageType, extensionName, extensionType) {
+    const options = messageType.options;
+    const optionVal = options[extensionName];
+    if (optionVal === undefined) {
+        return optionVal;
+    }
+    return extensionType ? extensionType.fromJson(optionVal) : optionVal;
+}
+exports.readMessageOption = readMessageOption;
+
+
+/***/ }),
+
+/***/ 6790:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ReflectionJsonReader = void 0;
+const json_typings_1 = __nccwpck_require__(9999);
+const base64_1 = __nccwpck_require__(6335);
+const reflection_info_1 = __nccwpck_require__(7910);
+const pb_long_1 = __nccwpck_require__(1753);
+const assert_1 = __nccwpck_require__(8602);
+const reflection_long_convert_1 = __nccwpck_require__(3402);
+/**
+ * Reads proto3 messages in canonical JSON format using reflection information.
+ *
+ * https://developers.google.com/protocol-buffers/docs/proto3#json
+ */
+class ReflectionJsonReader {
+    constructor(info) {
+        this.info = info;
+    }
+    prepare() {
+        var _a;
+        if (this.fMap === undefined) {
+            this.fMap = {};
+            const fieldsInput = (_a = this.info.fields) !== null && _a !== void 0 ? _a : [];
+            for (const field of fieldsInput) {
+                this.fMap[field.name] = field;
+                this.fMap[field.jsonName] = field;
+                this.fMap[field.localName] = field;
+            }
+        }
+    }
+    // Cannot parse JSON <type of jsonValue> for <type name>#<fieldName>.
+    assert(condition, fieldName, jsonValue) {
+        if (!condition) {
+            let what = json_typings_1.typeofJsonValue(jsonValue);
+            if (what == "number" || what == "boolean")
+                what = jsonValue.toString();
+            throw new Error(`Cannot parse JSON ${what} for ${this.info.typeName}#${fieldName}`);
+        }
+    }
+    /**
+     * Reads a message from canonical JSON format into the target message.
+     *
+     * Repeated fields are appended. Map entries are added, overwriting
+     * existing keys.
+     *
+     * If a message field is already present, it will be merged with the
+     * new data.
+     */
+    read(input, message, options) {
+        this.prepare();
+        const oneofsHandled = [];
+        for (const [jsonKey, jsonValue] of Object.entries(input)) {
+            const field = this.fMap[jsonKey];
+            if (!field) {
+                if (!options.ignoreUnknownFields)
+                    throw new Error(`Found unknown field while reading ${this.info.typeName} from JSON format. JSON key: ${jsonKey}`);
+                continue;
+            }
+            const localName = field.localName;
+            // handle oneof ADT
+            let target; // this will be the target for the field value, whether it is member of a oneof or not
+            if (field.oneof) {
+                if (jsonValue === null && (field.kind !== 'enum' || field.T()[0] !== 'google.protobuf.NullValue')) {
+                    continue;
+                }
+                // since json objects are unordered by specification, it is not possible to take the last of multiple oneofs
+                if (oneofsHandled.includes(field.oneof))
+                    throw new Error(`Multiple members of the oneof group "${field.oneof}" of ${this.info.typeName} are present in JSON.`);
+                oneofsHandled.push(field.oneof);
+                target = message[field.oneof] = {
+                    oneofKind: localName
+                };
+            }
+            else {
+                target = message;
+            }
+            // we have handled oneof above. we just have read the value into `target`.
+            if (field.kind == 'map') {
+                if (jsonValue === null) {
+                    continue;
+                }
+                // check input
+                this.assert(json_typings_1.isJsonObject(jsonValue), field.name, jsonValue);
+                // our target to put map entries into
+                const fieldObj = target[localName];
+                // read entries
+                for (const [jsonObjKey, jsonObjValue] of Object.entries(jsonValue)) {
+                    this.assert(jsonObjValue !== null, field.name + " map value", null);
+                    // read value
+                    let val;
+                    switch (field.V.kind) {
+                        case "message":
+                            val = field.V.T().internalJsonRead(jsonObjValue, options);
+                            break;
+                        case "enum":
+                            val = this.enum(field.V.T(), jsonObjValue, field.name, options.ignoreUnknownFields);
+                            if (val === false)
+                                continue;
+                            break;
+                        case "scalar":
+                            val = this.scalar(jsonObjValue, field.V.T, field.V.L, field.name);
+                            break;
+                    }
+                    this.assert(val !== undefined, field.name + " map value", jsonObjValue);
+                    // read key
+                    let key = jsonObjKey;
+                    if (field.K == reflection_info_1.ScalarType.BOOL)
+                        key = key == "true" ? true : key == "false" ? false : key;
+                    key = this.scalar(key, field.K, reflection_info_1.LongType.STRING, field.name).toString();
+                    fieldObj[key] = val;
+                }
+            }
+            else if (field.repeat) {
+                if (jsonValue === null)
+                    continue;
+                // check input
+                this.assert(Array.isArray(jsonValue), field.name, jsonValue);
+                // our target to put array entries into
+                const fieldArr = target[localName];
+                // read array entries
+                for (const jsonItem of jsonValue) {
+                    this.assert(jsonItem !== null, field.name, null);
+                    let val;
+                    switch (field.kind) {
+                        case "message":
+                            val = field.T().internalJsonRead(jsonItem, options);
+                            break;
+                        case "enum":
+                            val = this.enum(field.T(), jsonItem, field.name, options.ignoreUnknownFields);
+                            if (val === false)
+                                continue;
+                            break;
+                        case "scalar":
+                            val = this.scalar(jsonItem, field.T, field.L, field.name);
+                            break;
+                    }
+                    this.assert(val !== undefined, field.name, jsonValue);
+                    fieldArr.push(val);
+                }
+            }
+            else {
+                switch (field.kind) {
+                    case "message":
+                        if (jsonValue === null && field.T().typeName != 'google.protobuf.Value') {
+                            this.assert(field.oneof === undefined, field.name + " (oneof member)", null);
+                            continue;
+                        }
+                        target[localName] = field.T().internalJsonRead(jsonValue, options, target[localName]);
+                        break;
+                    case "enum":
+                        if (jsonValue === null)
+                            continue;
+                        let val = this.enum(field.T(), jsonValue, field.name, options.ignoreUnknownFields);
+                        if (val === false)
+                            continue;
+                        target[localName] = val;
+                        break;
+                    case "scalar":
+                        if (jsonValue === null)
+                            continue;
+                        target[localName] = this.scalar(jsonValue, field.T, field.L, field.name);
+                        break;
+                }
+            }
+        }
+    }
+    /**
+     * Returns `false` for unrecognized string representations.
+     *
+     * google.protobuf.NullValue accepts only JSON `null` (or the old `"NULL_VALUE"`).
+     */
+    enum(type, json, fieldName, ignoreUnknownFields) {
+        if (type[0] == 'google.protobuf.NullValue')
+            assert_1.assert(json === null || json === "NULL_VALUE", `Unable to parse field ${this.info.typeName}#${fieldName}, enum ${type[0]} only accepts null.`);
+        if (json === null)
+            // we require 0 to be default value for all enums
+            return 0;
+        switch (typeof json) {
+            case "number":
+                assert_1.assert(Number.isInteger(json), `Unable to parse field ${this.info.typeName}#${fieldName}, enum can only be integral number, got ${json}.`);
+                return json;
+            case "string":
+                let localEnumName = json;
+                if (type[2] && json.substring(0, type[2].length) === type[2])
+                    // lookup without the shared prefix
+                    localEnumName = json.substring(type[2].length);
+                let enumNumber = type[1][localEnumName];
+                if (typeof enumNumber === 'undefined' && ignoreUnknownFields) {
+                    return false;
+                }
+                assert_1.assert(typeof enumNumber == "number", `Unable to parse field ${this.info.typeName}#${fieldName}, enum ${type[0]} has no value for "${json}".`);
+                return enumNumber;
+        }
+        assert_1.assert(false, `Unable to parse field ${this.info.typeName}#${fieldName}, cannot parse enum value from ${typeof json}".`);
+    }
+    scalar(json, type, longType, fieldName) {
+        let e;
+        try {
+            switch (type) {
+                // float, double: JSON value will be a number or one of the special string values "NaN", "Infinity", and "-Infinity".
+                // Either numbers or strings are accepted. Exponent notation is also accepted.
+                case reflection_info_1.ScalarType.DOUBLE:
+                case reflection_info_1.ScalarType.FLOAT:
+                    if (json === null)
+                        return .0;
+                    if (json === "NaN")
+                        return Number.NaN;
+                    if (json === "Infinity")
+                        return Number.POSITIVE_INFINITY;
+                    if (json === "-Infinity")
+                        return Number.NEGATIVE_INFINITY;
+                    if (json === "") {
+                        e = "empty string";
+                        break;
+                    }
+                    if (typeof json == "string" && json.trim().length !== json.length) {
+                        e = "extra whitespace";
+                        break;
+                    }
+                    if (typeof json != "string" && typeof json != "number") {
+                        break;
+                    }
+                    let float = Number(json);
+                    if (Number.isNaN(float)) {
+                        e = "not a number";
+                        break;
+                    }
+                    if (!Number.isFinite(float)) {
+                        // infinity and -infinity are handled by string representation above, so this is an error
+                        e = "too large or small";
+                        break;
+                    }
+                    if (type == reflection_info_1.ScalarType.FLOAT)
+                        assert_1.assertFloat32(float);
+                    return float;
+                // int32, fixed32, uint32: JSON value will be a decimal number. Either numbers or strings are accepted.
+                case reflection_info_1.ScalarType.INT32:
+                case reflection_info_1.ScalarType.FIXED32:
+                case reflection_info_1.ScalarType.SFIXED32:
+                case reflection_info_1.ScalarType.SINT32:
+                case reflection_info_1.ScalarType.UINT32:
+                    if (json === null)
+                        return 0;
+                    let int32;
+                    if (typeof json == "number")
+                        int32 = json;
+                    else if (json === "")
+                        e = "empty string";
+                    else if (typeof json == "string") {
+                        if (json.trim().length !== json.length)
+                            e = "extra whitespace";
+                        else
+                            int32 = Number(json);
+                    }
+                    if (int32 === undefined)
+                        break;
+                    if (type == reflection_info_1.ScalarType.UINT32)
+                        assert_1.assertUInt32(int32);
+                    else
+                        assert_1.assertInt32(int32);
+                    return int32;
+                // int64, fixed64, uint64: JSON value will be a decimal string. Either numbers or strings are accepted.
+                case reflection_info_1.ScalarType.INT64:
+                case reflection_info_1.ScalarType.SFIXED64:
+                case reflection_info_1.ScalarType.SINT64:
+                    if (json === null)
+                        return reflection_long_convert_1.reflectionLongConvert(pb_long_1.PbLong.ZERO, longType);
+                    if (typeof json != "number" && typeof json != "string")
+                        break;
+                    return reflection_long_convert_1.reflectionLongConvert(pb_long_1.PbLong.from(json), longType);
+                case reflection_info_1.ScalarType.FIXED64:
+                case reflection_info_1.ScalarType.UINT64:
+                    if (json === null)
+                        return reflection_long_convert_1.reflectionLongConvert(pb_long_1.PbULong.ZERO, longType);
+                    if (typeof json != "number" && typeof json != "string")
+                        break;
+                    return reflection_long_convert_1.reflectionLongConvert(pb_long_1.PbULong.from(json), longType);
+                // bool:
+                case reflection_info_1.ScalarType.BOOL:
+                    if (json === null)
+                        return false;
+                    if (typeof json !== "boolean")
+                        break;
+                    return json;
+                // string:
+                case reflection_info_1.ScalarType.STRING:
+                    if (json === null)
+                        return "";
+                    if (typeof json !== "string") {
+                        e = "extra whitespace";
+                        break;
+                    }
+                    try {
+                        encodeURIComponent(json);
+                    }
+                    catch (e) {
+                        e = "invalid UTF8";
+                        break;
+                    }
+                    return json;
+                // bytes: JSON value will be the data encoded as a string using standard base64 encoding with paddings.
+                // Either standard or URL-safe base64 encoding with/without paddings are accepted.
+                case reflection_info_1.ScalarType.BYTES:
+                    if (json === null || json === "")
+                        return new Uint8Array(0);
+                    if (typeof json !== 'string')
+                        break;
+                    return base64_1.base64decode(json);
+            }
+        }
+        catch (error) {
+            e = error.message;
+        }
+        this.assert(false, fieldName + (e ? " - " + e : ""), json);
+    }
+}
+exports.ReflectionJsonReader = ReflectionJsonReader;
+
+
+/***/ }),
+
+/***/ 1094:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ReflectionJsonWriter = void 0;
+const base64_1 = __nccwpck_require__(6335);
+const pb_long_1 = __nccwpck_require__(1753);
+const reflection_info_1 = __nccwpck_require__(7910);
+const assert_1 = __nccwpck_require__(8602);
+/**
+ * Writes proto3 messages in canonical JSON format using reflection
+ * information.
+ *
+ * https://developers.google.com/protocol-buffers/docs/proto3#json
+ */
+class ReflectionJsonWriter {
+    constructor(info) {
+        var _a;
+        this.fields = (_a = info.fields) !== null && _a !== void 0 ? _a : [];
+    }
+    /**
+     * Converts the message to a JSON object, based on the field descriptors.
+     */
+    write(message, options) {
+        const json = {}, source = message;
+        for (const field of this.fields) {
+            // field is not part of a oneof, simply write as is
+            if (!field.oneof) {
+                let jsonValue = this.field(field, source[field.localName], options);
+                if (jsonValue !== undefined)
+                    json[options.useProtoFieldName ? field.name : field.jsonName] = jsonValue;
+                continue;
+            }
+            // field is part of a oneof
+            const group = source[field.oneof];
+            if (group.oneofKind !== field.localName)
+                continue; // not selected, skip
+            const opt = field.kind == 'scalar' || field.kind == 'enum'
+                ? Object.assign(Object.assign({}, options), { emitDefaultValues: true }) : options;
+            let jsonValue = this.field(field, group[field.localName], opt);
+            assert_1.assert(jsonValue !== undefined);
+            json[options.useProtoFieldName ? field.name : field.jsonName] = jsonValue;
+        }
+        return json;
+    }
+    field(field, value, options) {
+        let jsonValue = undefined;
+        if (field.kind == 'map') {
+            assert_1.assert(typeof value == "object" && value !== null);
+            const jsonObj = {};
+            switch (field.V.kind) {
+                case "scalar":
+                    for (const [entryKey, entryValue] of Object.entries(value)) {
+                        const val = this.scalar(field.V.T, entryValue, field.name, false, true);
+                        assert_1.assert(val !== undefined);
+                        jsonObj[entryKey.toString()] = val; // JSON standard allows only (double quoted) string as property key
+                    }
+                    break;
+                case "message":
+                    const messageType = field.V.T();
+                    for (const [entryKey, entryValue] of Object.entries(value)) {
+                        const val = this.message(messageType, entryValue, field.name, options);
+                        assert_1.assert(val !== undefined);
+                        jsonObj[entryKey.toString()] = val; // JSON standard allows only (double quoted) string as property key
+                    }
+                    break;
+                case "enum":
+                    const enumInfo = field.V.T();
+                    for (const [entryKey, entryValue] of Object.entries(value)) {
+                        assert_1.assert(entryValue === undefined || typeof entryValue == 'number');
+                        const val = this.enum(enumInfo, entryValue, field.name, false, true, options.enumAsInteger);
+                        assert_1.assert(val !== undefined);
+                        jsonObj[entryKey.toString()] = val; // JSON standard allows only (double quoted) string as property key
+                    }
+                    break;
+            }
+            if (options.emitDefaultValues || Object.keys(jsonObj).length > 0)
+                jsonValue = jsonObj;
+        }
+        else if (field.repeat) {
+            assert_1.assert(Array.isArray(value));
+            const jsonArr = [];
+            switch (field.kind) {
+                case "scalar":
+                    for (let i = 0; i < value.length; i++) {
+                        const val = this.scalar(field.T, value[i], field.name, field.opt, true);
+                        assert_1.assert(val !== undefined);
+                        jsonArr.push(val);
+                    }
+                    break;
+                case "enum":
+                    const enumInfo = field.T();
+                    for (let i = 0; i < value.length; i++) {
+                        assert_1.assert(value[i] === undefined || typeof value[i] == 'number');
+                        const val = this.enum(enumInfo, value[i], field.name, field.opt, true, options.enumAsInteger);
+                        assert_1.assert(val !== undefined);
+                        jsonArr.push(val);
+                    }
+                    break;
+                case "message":
+                    const messageType = field.T();
+                    for (let i = 0; i < value.length; i++) {
+                        const val = this.message(messageType, value[i], field.name, options);
+                        assert_1.assert(val !== undefined);
+                        jsonArr.push(val);
+                    }
+                    break;
+            }
+            // add converted array to json output
+            if (options.emitDefaultValues || jsonArr.length > 0 || options.emitDefaultValues)
+                jsonValue = jsonArr;
+        }
+        else {
+            switch (field.kind) {
+                case "scalar":
+                    jsonValue = this.scalar(field.T, value, field.name, field.opt, options.emitDefaultValues);
+                    break;
+                case "enum":
+                    jsonValue = this.enum(field.T(), value, field.name, field.opt, options.emitDefaultValues, options.enumAsInteger);
+                    break;
+                case "message":
+                    jsonValue = this.message(field.T(), value, field.name, options);
+                    break;
+            }
+        }
+        return jsonValue;
+    }
+    /**
+     * Returns `null` as the default for google.protobuf.NullValue.
+     */
+    enum(type, value, fieldName, optional, emitDefaultValues, enumAsInteger) {
+        if (type[0] == 'google.protobuf.NullValue')
+            return !emitDefaultValues && !optional ? undefined : null;
+        if (value === undefined) {
+            assert_1.assert(optional);
+            return undefined;
+        }
+        if (value === 0 && !emitDefaultValues && !optional)
+            // we require 0 to be default value for all enums
+            return undefined;
+        assert_1.assert(typeof value == 'number');
+        assert_1.assert(Number.isInteger(value));
+        if (enumAsInteger || !type[1].hasOwnProperty(value))
+            // if we don't now the enum value, just return the number
+            return value;
+        if (type[2])
+            // restore the dropped prefix
+            return type[2] + type[1][value];
+        return type[1][value];
+    }
+    message(type, value, fieldName, options) {
+        if (value === undefined)
+            return options.emitDefaultValues ? null : undefined;
+        return type.internalJsonWrite(value, options);
+    }
+    scalar(type, value, fieldName, optional, emitDefaultValues) {
+        if (value === undefined) {
+            assert_1.assert(optional);
+            return undefined;
+        }
+        const ed = emitDefaultValues || optional;
+        // noinspection FallThroughInSwitchStatementJS
+        switch (type) {
+            // int32, fixed32, uint32: JSON value will be a decimal number. Either numbers or strings are accepted.
+            case reflection_info_1.ScalarType.INT32:
+            case reflection_info_1.ScalarType.SFIXED32:
+            case reflection_info_1.ScalarType.SINT32:
+                if (value === 0)
+                    return ed ? 0 : undefined;
+                assert_1.assertInt32(value);
+                return value;
+            case reflection_info_1.ScalarType.FIXED32:
+            case reflection_info_1.ScalarType.UINT32:
+                if (value === 0)
+                    return ed ? 0 : undefined;
+                assert_1.assertUInt32(value);
+                return value;
+            // float, double: JSON value will be a number or one of the special string values "NaN", "Infinity", and "-Infinity".
+            // Either numbers or strings are accepted. Exponent notation is also accepted.
+            case reflection_info_1.ScalarType.FLOAT:
+                assert_1.assertFloat32(value);
+            case reflection_info_1.ScalarType.DOUBLE:
+                if (value === 0)
+                    return ed ? 0 : undefined;
+                assert_1.assert(typeof value == 'number');
+                if (Number.isNaN(value))
+                    return 'NaN';
+                if (value === Number.POSITIVE_INFINITY)
+                    return 'Infinity';
+                if (value === Number.NEGATIVE_INFINITY)
+                    return '-Infinity';
+                return value;
+            // string:
+            case reflection_info_1.ScalarType.STRING:
+                if (value === "")
+                    return ed ? '' : undefined;
+                assert_1.assert(typeof value == 'string');
+                return value;
+            // bool:
+            case reflection_info_1.ScalarType.BOOL:
+                if (value === false)
+                    return ed ? false : undefined;
+                assert_1.assert(typeof value == 'boolean');
+                return value;
+            // JSON value will be a decimal string. Either numbers or strings are accepted.
+            case reflection_info_1.ScalarType.UINT64:
+            case reflection_info_1.ScalarType.FIXED64:
+                assert_1.assert(typeof value == 'number' || typeof value == 'string' || typeof value == 'bigint');
+                let ulong = pb_long_1.PbULong.from(value);
+                if (ulong.isZero() && !ed)
+                    return undefined;
+                return ulong.toString();
+            // JSON value will be a decimal string. Either numbers or strings are accepted.
+            case reflection_info_1.ScalarType.INT64:
+            case reflection_info_1.ScalarType.SFIXED64:
+            case reflection_info_1.ScalarType.SINT64:
+                assert_1.assert(typeof value == 'number' || typeof value == 'string' || typeof value == 'bigint');
+                let long = pb_long_1.PbLong.from(value);
+                if (long.isZero() && !ed)
+                    return undefined;
+                return long.toString();
+            // bytes: JSON value will be the data encoded as a string using standard base64 encoding with paddings.
+            // Either standard or URL-safe base64 encoding with/without paddings are accepted.
+            case reflection_info_1.ScalarType.BYTES:
+                assert_1.assert(value instanceof Uint8Array);
+                if (!value.byteLength)
+                    return ed ? "" : undefined;
+                return base64_1.base64encode(value);
+        }
+    }
+}
+exports.ReflectionJsonWriter = ReflectionJsonWriter;
+
+
+/***/ }),
+
+/***/ 3402:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.reflectionLongConvert = void 0;
+const reflection_info_1 = __nccwpck_require__(7910);
+/**
+ * Utility method to convert a PbLong or PbUlong to a JavaScript
+ * representation during runtime.
+ *
+ * Works with generated field information, `undefined` is equivalent
+ * to `STRING`.
+ */
+function reflectionLongConvert(long, type) {
+    switch (type) {
+        case reflection_info_1.LongType.BIGINT:
+            return long.toBigInt();
+        case reflection_info_1.LongType.NUMBER:
+            return long.toNumber();
+        default:
+            // case undefined:
+            // case LongType.STRING:
+            return long.toString();
+    }
+}
+exports.reflectionLongConvert = reflectionLongConvert;
+
+
+/***/ }),
+
+/***/ 8044:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.reflectionMergePartial = void 0;
+/**
+ * Copy partial data into the target message.
+ *
+ * If a singular scalar or enum field is present in the source, it
+ * replaces the field in the target.
+ *
+ * If a singular message field is present in the source, it is merged
+ * with the target field by calling mergePartial() of the responsible
+ * message type.
+ *
+ * If a repeated field is present in the source, its values replace
+ * all values in the target array, removing extraneous values.
+ * Repeated message fields are copied, not merged.
+ *
+ * If a map field is present in the source, entries are added to the
+ * target map, replacing entries with the same key. Entries that only
+ * exist in the target remain. Entries with message values are copied,
+ * not merged.
+ *
+ * Note that this function differs from protobuf merge semantics,
+ * which appends repeated fields.
+ */
+function reflectionMergePartial(info, target, source) {
+    let fieldValue, // the field value we are working with
+    input = source, output; // where we want our field value to go
+    for (let field of info.fields) {
+        let name = field.localName;
+        if (field.oneof) {
+            const group = input[field.oneof]; // this is the oneof`s group in the source
+            if ((group === null || group === void 0 ? void 0 : group.oneofKind) == undefined) { // the user is free to omit
+                continue; // we skip this field, and all other members too
+            }
+            fieldValue = group[name]; // our value comes from the the oneof group of the source
+            output = target[field.oneof]; // and our output is the oneof group of the target
+            output.oneofKind = group.oneofKind; // always update discriminator
+            if (fieldValue == undefined) {
+                delete output[name]; // remove any existing value
+                continue; // skip further work on field
+            }
+        }
+        else {
+            fieldValue = input[name]; // we are using the source directly
+            output = target; // we want our field value to go directly into the target
+            if (fieldValue == undefined) {
+                continue; // skip further work on field, existing value is used as is
+            }
+        }
+        if (field.repeat)
+            output[name].length = fieldValue.length; // resize target array to match source array
+        // now we just work with `fieldValue` and `output` to merge the value
+        switch (field.kind) {
+            case "scalar":
+            case "enum":
+                if (field.repeat)
+                    for (let i = 0; i < fieldValue.length; i++)
+                        output[name][i] = fieldValue[i]; // not a reference type
+                else
+                    output[name] = fieldValue; // not a reference type
+                break;
+            case "message":
+                let T = field.T();
+                if (field.repeat)
+                    for (let i = 0; i < fieldValue.length; i++)
+                        output[name][i] = T.create(fieldValue[i]);
+                else if (output[name] === undefined)
+                    output[name] = T.create(fieldValue); // nothing to merge with
+                else
+                    T.mergePartial(output[name], fieldValue);
+                break;
+            case "map":
+                // Map and repeated fields are simply overwritten, not appended or merged
+                switch (field.V.kind) {
+                    case "scalar":
+                    case "enum":
+                        Object.assign(output[name], fieldValue); // elements are not reference types
+                        break;
+                    case "message":
+                        let T = field.V.T();
+                        for (let k of Object.keys(fieldValue))
+                            output[name][k] = T.create(fieldValue[k]);
+                        break;
+                }
+                break;
+        }
+    }
+}
+exports.reflectionMergePartial = reflectionMergePartial;
+
+
+/***/ }),
+
+/***/ 9526:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.reflectionScalarDefault = void 0;
+const reflection_info_1 = __nccwpck_require__(7910);
+const reflection_long_convert_1 = __nccwpck_require__(3402);
+const pb_long_1 = __nccwpck_require__(1753);
+/**
+ * Creates the default value for a scalar type.
+ */
+function reflectionScalarDefault(type, longType = reflection_info_1.LongType.STRING) {
+    switch (type) {
+        case reflection_info_1.ScalarType.BOOL:
+            return false;
+        case reflection_info_1.ScalarType.UINT64:
+        case reflection_info_1.ScalarType.FIXED64:
+            return reflection_long_convert_1.reflectionLongConvert(pb_long_1.PbULong.ZERO, longType);
+        case reflection_info_1.ScalarType.INT64:
+        case reflection_info_1.ScalarType.SFIXED64:
+        case reflection_info_1.ScalarType.SINT64:
+            return reflection_long_convert_1.reflectionLongConvert(pb_long_1.PbLong.ZERO, longType);
+        case reflection_info_1.ScalarType.DOUBLE:
+        case reflection_info_1.ScalarType.FLOAT:
+            return 0.0;
+        case reflection_info_1.ScalarType.BYTES:
+            return new Uint8Array(0);
+        case reflection_info_1.ScalarType.STRING:
+            return "";
+        default:
+            // case ScalarType.INT32:
+            // case ScalarType.UINT32:
+            // case ScalarType.SINT32:
+            // case ScalarType.FIXED32:
+            // case ScalarType.SFIXED32:
+            return 0;
+    }
+}
+exports.reflectionScalarDefault = reflectionScalarDefault;
+
+
+/***/ }),
+
+/***/ 5167:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ReflectionTypeCheck = void 0;
+const reflection_info_1 = __nccwpck_require__(7910);
+const oneof_1 = __nccwpck_require__(8063);
+// noinspection JSMethodCanBeStatic
+class ReflectionTypeCheck {
+    constructor(info) {
+        var _a;
+        this.fields = (_a = info.fields) !== null && _a !== void 0 ? _a : [];
+    }
+    prepare() {
+        if (this.data)
+            return;
+        const req = [], known = [], oneofs = [];
+        for (let field of this.fields) {
+            if (field.oneof) {
+                if (!oneofs.includes(field.oneof)) {
+                    oneofs.push(field.oneof);
+                    req.push(field.oneof);
+                    known.push(field.oneof);
+                }
+            }
+            else {
+                known.push(field.localName);
+                switch (field.kind) {
+                    case "scalar":
+                    case "enum":
+                        if (!field.opt || field.repeat)
+                            req.push(field.localName);
+                        break;
+                    case "message":
+                        if (field.repeat)
+                            req.push(field.localName);
+                        break;
+                    case "map":
+                        req.push(field.localName);
+                        break;
+                }
+            }
+        }
+        this.data = { req, known, oneofs: Object.values(oneofs) };
+    }
+    /**
+     * Is the argument a valid message as specified by the
+     * reflection information?
+     *
+     * Checks all field types recursively. The `depth`
+     * specifies how deep into the structure the check will be.
+     *
+     * With a depth of 0, only the presence of fields
+     * is checked.
+     *
+     * With a depth of 1 or more, the field types are checked.
+     *
+     * With a depth of 2 or more, the members of map, repeated
+     * and message fields are checked.
+     *
+     * Message fields will be checked recursively with depth - 1.
+     *
+     * The number of map entries / repeated values being checked
+     * is < depth.
+     */
+    is(message, depth, allowExcessProperties = false) {
+        if (depth < 0)
+            return true;
+        if (message === null || message === undefined || typeof message != 'object')
+            return false;
+        this.prepare();
+        let keys = Object.keys(message), data = this.data;
+        // if a required field is missing in arg, this cannot be a T
+        if (keys.length < data.req.length || data.req.some(n => !keys.includes(n)))
+            return false;
+        if (!allowExcessProperties) {
+            // if the arg contains a key we dont know, this is not a literal T
+            if (keys.some(k => !data.known.includes(k)))
+                return false;
+        }
+        // "With a depth of 0, only the presence and absence of fields is checked."
+        // "With a depth of 1 or more, the field types are checked."
+        if (depth < 1) {
+            return true;
+        }
+        // check oneof group
+        for (const name of data.oneofs) {
+            const group = message[name];
+            if (!oneof_1.isOneofGroup(group))
+                return false;
+            if (group.oneofKind === undefined)
+                continue;
+            const field = this.fields.find(f => f.localName === group.oneofKind);
+            if (!field)
+                return false; // we found no field, but have a kind, something is wrong
+            if (!this.field(group[group.oneofKind], field, allowExcessProperties, depth))
+                return false;
+        }
+        // check types
+        for (const field of this.fields) {
+            if (field.oneof !== undefined)
+                continue;
+            if (!this.field(message[field.localName], field, allowExcessProperties, depth))
+                return false;
+        }
+        return true;
+    }
+    field(arg, field, allowExcessProperties, depth) {
+        let repeated = field.repeat;
+        switch (field.kind) {
+            case "scalar":
+                if (arg === undefined)
+                    return field.opt;
+                if (repeated)
+                    return this.scalars(arg, field.T, depth, field.L);
+                return this.scalar(arg, field.T, field.L);
+            case "enum":
+                if (arg === undefined)
+                    return field.opt;
+                if (repeated)
+                    return this.scalars(arg, reflection_info_1.ScalarType.INT32, depth);
+                return this.scalar(arg, reflection_info_1.ScalarType.INT32);
+            case "message":
+                if (arg === undefined)
+                    return true;
+                if (repeated)
+                    return this.messages(arg, field.T(), allowExcessProperties, depth);
+                return this.message(arg, field.T(), allowExcessProperties, depth);
+            case "map":
+                if (typeof arg != 'object' || arg === null)
+                    return false;
+                if (depth < 2)
+                    return true;
+                if (!this.mapKeys(arg, field.K, depth))
+                    return false;
+                switch (field.V.kind) {
+                    case "scalar":
+                        return this.scalars(Object.values(arg), field.V.T, depth, field.V.L);
+                    case "enum":
+                        return this.scalars(Object.values(arg), reflection_info_1.ScalarType.INT32, depth);
+                    case "message":
+                        return this.messages(Object.values(arg), field.V.T(), allowExcessProperties, depth);
+                }
+                break;
+        }
+        return true;
+    }
+    message(arg, type, allowExcessProperties, depth) {
+        if (allowExcessProperties) {
+            return type.isAssignable(arg, depth);
+        }
+        return type.is(arg, depth);
+    }
+    messages(arg, type, allowExcessProperties, depth) {
+        if (!Array.isArray(arg))
+            return false;
+        if (depth < 2)
+            return true;
+        if (allowExcessProperties) {
+            for (let i = 0; i < arg.length && i < depth; i++)
+                if (!type.isAssignable(arg[i], depth - 1))
+                    return false;
+        }
+        else {
+            for (let i = 0; i < arg.length && i < depth; i++)
+                if (!type.is(arg[i], depth - 1))
+                    return false;
+        }
+        return true;
+    }
+    scalar(arg, type, longType) {
+        let argType = typeof arg;
+        switch (type) {
+            case reflection_info_1.ScalarType.UINT64:
+            case reflection_info_1.ScalarType.FIXED64:
+            case reflection_info_1.ScalarType.INT64:
+            case reflection_info_1.ScalarType.SFIXED64:
+            case reflection_info_1.ScalarType.SINT64:
+                switch (longType) {
+                    case reflection_info_1.LongType.BIGINT:
+                        return argType == "bigint";
+                    case reflection_info_1.LongType.NUMBER:
+                        return argType == "number" && !isNaN(arg);
+                    default:
+                        return argType == "string";
+                }
+            case reflection_info_1.ScalarType.BOOL:
+                return argType == 'boolean';
+            case reflection_info_1.ScalarType.STRING:
+                return argType == 'string';
+            case reflection_info_1.ScalarType.BYTES:
+                return arg instanceof Uint8Array;
+            case reflection_info_1.ScalarType.DOUBLE:
+            case reflection_info_1.ScalarType.FLOAT:
+                return argType == 'number' && !isNaN(arg);
+            default:
+                // case ScalarType.UINT32:
+                // case ScalarType.FIXED32:
+                // case ScalarType.INT32:
+                // case ScalarType.SINT32:
+                // case ScalarType.SFIXED32:
+                return argType == 'number' && Number.isInteger(arg);
+        }
+    }
+    scalars(arg, type, depth, longType) {
+        if (!Array.isArray(arg))
+            return false;
+        if (depth < 2)
+            return true;
+        if (Array.isArray(arg))
+            for (let i = 0; i < arg.length && i < depth; i++)
+                if (!this.scalar(arg[i], type, longType))
+                    return false;
+        return true;
+    }
+    mapKeys(map, type, depth) {
+        let keys = Object.keys(map);
+        switch (type) {
+            case reflection_info_1.ScalarType.INT32:
+            case reflection_info_1.ScalarType.FIXED32:
+            case reflection_info_1.ScalarType.SFIXED32:
+            case reflection_info_1.ScalarType.SINT32:
+            case reflection_info_1.ScalarType.UINT32:
+                return this.scalars(keys.slice(0, depth).map(k => parseInt(k)), type, depth);
+            case reflection_info_1.ScalarType.BOOL:
+                return this.scalars(keys.slice(0, depth).map(k => k == 'true' ? true : k == 'false' ? false : k), type, depth);
+            default:
+                return this.scalars(keys, type, depth, reflection_info_1.LongType.STRING);
+        }
+    }
+}
+exports.ReflectionTypeCheck = ReflectionTypeCheck;
 
 
 /***/ }),
@@ -37853,2041 +44244,6 @@ formatters.O = function (v) {
 
 /***/ }),
 
-/***/ 9741:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-const validator = __nccwpck_require__(9433);
-const XMLParser = __nccwpck_require__(9844);
-const XMLBuilder = __nccwpck_require__(659);
-
-module.exports = {
-  XMLParser: XMLParser,
-  XMLValidator: validator,
-  XMLBuilder: XMLBuilder
-}
-
-/***/ }),
-
-/***/ 812:
-/***/ ((module) => {
-
-function getIgnoreAttributesFn(ignoreAttributes) {
-    if (typeof ignoreAttributes === 'function') {
-        return ignoreAttributes
-    }
-    if (Array.isArray(ignoreAttributes)) {
-        return (attrName) => {
-            for (const pattern of ignoreAttributes) {
-                if (typeof pattern === 'string' && attrName === pattern) {
-                    return true
-                }
-                if (pattern instanceof RegExp && pattern.test(attrName)) {
-                    return true
-                }
-            }
-        }
-    }
-    return () => false
-}
-
-module.exports = getIgnoreAttributesFn
-
-/***/ }),
-
-/***/ 7019:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-const nameStartChar = ':A-Za-z_\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD';
-const nameChar = nameStartChar + '\\-.\\d\\u00B7\\u0300-\\u036F\\u203F-\\u2040';
-const nameRegexp = '[' + nameStartChar + '][' + nameChar + ']*'
-const regexName = new RegExp('^' + nameRegexp + '$');
-
-const getAllMatches = function(string, regex) {
-  const matches = [];
-  let match = regex.exec(string);
-  while (match) {
-    const allmatches = [];
-    allmatches.startIndex = regex.lastIndex - match[0].length;
-    const len = match.length;
-    for (let index = 0; index < len; index++) {
-      allmatches.push(match[index]);
-    }
-    matches.push(allmatches);
-    match = regex.exec(string);
-  }
-  return matches;
-};
-
-const isName = function(string) {
-  const match = regexName.exec(string);
-  return !(match === null || typeof match === 'undefined');
-};
-
-exports.isExist = function(v) {
-  return typeof v !== 'undefined';
-};
-
-exports.isEmptyObject = function(obj) {
-  return Object.keys(obj).length === 0;
-};
-
-/**
- * Copy all the properties of a into b.
- * @param {*} target
- * @param {*} a
- */
-exports.merge = function(target, a, arrayMode) {
-  if (a) {
-    const keys = Object.keys(a); // will return an array of own properties
-    const len = keys.length; //don't make it inline
-    for (let i = 0; i < len; i++) {
-      if (arrayMode === 'strict') {
-        target[keys[i]] = [ a[keys[i]] ];
-      } else {
-        target[keys[i]] = a[keys[i]];
-      }
-    }
-  }
-};
-/* exports.merge =function (b,a){
-  return Object.assign(b,a);
-} */
-
-exports.getValue = function(v) {
-  if (exports.isExist(v)) {
-    return v;
-  } else {
-    return '';
-  }
-};
-
-// const fakeCall = function(a) {return a;};
-// const fakeCallNoReturn = function() {};
-
-exports.isName = isName;
-exports.getAllMatches = getAllMatches;
-exports.nameRegexp = nameRegexp;
-
-
-/***/ }),
-
-/***/ 9433:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-const util = __nccwpck_require__(7019);
-
-const defaultOptions = {
-  allowBooleanAttributes: false, //A tag can have attributes without any value
-  unpairedTags: []
-};
-
-//const tagsPattern = new RegExp("<\\/?([\\w:\\-_\.]+)\\s*\/?>","g");
-exports.validate = function (xmlData, options) {
-  options = Object.assign({}, defaultOptions, options);
-
-  //xmlData = xmlData.replace(/(\r\n|\n|\r)/gm,"");//make it single line
-  //xmlData = xmlData.replace(/(^\s*<\?xml.*?\?>)/g,"");//Remove XML starting tag
-  //xmlData = xmlData.replace(/(<!DOCTYPE[\s\w\"\.\/\-\:]+(\[.*\])*\s*>)/g,"");//Remove DOCTYPE
-  const tags = [];
-  let tagFound = false;
-
-  //indicates that the root tag has been closed (aka. depth 0 has been reached)
-  let reachedRoot = false;
-
-  if (xmlData[0] === '\ufeff') {
-    // check for byte order mark (BOM)
-    xmlData = xmlData.substr(1);
-  }
-  
-  for (let i = 0; i < xmlData.length; i++) {
-
-    if (xmlData[i] === '<' && xmlData[i+1] === '?') {
-      i+=2;
-      i = readPI(xmlData,i);
-      if (i.err) return i;
-    }else if (xmlData[i] === '<') {
-      //starting of tag
-      //read until you reach to '>' avoiding any '>' in attribute value
-      let tagStartPos = i;
-      i++;
-      
-      if (xmlData[i] === '!') {
-        i = readCommentAndCDATA(xmlData, i);
-        continue;
-      } else {
-        let closingTag = false;
-        if (xmlData[i] === '/') {
-          //closing tag
-          closingTag = true;
-          i++;
-        }
-        //read tagname
-        let tagName = '';
-        for (; i < xmlData.length &&
-          xmlData[i] !== '>' &&
-          xmlData[i] !== ' ' &&
-          xmlData[i] !== '\t' &&
-          xmlData[i] !== '\n' &&
-          xmlData[i] !== '\r'; i++
-        ) {
-          tagName += xmlData[i];
-        }
-        tagName = tagName.trim();
-        //console.log(tagName);
-
-        if (tagName[tagName.length - 1] === '/') {
-          //self closing tag without attributes
-          tagName = tagName.substring(0, tagName.length - 1);
-          //continue;
-          i--;
-        }
-        if (!validateTagName(tagName)) {
-          let msg;
-          if (tagName.trim().length === 0) {
-            msg = "Invalid space after '<'.";
-          } else {
-            msg = "Tag '"+tagName+"' is an invalid name.";
-          }
-          return getErrorObject('InvalidTag', msg, getLineNumberForPosition(xmlData, i));
-        }
-
-        const result = readAttributeStr(xmlData, i);
-        if (result === false) {
-          return getErrorObject('InvalidAttr', "Attributes for '"+tagName+"' have open quote.", getLineNumberForPosition(xmlData, i));
-        }
-        let attrStr = result.value;
-        i = result.index;
-
-        if (attrStr[attrStr.length - 1] === '/') {
-          //self closing tag
-          const attrStrStart = i - attrStr.length;
-          attrStr = attrStr.substring(0, attrStr.length - 1);
-          const isValid = validateAttributeString(attrStr, options);
-          if (isValid === true) {
-            tagFound = true;
-            //continue; //text may presents after self closing tag
-          } else {
-            //the result from the nested function returns the position of the error within the attribute
-            //in order to get the 'true' error line, we need to calculate the position where the attribute begins (i - attrStr.length) and then add the position within the attribute
-            //this gives us the absolute index in the entire xml, which we can use to find the line at last
-            return getErrorObject(isValid.err.code, isValid.err.msg, getLineNumberForPosition(xmlData, attrStrStart + isValid.err.line));
-          }
-        } else if (closingTag) {
-          if (!result.tagClosed) {
-            return getErrorObject('InvalidTag', "Closing tag '"+tagName+"' doesn't have proper closing.", getLineNumberForPosition(xmlData, i));
-          } else if (attrStr.trim().length > 0) {
-            return getErrorObject('InvalidTag', "Closing tag '"+tagName+"' can't have attributes or invalid starting.", getLineNumberForPosition(xmlData, tagStartPos));
-          } else if (tags.length === 0) {
-            return getErrorObject('InvalidTag', "Closing tag '"+tagName+"' has not been opened.", getLineNumberForPosition(xmlData, tagStartPos));
-          } else {
-            const otg = tags.pop();
-            if (tagName !== otg.tagName) {
-              let openPos = getLineNumberForPosition(xmlData, otg.tagStartPos);
-              return getErrorObject('InvalidTag',
-                "Expected closing tag '"+otg.tagName+"' (opened in line "+openPos.line+", col "+openPos.col+") instead of closing tag '"+tagName+"'.",
-                getLineNumberForPosition(xmlData, tagStartPos));
-            }
-
-            //when there are no more tags, we reached the root level.
-            if (tags.length == 0) {
-              reachedRoot = true;
-            }
-          }
-        } else {
-          const isValid = validateAttributeString(attrStr, options);
-          if (isValid !== true) {
-            //the result from the nested function returns the position of the error within the attribute
-            //in order to get the 'true' error line, we need to calculate the position where the attribute begins (i - attrStr.length) and then add the position within the attribute
-            //this gives us the absolute index in the entire xml, which we can use to find the line at last
-            return getErrorObject(isValid.err.code, isValid.err.msg, getLineNumberForPosition(xmlData, i - attrStr.length + isValid.err.line));
-          }
-
-          //if the root level has been reached before ...
-          if (reachedRoot === true) {
-            return getErrorObject('InvalidXml', 'Multiple possible root nodes found.', getLineNumberForPosition(xmlData, i));
-          } else if(options.unpairedTags.indexOf(tagName) !== -1){
-            //don't push into stack
-          } else {
-            tags.push({tagName, tagStartPos});
-          }
-          tagFound = true;
-        }
-
-        //skip tag text value
-        //It may include comments and CDATA value
-        for (i++; i < xmlData.length; i++) {
-          if (xmlData[i] === '<') {
-            if (xmlData[i + 1] === '!') {
-              //comment or CADATA
-              i++;
-              i = readCommentAndCDATA(xmlData, i);
-              continue;
-            } else if (xmlData[i+1] === '?') {
-              i = readPI(xmlData, ++i);
-              if (i.err) return i;
-            } else{
-              break;
-            }
-          } else if (xmlData[i] === '&') {
-            const afterAmp = validateAmpersand(xmlData, i);
-            if (afterAmp == -1)
-              return getErrorObject('InvalidChar', "char '&' is not expected.", getLineNumberForPosition(xmlData, i));
-            i = afterAmp;
-          }else{
-            if (reachedRoot === true && !isWhiteSpace(xmlData[i])) {
-              return getErrorObject('InvalidXml', "Extra text at the end", getLineNumberForPosition(xmlData, i));
-            }
-          }
-        } //end of reading tag text value
-        if (xmlData[i] === '<') {
-          i--;
-        }
-      }
-    } else {
-      if ( isWhiteSpace(xmlData[i])) {
-        continue;
-      }
-      return getErrorObject('InvalidChar', "char '"+xmlData[i]+"' is not expected.", getLineNumberForPosition(xmlData, i));
-    }
-  }
-
-  if (!tagFound) {
-    return getErrorObject('InvalidXml', 'Start tag expected.', 1);
-  }else if (tags.length == 1) {
-      return getErrorObject('InvalidTag', "Unclosed tag '"+tags[0].tagName+"'.", getLineNumberForPosition(xmlData, tags[0].tagStartPos));
-  }else if (tags.length > 0) {
-      return getErrorObject('InvalidXml', "Invalid '"+
-          JSON.stringify(tags.map(t => t.tagName), null, 4).replace(/\r?\n/g, '')+
-          "' found.", {line: 1, col: 1});
-  }
-
-  return true;
-};
-
-function isWhiteSpace(char){
-  return char === ' ' || char === '\t' || char === '\n'  || char === '\r';
-}
-/**
- * Read Processing insstructions and skip
- * @param {*} xmlData
- * @param {*} i
- */
-function readPI(xmlData, i) {
-  const start = i;
-  for (; i < xmlData.length; i++) {
-    if (xmlData[i] == '?' || xmlData[i] == ' ') {
-      //tagname
-      const tagname = xmlData.substr(start, i - start);
-      if (i > 5 && tagname === 'xml') {
-        return getErrorObject('InvalidXml', 'XML declaration allowed only at the start of the document.', getLineNumberForPosition(xmlData, i));
-      } else if (xmlData[i] == '?' && xmlData[i + 1] == '>') {
-        //check if valid attribut string
-        i++;
-        break;
-      } else {
-        continue;
-      }
-    }
-  }
-  return i;
-}
-
-function readCommentAndCDATA(xmlData, i) {
-  if (xmlData.length > i + 5 && xmlData[i + 1] === '-' && xmlData[i + 2] === '-') {
-    //comment
-    for (i += 3; i < xmlData.length; i++) {
-      if (xmlData[i] === '-' && xmlData[i + 1] === '-' && xmlData[i + 2] === '>') {
-        i += 2;
-        break;
-      }
-    }
-  } else if (
-    xmlData.length > i + 8 &&
-    xmlData[i + 1] === 'D' &&
-    xmlData[i + 2] === 'O' &&
-    xmlData[i + 3] === 'C' &&
-    xmlData[i + 4] === 'T' &&
-    xmlData[i + 5] === 'Y' &&
-    xmlData[i + 6] === 'P' &&
-    xmlData[i + 7] === 'E'
-  ) {
-    let angleBracketsCount = 1;
-    for (i += 8; i < xmlData.length; i++) {
-      if (xmlData[i] === '<') {
-        angleBracketsCount++;
-      } else if (xmlData[i] === '>') {
-        angleBracketsCount--;
-        if (angleBracketsCount === 0) {
-          break;
-        }
-      }
-    }
-  } else if (
-    xmlData.length > i + 9 &&
-    xmlData[i + 1] === '[' &&
-    xmlData[i + 2] === 'C' &&
-    xmlData[i + 3] === 'D' &&
-    xmlData[i + 4] === 'A' &&
-    xmlData[i + 5] === 'T' &&
-    xmlData[i + 6] === 'A' &&
-    xmlData[i + 7] === '['
-  ) {
-    for (i += 8; i < xmlData.length; i++) {
-      if (xmlData[i] === ']' && xmlData[i + 1] === ']' && xmlData[i + 2] === '>') {
-        i += 2;
-        break;
-      }
-    }
-  }
-
-  return i;
-}
-
-const doubleQuote = '"';
-const singleQuote = "'";
-
-/**
- * Keep reading xmlData until '<' is found outside the attribute value.
- * @param {string} xmlData
- * @param {number} i
- */
-function readAttributeStr(xmlData, i) {
-  let attrStr = '';
-  let startChar = '';
-  let tagClosed = false;
-  for (; i < xmlData.length; i++) {
-    if (xmlData[i] === doubleQuote || xmlData[i] === singleQuote) {
-      if (startChar === '') {
-        startChar = xmlData[i];
-      } else if (startChar !== xmlData[i]) {
-        //if vaue is enclosed with double quote then single quotes are allowed inside the value and vice versa
-      } else {
-        startChar = '';
-      }
-    } else if (xmlData[i] === '>') {
-      if (startChar === '') {
-        tagClosed = true;
-        break;
-      }
-    }
-    attrStr += xmlData[i];
-  }
-  if (startChar !== '') {
-    return false;
-  }
-
-  return {
-    value: attrStr,
-    index: i,
-    tagClosed: tagClosed
-  };
-}
-
-/**
- * Select all the attributes whether valid or invalid.
- */
-const validAttrStrRegxp = new RegExp('(\\s*)([^\\s=]+)(\\s*=)?(\\s*([\'"])(([\\s\\S])*?)\\5)?', 'g');
-
-//attr, ="sd", a="amit's", a="sd"b="saf", ab  cd=""
-
-function validateAttributeString(attrStr, options) {
-  //console.log("start:"+attrStr+":end");
-
-  //if(attrStr.trim().length === 0) return true; //empty string
-
-  const matches = util.getAllMatches(attrStr, validAttrStrRegxp);
-  const attrNames = {};
-
-  for (let i = 0; i < matches.length; i++) {
-    if (matches[i][1].length === 0) {
-      //nospace before attribute name: a="sd"b="saf"
-      return getErrorObject('InvalidAttr', "Attribute '"+matches[i][2]+"' has no space in starting.", getPositionFromMatch(matches[i]))
-    } else if (matches[i][3] !== undefined && matches[i][4] === undefined) {
-      return getErrorObject('InvalidAttr', "Attribute '"+matches[i][2]+"' is without value.", getPositionFromMatch(matches[i]));
-    } else if (matches[i][3] === undefined && !options.allowBooleanAttributes) {
-      //independent attribute: ab
-      return getErrorObject('InvalidAttr', "boolean attribute '"+matches[i][2]+"' is not allowed.", getPositionFromMatch(matches[i]));
-    }
-    /* else if(matches[i][6] === undefined){//attribute without value: ab=
-                    return { err: { code:"InvalidAttr",msg:"attribute " + matches[i][2] + " has no value assigned."}};
-                } */
-    const attrName = matches[i][2];
-    if (!validateAttrName(attrName)) {
-      return getErrorObject('InvalidAttr', "Attribute '"+attrName+"' is an invalid name.", getPositionFromMatch(matches[i]));
-    }
-    if (!attrNames.hasOwnProperty(attrName)) {
-      //check for duplicate attribute.
-      attrNames[attrName] = 1;
-    } else {
-      return getErrorObject('InvalidAttr', "Attribute '"+attrName+"' is repeated.", getPositionFromMatch(matches[i]));
-    }
-  }
-
-  return true;
-}
-
-function validateNumberAmpersand(xmlData, i) {
-  let re = /\d/;
-  if (xmlData[i] === 'x') {
-    i++;
-    re = /[\da-fA-F]/;
-  }
-  for (; i < xmlData.length; i++) {
-    if (xmlData[i] === ';')
-      return i;
-    if (!xmlData[i].match(re))
-      break;
-  }
-  return -1;
-}
-
-function validateAmpersand(xmlData, i) {
-  // https://www.w3.org/TR/xml/#dt-charref
-  i++;
-  if (xmlData[i] === ';')
-    return -1;
-  if (xmlData[i] === '#') {
-    i++;
-    return validateNumberAmpersand(xmlData, i);
-  }
-  let count = 0;
-  for (; i < xmlData.length; i++, count++) {
-    if (xmlData[i].match(/\w/) && count < 20)
-      continue;
-    if (xmlData[i] === ';')
-      break;
-    return -1;
-  }
-  return i;
-}
-
-function getErrorObject(code, message, lineNumber) {
-  return {
-    err: {
-      code: code,
-      msg: message,
-      line: lineNumber.line || lineNumber,
-      col: lineNumber.col,
-    },
-  };
-}
-
-function validateAttrName(attrName) {
-  return util.isName(attrName);
-}
-
-// const startsWithXML = /^xml/i;
-
-function validateTagName(tagname) {
-  return util.isName(tagname) /* && !tagname.match(startsWithXML) */;
-}
-
-//this function returns the line number for the character at the given index
-function getLineNumberForPosition(xmlData, index) {
-  const lines = xmlData.substring(0, index).split(/\r?\n/);
-  return {
-    line: lines.length,
-
-    // column number is last line's length + 1, because column numbering starts at 1:
-    col: lines[lines.length - 1].length + 1
-  };
-}
-
-//this function returns the position of the first character of match within attrStr
-function getPositionFromMatch(match) {
-  return match.startIndex + match[1].length;
-}
-
-
-/***/ }),
-
-/***/ 659:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-//parse Empty Node as self closing node
-const buildFromOrderedJs = __nccwpck_require__(3997);
-const getIgnoreAttributesFn = __nccwpck_require__(812)
-
-const defaultOptions = {
-  attributeNamePrefix: '@_',
-  attributesGroupName: false,
-  textNodeName: '#text',
-  ignoreAttributes: true,
-  cdataPropName: false,
-  format: false,
-  indentBy: '  ',
-  suppressEmptyNode: false,
-  suppressUnpairedNode: true,
-  suppressBooleanAttributes: true,
-  tagValueProcessor: function(key, a) {
-    return a;
-  },
-  attributeValueProcessor: function(attrName, a) {
-    return a;
-  },
-  preserveOrder: false,
-  commentPropName: false,
-  unpairedTags: [],
-  entities: [
-    { regex: new RegExp("&", "g"), val: "&amp;" },//it must be on top
-    { regex: new RegExp(">", "g"), val: "&gt;" },
-    { regex: new RegExp("<", "g"), val: "&lt;" },
-    { regex: new RegExp("\'", "g"), val: "&apos;" },
-    { regex: new RegExp("\"", "g"), val: "&quot;" }
-  ],
-  processEntities: true,
-  stopNodes: [],
-  // transformTagName: false,
-  // transformAttributeName: false,
-  oneListGroup: false
-};
-
-function Builder(options) {
-  this.options = Object.assign({}, defaultOptions, options);
-  if (this.options.ignoreAttributes === true || this.options.attributesGroupName) {
-    this.isAttribute = function(/*a*/) {
-      return false;
-    };
-  } else {
-    this.ignoreAttributesFn = getIgnoreAttributesFn(this.options.ignoreAttributes)
-    this.attrPrefixLen = this.options.attributeNamePrefix.length;
-    this.isAttribute = isAttribute;
-  }
-
-  this.processTextOrObjNode = processTextOrObjNode
-
-  if (this.options.format) {
-    this.indentate = indentate;
-    this.tagEndChar = '>\n';
-    this.newLine = '\n';
-  } else {
-    this.indentate = function() {
-      return '';
-    };
-    this.tagEndChar = '>';
-    this.newLine = '';
-  }
-}
-
-Builder.prototype.build = function(jObj) {
-  if(this.options.preserveOrder){
-    return buildFromOrderedJs(jObj, this.options);
-  }else {
-    if(Array.isArray(jObj) && this.options.arrayNodeName && this.options.arrayNodeName.length > 1){
-      jObj = {
-        [this.options.arrayNodeName] : jObj
-      }
-    }
-    return this.j2x(jObj, 0, []).val;
-  }
-};
-
-Builder.prototype.j2x = function(jObj, level, ajPath) {
-  let attrStr = '';
-  let val = '';
-  const jPath = ajPath.join('.')
-  for (let key in jObj) {
-    if(!Object.prototype.hasOwnProperty.call(jObj, key)) continue;
-    if (typeof jObj[key] === 'undefined') {
-      // supress undefined node only if it is not an attribute
-      if (this.isAttribute(key)) {
-        val += '';
-      }
-    } else if (jObj[key] === null) {
-      // null attribute should be ignored by the attribute list, but should not cause the tag closing
-      if (this.isAttribute(key)) {
-        val += '';
-      } else if (key[0] === '?') {
-        val += this.indentate(level) + '<' + key + '?' + this.tagEndChar;
-      } else {
-        val += this.indentate(level) + '<' + key + '/' + this.tagEndChar;
-      }
-      // val += this.indentate(level) + '<' + key + '/' + this.tagEndChar;
-    } else if (jObj[key] instanceof Date) {
-      val += this.buildTextValNode(jObj[key], key, '', level);
-    } else if (typeof jObj[key] !== 'object') {
-      //premitive type
-      const attr = this.isAttribute(key);
-      if (attr && !this.ignoreAttributesFn(attr, jPath)) {
-        attrStr += this.buildAttrPairStr(attr, '' + jObj[key]);
-      } else if (!attr) {
-        //tag value
-        if (key === this.options.textNodeName) {
-          let newval = this.options.tagValueProcessor(key, '' + jObj[key]);
-          val += this.replaceEntitiesValue(newval);
-        } else {
-          val += this.buildTextValNode(jObj[key], key, '', level);
-        }
-      }
-    } else if (Array.isArray(jObj[key])) {
-      //repeated nodes
-      const arrLen = jObj[key].length;
-      let listTagVal = "";
-      let listTagAttr = "";
-      for (let j = 0; j < arrLen; j++) {
-        const item = jObj[key][j];
-        if (typeof item === 'undefined') {
-          // supress undefined node
-        } else if (item === null) {
-          if(key[0] === "?") val += this.indentate(level) + '<' + key + '?' + this.tagEndChar;
-          else val += this.indentate(level) + '<' + key + '/' + this.tagEndChar;
-          // val += this.indentate(level) + '<' + key + '/' + this.tagEndChar;
-        } else if (typeof item === 'object') {
-          if(this.options.oneListGroup){
-            const result = this.j2x(item, level + 1, ajPath.concat(key));
-            listTagVal += result.val;
-            if (this.options.attributesGroupName && item.hasOwnProperty(this.options.attributesGroupName)) {
-              listTagAttr += result.attrStr
-            }
-          }else{
-            listTagVal += this.processTextOrObjNode(item, key, level, ajPath)
-          }
-        } else {
-          if (this.options.oneListGroup) {
-            let textValue = this.options.tagValueProcessor(key, item);
-            textValue = this.replaceEntitiesValue(textValue);
-            listTagVal += textValue;
-          } else {
-            listTagVal += this.buildTextValNode(item, key, '', level);
-          }
-        }
-      }
-      if(this.options.oneListGroup){
-        listTagVal = this.buildObjectNode(listTagVal, key, listTagAttr, level);
-      }
-      val += listTagVal;
-    } else {
-      //nested node
-      if (this.options.attributesGroupName && key === this.options.attributesGroupName) {
-        const Ks = Object.keys(jObj[key]);
-        const L = Ks.length;
-        for (let j = 0; j < L; j++) {
-          attrStr += this.buildAttrPairStr(Ks[j], '' + jObj[key][Ks[j]]);
-        }
-      } else {
-        val += this.processTextOrObjNode(jObj[key], key, level, ajPath)
-      }
-    }
-  }
-  return {attrStr: attrStr, val: val};
-};
-
-Builder.prototype.buildAttrPairStr = function(attrName, val){
-  val = this.options.attributeValueProcessor(attrName, '' + val);
-  val = this.replaceEntitiesValue(val);
-  if (this.options.suppressBooleanAttributes && val === "true") {
-    return ' ' + attrName;
-  } else return ' ' + attrName + '="' + val + '"';
-}
-
-function processTextOrObjNode (object, key, level, ajPath) {
-  const result = this.j2x(object, level + 1, ajPath.concat(key));
-  if (object[this.options.textNodeName] !== undefined && Object.keys(object).length === 1) {
-    return this.buildTextValNode(object[this.options.textNodeName], key, result.attrStr, level);
-  } else {
-    return this.buildObjectNode(result.val, key, result.attrStr, level);
-  }
-}
-
-Builder.prototype.buildObjectNode = function(val, key, attrStr, level) {
-  if(val === ""){
-    if(key[0] === "?") return  this.indentate(level) + '<' + key + attrStr+ '?' + this.tagEndChar;
-    else {
-      return this.indentate(level) + '<' + key + attrStr + this.closeTag(key) + this.tagEndChar;
-    }
-  }else{
-
-    let tagEndExp = '</' + key + this.tagEndChar;
-    let piClosingChar = "";
-    
-    if(key[0] === "?") {
-      piClosingChar = "?";
-      tagEndExp = "";
-    }
-  
-    // attrStr is an empty string in case the attribute came as undefined or null
-    if ((attrStr || attrStr === '') && val.indexOf('<') === -1) {
-      return ( this.indentate(level) + '<' +  key + attrStr + piClosingChar + '>' + val + tagEndExp );
-    } else if (this.options.commentPropName !== false && key === this.options.commentPropName && piClosingChar.length === 0) {
-      return this.indentate(level) + `<!--${val}-->` + this.newLine;
-    }else {
-      return (
-        this.indentate(level) + '<' + key + attrStr + piClosingChar + this.tagEndChar +
-        val +
-        this.indentate(level) + tagEndExp    );
-    }
-  }
-}
-
-Builder.prototype.closeTag = function(key){
-  let closeTag = "";
-  if(this.options.unpairedTags.indexOf(key) !== -1){ //unpaired
-    if(!this.options.suppressUnpairedNode) closeTag = "/"
-  }else if(this.options.suppressEmptyNode){ //empty
-    closeTag = "/";
-  }else{
-    closeTag = `></${key}`
-  }
-  return closeTag;
-}
-
-function buildEmptyObjNode(val, key, attrStr, level) {
-  if (val !== '') {
-    return this.buildObjectNode(val, key, attrStr, level);
-  } else {
-    if(key[0] === "?") return  this.indentate(level) + '<' + key + attrStr+ '?' + this.tagEndChar;
-    else {
-      return  this.indentate(level) + '<' + key + attrStr + '/' + this.tagEndChar;
-      // return this.buildTagStr(level,key, attrStr);
-    }
-  }
-}
-
-Builder.prototype.buildTextValNode = function(val, key, attrStr, level) {
-  if (this.options.cdataPropName !== false && key === this.options.cdataPropName) {
-    return this.indentate(level) + `<![CDATA[${val}]]>` +  this.newLine;
-  }else if (this.options.commentPropName !== false && key === this.options.commentPropName) {
-    return this.indentate(level) + `<!--${val}-->` +  this.newLine;
-  }else if(key[0] === "?") {//PI tag
-    return  this.indentate(level) + '<' + key + attrStr+ '?' + this.tagEndChar; 
-  }else{
-    let textValue = this.options.tagValueProcessor(key, val);
-    textValue = this.replaceEntitiesValue(textValue);
-  
-    if( textValue === ''){
-      return this.indentate(level) + '<' + key + attrStr + this.closeTag(key) + this.tagEndChar;
-    }else{
-      return this.indentate(level) + '<' + key + attrStr + '>' +
-         textValue +
-        '</' + key + this.tagEndChar;
-    }
-  }
-}
-
-Builder.prototype.replaceEntitiesValue = function(textValue){
-  if(textValue && textValue.length > 0 && this.options.processEntities){
-    for (let i=0; i<this.options.entities.length; i++) {
-      const entity = this.options.entities[i];
-      textValue = textValue.replace(entity.regex, entity.val);
-    }
-  }
-  return textValue;
-}
-
-function indentate(level) {
-  return this.options.indentBy.repeat(level);
-}
-
-function isAttribute(name /*, options*/) {
-  if (name.startsWith(this.options.attributeNamePrefix) && name !== this.options.textNodeName) {
-    return name.substr(this.attrPrefixLen);
-  } else {
-    return false;
-  }
-}
-
-module.exports = Builder;
-
-
-/***/ }),
-
-/***/ 3997:
-/***/ ((module) => {
-
-const EOL = "\n";
-
-/**
- * 
- * @param {array} jArray 
- * @param {any} options 
- * @returns 
- */
-function toXml(jArray, options) {
-    let indentation = "";
-    if (options.format && options.indentBy.length > 0) {
-        indentation = EOL;
-    }
-    return arrToStr(jArray, options, "", indentation);
-}
-
-function arrToStr(arr, options, jPath, indentation) {
-    let xmlStr = "";
-    let isPreviousElementTag = false;
-
-    for (let i = 0; i < arr.length; i++) {
-        const tagObj = arr[i];
-        const tagName = propName(tagObj);
-        if(tagName === undefined) continue;
-
-        let newJPath = "";
-        if (jPath.length === 0) newJPath = tagName
-        else newJPath = `${jPath}.${tagName}`;
-
-        if (tagName === options.textNodeName) {
-            let tagText = tagObj[tagName];
-            if (!isStopNode(newJPath, options)) {
-                tagText = options.tagValueProcessor(tagName, tagText);
-                tagText = replaceEntitiesValue(tagText, options);
-            }
-            if (isPreviousElementTag) {
-                xmlStr += indentation;
-            }
-            xmlStr += tagText;
-            isPreviousElementTag = false;
-            continue;
-        } else if (tagName === options.cdataPropName) {
-            if (isPreviousElementTag) {
-                xmlStr += indentation;
-            }
-            xmlStr += `<![CDATA[${tagObj[tagName][0][options.textNodeName]}]]>`;
-            isPreviousElementTag = false;
-            continue;
-        } else if (tagName === options.commentPropName) {
-            xmlStr += indentation + `<!--${tagObj[tagName][0][options.textNodeName]}-->`;
-            isPreviousElementTag = true;
-            continue;
-        } else if (tagName[0] === "?") {
-            const attStr = attr_to_str(tagObj[":@"], options);
-            const tempInd = tagName === "?xml" ? "" : indentation;
-            let piTextNodeName = tagObj[tagName][0][options.textNodeName];
-            piTextNodeName = piTextNodeName.length !== 0 ? " " + piTextNodeName : ""; //remove extra spacing
-            xmlStr += tempInd + `<${tagName}${piTextNodeName}${attStr}?>`;
-            isPreviousElementTag = true;
-            continue;
-        }
-        let newIdentation = indentation;
-        if (newIdentation !== "") {
-            newIdentation += options.indentBy;
-        }
-        const attStr = attr_to_str(tagObj[":@"], options);
-        const tagStart = indentation + `<${tagName}${attStr}`;
-        const tagValue = arrToStr(tagObj[tagName], options, newJPath, newIdentation);
-        if (options.unpairedTags.indexOf(tagName) !== -1) {
-            if (options.suppressUnpairedNode) xmlStr += tagStart + ">";
-            else xmlStr += tagStart + "/>";
-        } else if ((!tagValue || tagValue.length === 0) && options.suppressEmptyNode) {
-            xmlStr += tagStart + "/>";
-        } else if (tagValue && tagValue.endsWith(">")) {
-            xmlStr += tagStart + `>${tagValue}${indentation}</${tagName}>`;
-        } else {
-            xmlStr += tagStart + ">";
-            if (tagValue && indentation !== "" && (tagValue.includes("/>") || tagValue.includes("</"))) {
-                xmlStr += indentation + options.indentBy + tagValue + indentation;
-            } else {
-                xmlStr += tagValue;
-            }
-            xmlStr += `</${tagName}>`;
-        }
-        isPreviousElementTag = true;
-    }
-
-    return xmlStr;
-}
-
-function propName(obj) {
-    const keys = Object.keys(obj);
-    for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
-        if(!obj.hasOwnProperty(key)) continue;
-        if (key !== ":@") return key;
-    }
-}
-
-function attr_to_str(attrMap, options) {
-    let attrStr = "";
-    if (attrMap && !options.ignoreAttributes) {
-        for (let attr in attrMap) {
-            if(!attrMap.hasOwnProperty(attr)) continue;
-            let attrVal = options.attributeValueProcessor(attr, attrMap[attr]);
-            attrVal = replaceEntitiesValue(attrVal, options);
-            if (attrVal === true && options.suppressBooleanAttributes) {
-                attrStr += ` ${attr.substr(options.attributeNamePrefix.length)}`;
-            } else {
-                attrStr += ` ${attr.substr(options.attributeNamePrefix.length)}="${attrVal}"`;
-            }
-        }
-    }
-    return attrStr;
-}
-
-function isStopNode(jPath, options) {
-    jPath = jPath.substr(0, jPath.length - options.textNodeName.length - 1);
-    let tagName = jPath.substr(jPath.lastIndexOf(".") + 1);
-    for (let index in options.stopNodes) {
-        if (options.stopNodes[index] === jPath || options.stopNodes[index] === "*." + tagName) return true;
-    }
-    return false;
-}
-
-function replaceEntitiesValue(textValue, options) {
-    if (textValue && textValue.length > 0 && options.processEntities) {
-        for (let i = 0; i < options.entities.length; i++) {
-            const entity = options.entities[i];
-            textValue = textValue.replace(entity.regex, entity.val);
-        }
-    }
-    return textValue;
-}
-module.exports = toXml;
-
-
-/***/ }),
-
-/***/ 151:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const util = __nccwpck_require__(7019);
-
-//TODO: handle comments
-function readDocType(xmlData, i){
-    
-    const entities = {};
-    if( xmlData[i + 3] === 'O' &&
-         xmlData[i + 4] === 'C' &&
-         xmlData[i + 5] === 'T' &&
-         xmlData[i + 6] === 'Y' &&
-         xmlData[i + 7] === 'P' &&
-         xmlData[i + 8] === 'E')
-    {    
-        i = i+9;
-        let angleBracketsCount = 1;
-        let hasBody = false, comment = false;
-        let exp = "";
-        for(;i<xmlData.length;i++){
-            if (xmlData[i] === '<' && !comment) { //Determine the tag type
-                if( hasBody && isEntity(xmlData, i)){
-                    i += 7; 
-                    [entityName, val,i] = readEntityExp(xmlData,i+1);
-                    if(val.indexOf("&") === -1) //Parameter entities are not supported
-                        entities[ validateEntityName(entityName) ] = {
-                            regx : RegExp( `&${entityName};`,"g"),
-                            val: val
-                        };
-                }
-                else if( hasBody && isElement(xmlData, i))  i += 8;//Not supported
-                else if( hasBody && isAttlist(xmlData, i))  i += 8;//Not supported
-                else if( hasBody && isNotation(xmlData, i)) i += 9;//Not supported
-                else if( isComment)                         comment = true;
-                else                                        throw new Error("Invalid DOCTYPE");
-
-                angleBracketsCount++;
-                exp = "";
-            } else if (xmlData[i] === '>') { //Read tag content
-                if(comment){
-                    if( xmlData[i - 1] === "-" && xmlData[i - 2] === "-"){
-                        comment = false;
-                        angleBracketsCount--;
-                    }
-                }else{
-                    angleBracketsCount--;
-                }
-                if (angleBracketsCount === 0) {
-                  break;
-                }
-            }else if( xmlData[i] === '['){
-                hasBody = true;
-            }else{
-                exp += xmlData[i];
-            }
-        }
-        if(angleBracketsCount !== 0){
-            throw new Error(`Unclosed DOCTYPE`);
-        }
-    }else{
-        throw new Error(`Invalid Tag instead of DOCTYPE`);
-    }
-    return {entities, i};
-}
-
-function readEntityExp(xmlData,i){
-    //External entities are not supported
-    //    <!ENTITY ext SYSTEM "http://normal-website.com" >
-
-    //Parameter entities are not supported
-    //    <!ENTITY entityname "&anotherElement;">
-
-    //Internal entities are supported
-    //    <!ENTITY entityname "replacement text">
-    
-    //read EntityName
-    let entityName = "";
-    for (; i < xmlData.length && (xmlData[i] !== "'" && xmlData[i] !== '"' ); i++) {
-        // if(xmlData[i] === " ") continue;
-        // else 
-        entityName += xmlData[i];
-    }
-    entityName = entityName.trim();
-    if(entityName.indexOf(" ") !== -1) throw new Error("External entites are not supported");
-
-    //read Entity Value
-    const startChar = xmlData[i++];
-    let val = ""
-    for (; i < xmlData.length && xmlData[i] !== startChar ; i++) {
-        val += xmlData[i];
-    }
-    return [entityName, val, i];
-}
-
-function isComment(xmlData, i){
-    if(xmlData[i+1] === '!' &&
-    xmlData[i+2] === '-' &&
-    xmlData[i+3] === '-') return true
-    return false
-}
-function isEntity(xmlData, i){
-    if(xmlData[i+1] === '!' &&
-    xmlData[i+2] === 'E' &&
-    xmlData[i+3] === 'N' &&
-    xmlData[i+4] === 'T' &&
-    xmlData[i+5] === 'I' &&
-    xmlData[i+6] === 'T' &&
-    xmlData[i+7] === 'Y') return true
-    return false
-}
-function isElement(xmlData, i){
-    if(xmlData[i+1] === '!' &&
-    xmlData[i+2] === 'E' &&
-    xmlData[i+3] === 'L' &&
-    xmlData[i+4] === 'E' &&
-    xmlData[i+5] === 'M' &&
-    xmlData[i+6] === 'E' &&
-    xmlData[i+7] === 'N' &&
-    xmlData[i+8] === 'T') return true
-    return false
-}
-
-function isAttlist(xmlData, i){
-    if(xmlData[i+1] === '!' &&
-    xmlData[i+2] === 'A' &&
-    xmlData[i+3] === 'T' &&
-    xmlData[i+4] === 'T' &&
-    xmlData[i+5] === 'L' &&
-    xmlData[i+6] === 'I' &&
-    xmlData[i+7] === 'S' &&
-    xmlData[i+8] === 'T') return true
-    return false
-}
-function isNotation(xmlData, i){
-    if(xmlData[i+1] === '!' &&
-    xmlData[i+2] === 'N' &&
-    xmlData[i+3] === 'O' &&
-    xmlData[i+4] === 'T' &&
-    xmlData[i+5] === 'A' &&
-    xmlData[i+6] === 'T' &&
-    xmlData[i+7] === 'I' &&
-    xmlData[i+8] === 'O' &&
-    xmlData[i+9] === 'N') return true
-    return false
-}
-
-function validateEntityName(name){
-    if (util.isName(name))
-	return name;
-    else
-        throw new Error(`Invalid entity name ${name}`);
-}
-
-module.exports = readDocType;
-
-
-/***/ }),
-
-/***/ 4769:
-/***/ ((__unused_webpack_module, exports) => {
-
-
-const defaultOptions = {
-    preserveOrder: false,
-    attributeNamePrefix: '@_',
-    attributesGroupName: false,
-    textNodeName: '#text',
-    ignoreAttributes: true,
-    removeNSPrefix: false, // remove NS from tag name or attribute name if true
-    allowBooleanAttributes: false, //a tag can have attributes without any value
-    //ignoreRootElement : false,
-    parseTagValue: true,
-    parseAttributeValue: false,
-    trimValues: true, //Trim string values of tag and attributes
-    cdataPropName: false,
-    numberParseOptions: {
-      hex: true,
-      leadingZeros: true,
-      eNotation: true
-    },
-    tagValueProcessor: function(tagName, val) {
-      return val;
-    },
-    attributeValueProcessor: function(attrName, val) {
-      return val;
-    },
-    stopNodes: [], //nested tags will not be parsed even for errors
-    alwaysCreateTextNode: false,
-    isArray: () => false,
-    commentPropName: false,
-    unpairedTags: [],
-    processEntities: true,
-    htmlEntities: false,
-    ignoreDeclaration: false,
-    ignorePiTags: false,
-    transformTagName: false,
-    transformAttributeName: false,
-    updateTag: function(tagName, jPath, attrs){
-      return tagName
-    },
-    // skipEmptyListItem: false
-};
-   
-const buildOptions = function(options) {
-    return Object.assign({}, defaultOptions, options);
-};
-
-exports.buildOptions = buildOptions;
-exports.defaultOptions = defaultOptions;
-
-/***/ }),
-
-/***/ 3017:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-///@ts-check
-
-const util = __nccwpck_require__(7019);
-const xmlNode = __nccwpck_require__(9307);
-const readDocType = __nccwpck_require__(151);
-const toNumber = __nccwpck_require__(6496);
-const getIgnoreAttributesFn = __nccwpck_require__(812)
-
-// const regx =
-//   '<((!\\[CDATA\\[([\\s\\S]*?)(]]>))|((NAME:)?(NAME))([^>]*)>|((\\/)(NAME)\\s*>))([^<]*)'
-//   .replace(/NAME/g, util.nameRegexp);
-
-//const tagsRegx = new RegExp("<(\\/?[\\w:\\-\._]+)([^>]*)>(\\s*"+cdataRegx+")*([^<]+)?","g");
-//const tagsRegx = new RegExp("<(\\/?)((\\w*:)?([\\w:\\-\._]+))([^>]*)>([^<]*)("+cdataRegx+"([^<]*))*([^<]+)?","g");
-
-class OrderedObjParser{
-  constructor(options){
-    this.options = options;
-    this.currentNode = null;
-    this.tagsNodeStack = [];
-    this.docTypeEntities = {};
-    this.lastEntities = {
-      "apos" : { regex: /&(apos|#39|#x27);/g, val : "'"},
-      "gt" : { regex: /&(gt|#62|#x3E);/g, val : ">"},
-      "lt" : { regex: /&(lt|#60|#x3C);/g, val : "<"},
-      "quot" : { regex: /&(quot|#34|#x22);/g, val : "\""},
-    };
-    this.ampEntity = { regex: /&(amp|#38|#x26);/g, val : "&"};
-    this.htmlEntities = {
-      "space": { regex: /&(nbsp|#160);/g, val: " " },
-      // "lt" : { regex: /&(lt|#60);/g, val: "<" },
-      // "gt" : { regex: /&(gt|#62);/g, val: ">" },
-      // "amp" : { regex: /&(amp|#38);/g, val: "&" },
-      // "quot" : { regex: /&(quot|#34);/g, val: "\"" },
-      // "apos" : { regex: /&(apos|#39);/g, val: "'" },
-      "cent" : { regex: /&(cent|#162);/g, val: "¢" },
-      "pound" : { regex: /&(pound|#163);/g, val: "£" },
-      "yen" : { regex: /&(yen|#165);/g, val: "¥" },
-      "euro" : { regex: /&(euro|#8364);/g, val: "€" },
-      "copyright" : { regex: /&(copy|#169);/g, val: "©" },
-      "reg" : { regex: /&(reg|#174);/g, val: "®" },
-      "inr" : { regex: /&(inr|#8377);/g, val: "₹" },
-      "num_dec": { regex: /&#([0-9]{1,7});/g, val : (_, str) => String.fromCharCode(Number.parseInt(str, 10)) },
-      "num_hex": { regex: /&#x([0-9a-fA-F]{1,6});/g, val : (_, str) => String.fromCharCode(Number.parseInt(str, 16)) },
-    };
-    this.addExternalEntities = addExternalEntities;
-    this.parseXml = parseXml;
-    this.parseTextData = parseTextData;
-    this.resolveNameSpace = resolveNameSpace;
-    this.buildAttributesMap = buildAttributesMap;
-    this.isItStopNode = isItStopNode;
-    this.replaceEntitiesValue = replaceEntitiesValue;
-    this.readStopNodeData = readStopNodeData;
-    this.saveTextToParentTag = saveTextToParentTag;
-    this.addChild = addChild;
-    this.ignoreAttributesFn = getIgnoreAttributesFn(this.options.ignoreAttributes)
-  }
-
-}
-
-function addExternalEntities(externalEntities){
-  const entKeys = Object.keys(externalEntities);
-  for (let i = 0; i < entKeys.length; i++) {
-    const ent = entKeys[i];
-    this.lastEntities[ent] = {
-       regex: new RegExp("&"+ent+";","g"),
-       val : externalEntities[ent]
-    }
-  }
-}
-
-/**
- * @param {string} val
- * @param {string} tagName
- * @param {string} jPath
- * @param {boolean} dontTrim
- * @param {boolean} hasAttributes
- * @param {boolean} isLeafNode
- * @param {boolean} escapeEntities
- */
-function parseTextData(val, tagName, jPath, dontTrim, hasAttributes, isLeafNode, escapeEntities) {
-  if (val !== undefined) {
-    if (this.options.trimValues && !dontTrim) {
-      val = val.trim();
-    }
-    if(val.length > 0){
-      if(!escapeEntities) val = this.replaceEntitiesValue(val);
-      
-      const newval = this.options.tagValueProcessor(tagName, val, jPath, hasAttributes, isLeafNode);
-      if(newval === null || newval === undefined){
-        //don't parse
-        return val;
-      }else if(typeof newval !== typeof val || newval !== val){
-        //overwrite
-        return newval;
-      }else if(this.options.trimValues){
-        return parseValue(val, this.options.parseTagValue, this.options.numberParseOptions);
-      }else{
-        const trimmedVal = val.trim();
-        if(trimmedVal === val){
-          return parseValue(val, this.options.parseTagValue, this.options.numberParseOptions);
-        }else{
-          return val;
-        }
-      }
-    }
-  }
-}
-
-function resolveNameSpace(tagname) {
-  if (this.options.removeNSPrefix) {
-    const tags = tagname.split(':');
-    const prefix = tagname.charAt(0) === '/' ? '/' : '';
-    if (tags[0] === 'xmlns') {
-      return '';
-    }
-    if (tags.length === 2) {
-      tagname = prefix + tags[1];
-    }
-  }
-  return tagname;
-}
-
-//TODO: change regex to capture NS
-//const attrsRegx = new RegExp("([\\w\\-\\.\\:]+)\\s*=\\s*(['\"])((.|\n)*?)\\2","gm");
-const attrsRegx = new RegExp('([^\\s=]+)\\s*(=\\s*([\'"])([\\s\\S]*?)\\3)?', 'gm');
-
-function buildAttributesMap(attrStr, jPath, tagName) {
-  if (this.options.ignoreAttributes !== true && typeof attrStr === 'string') {
-    // attrStr = attrStr.replace(/\r?\n/g, ' ');
-    //attrStr = attrStr || attrStr.trim();
-
-    const matches = util.getAllMatches(attrStr, attrsRegx);
-    const len = matches.length; //don't make it inline
-    const attrs = {};
-    for (let i = 0; i < len; i++) {
-      const attrName = this.resolveNameSpace(matches[i][1]);
-      if (this.ignoreAttributesFn(attrName, jPath)) {
-        continue
-      }
-      let oldVal = matches[i][4];
-      let aName = this.options.attributeNamePrefix + attrName;
-      if (attrName.length) {
-        if (this.options.transformAttributeName) {
-          aName = this.options.transformAttributeName(aName);
-        }
-        if(aName === "__proto__") aName  = "#__proto__";
-        if (oldVal !== undefined) {
-          if (this.options.trimValues) {
-            oldVal = oldVal.trim();
-          }
-          oldVal = this.replaceEntitiesValue(oldVal);
-          const newVal = this.options.attributeValueProcessor(attrName, oldVal, jPath);
-          if(newVal === null || newVal === undefined){
-            //don't parse
-            attrs[aName] = oldVal;
-          }else if(typeof newVal !== typeof oldVal || newVal !== oldVal){
-            //overwrite
-            attrs[aName] = newVal;
-          }else{
-            //parse
-            attrs[aName] = parseValue(
-              oldVal,
-              this.options.parseAttributeValue,
-              this.options.numberParseOptions
-            );
-          }
-        } else if (this.options.allowBooleanAttributes) {
-          attrs[aName] = true;
-        }
-      }
-    }
-    if (!Object.keys(attrs).length) {
-      return;
-    }
-    if (this.options.attributesGroupName) {
-      const attrCollection = {};
-      attrCollection[this.options.attributesGroupName] = attrs;
-      return attrCollection;
-    }
-    return attrs
-  }
-}
-
-const parseXml = function(xmlData) {
-  xmlData = xmlData.replace(/\r\n?/g, "\n"); //TODO: remove this line
-  const xmlObj = new xmlNode('!xml');
-  let currentNode = xmlObj;
-  let textData = "";
-  let jPath = "";
-  for(let i=0; i< xmlData.length; i++){//for each char in XML data
-    const ch = xmlData[i];
-    if(ch === '<'){
-      // const nextIndex = i+1;
-      // const _2ndChar = xmlData[nextIndex];
-      if( xmlData[i+1] === '/') {//Closing Tag
-        const closeIndex = findClosingIndex(xmlData, ">", i, "Closing Tag is not closed.")
-        let tagName = xmlData.substring(i+2,closeIndex).trim();
-
-        if(this.options.removeNSPrefix){
-          const colonIndex = tagName.indexOf(":");
-          if(colonIndex !== -1){
-            tagName = tagName.substr(colonIndex+1);
-          }
-        }
-
-        if(this.options.transformTagName) {
-          tagName = this.options.transformTagName(tagName);
-        }
-
-        if(currentNode){
-          textData = this.saveTextToParentTag(textData, currentNode, jPath);
-        }
-
-        //check if last tag of nested tag was unpaired tag
-        const lastTagName = jPath.substring(jPath.lastIndexOf(".")+1);
-        if(tagName && this.options.unpairedTags.indexOf(tagName) !== -1 ){
-          throw new Error(`Unpaired tag can not be used as closing tag: </${tagName}>`);
-        }
-        let propIndex = 0
-        if(lastTagName && this.options.unpairedTags.indexOf(lastTagName) !== -1 ){
-          propIndex = jPath.lastIndexOf('.', jPath.lastIndexOf('.')-1)
-          this.tagsNodeStack.pop();
-        }else{
-          propIndex = jPath.lastIndexOf(".");
-        }
-        jPath = jPath.substring(0, propIndex);
-
-        currentNode = this.tagsNodeStack.pop();//avoid recursion, set the parent tag scope
-        textData = "";
-        i = closeIndex;
-      } else if( xmlData[i+1] === '?') {
-
-        let tagData = readTagExp(xmlData,i, false, "?>");
-        if(!tagData) throw new Error("Pi Tag is not closed.");
-
-        textData = this.saveTextToParentTag(textData, currentNode, jPath);
-        if( (this.options.ignoreDeclaration && tagData.tagName === "?xml") || this.options.ignorePiTags){
-
-        }else{
-  
-          const childNode = new xmlNode(tagData.tagName);
-          childNode.add(this.options.textNodeName, "");
-          
-          if(tagData.tagName !== tagData.tagExp && tagData.attrExpPresent){
-            childNode[":@"] = this.buildAttributesMap(tagData.tagExp, jPath, tagData.tagName);
-          }
-          this.addChild(currentNode, childNode, jPath)
-
-        }
-
-
-        i = tagData.closeIndex + 1;
-      } else if(xmlData.substr(i + 1, 3) === '!--') {
-        const endIndex = findClosingIndex(xmlData, "-->", i+4, "Comment is not closed.")
-        if(this.options.commentPropName){
-          const comment = xmlData.substring(i + 4, endIndex - 2);
-
-          textData = this.saveTextToParentTag(textData, currentNode, jPath);
-
-          currentNode.add(this.options.commentPropName, [ { [this.options.textNodeName] : comment } ]);
-        }
-        i = endIndex;
-      } else if( xmlData.substr(i + 1, 2) === '!D') {
-        const result = readDocType(xmlData, i);
-        this.docTypeEntities = result.entities;
-        i = result.i;
-      }else if(xmlData.substr(i + 1, 2) === '![') {
-        const closeIndex = findClosingIndex(xmlData, "]]>", i, "CDATA is not closed.") - 2;
-        const tagExp = xmlData.substring(i + 9,closeIndex);
-
-        textData = this.saveTextToParentTag(textData, currentNode, jPath);
-
-        let val = this.parseTextData(tagExp, currentNode.tagname, jPath, true, false, true, true);
-        if(val == undefined) val = "";
-
-        //cdata should be set even if it is 0 length string
-        if(this.options.cdataPropName){
-          currentNode.add(this.options.cdataPropName, [ { [this.options.textNodeName] : tagExp } ]);
-        }else{
-          currentNode.add(this.options.textNodeName, val);
-        }
-        
-        i = closeIndex + 2;
-      }else {//Opening tag
-        let result = readTagExp(xmlData,i, this.options.removeNSPrefix);
-        let tagName= result.tagName;
-        const rawTagName = result.rawTagName;
-        let tagExp = result.tagExp;
-        let attrExpPresent = result.attrExpPresent;
-        let closeIndex = result.closeIndex;
-
-        if (this.options.transformTagName) {
-          tagName = this.options.transformTagName(tagName);
-        }
-        
-        //save text as child node
-        if (currentNode && textData) {
-          if(currentNode.tagname !== '!xml'){
-            //when nested tag is found
-            textData = this.saveTextToParentTag(textData, currentNode, jPath, false);
-          }
-        }
-
-        //check if last tag was unpaired tag
-        const lastTag = currentNode;
-        if(lastTag && this.options.unpairedTags.indexOf(lastTag.tagname) !== -1 ){
-          currentNode = this.tagsNodeStack.pop();
-          jPath = jPath.substring(0, jPath.lastIndexOf("."));
-        }
-        if(tagName !== xmlObj.tagname){
-          jPath += jPath ? "." + tagName : tagName;
-        }
-        if (this.isItStopNode(this.options.stopNodes, jPath, tagName)) {
-          let tagContent = "";
-          //self-closing tag
-          if(tagExp.length > 0 && tagExp.lastIndexOf("/") === tagExp.length - 1){
-            if(tagName[tagName.length - 1] === "/"){ //remove trailing '/'
-              tagName = tagName.substr(0, tagName.length - 1);
-              jPath = jPath.substr(0, jPath.length - 1);
-              tagExp = tagName;
-            }else{
-              tagExp = tagExp.substr(0, tagExp.length - 1);
-            }
-            i = result.closeIndex;
-          }
-          //unpaired tag
-          else if(this.options.unpairedTags.indexOf(tagName) !== -1){
-            
-            i = result.closeIndex;
-          }
-          //normal tag
-          else{
-            //read until closing tag is found
-            const result = this.readStopNodeData(xmlData, rawTagName, closeIndex + 1);
-            if(!result) throw new Error(`Unexpected end of ${rawTagName}`);
-            i = result.i;
-            tagContent = result.tagContent;
-          }
-
-          const childNode = new xmlNode(tagName);
-          if(tagName !== tagExp && attrExpPresent){
-            childNode[":@"] = this.buildAttributesMap(tagExp, jPath, tagName);
-          }
-          if(tagContent) {
-            tagContent = this.parseTextData(tagContent, tagName, jPath, true, attrExpPresent, true, true);
-          }
-          
-          jPath = jPath.substr(0, jPath.lastIndexOf("."));
-          childNode.add(this.options.textNodeName, tagContent);
-          
-          this.addChild(currentNode, childNode, jPath)
-        }else{
-  //selfClosing tag
-          if(tagExp.length > 0 && tagExp.lastIndexOf("/") === tagExp.length - 1){
-            if(tagName[tagName.length - 1] === "/"){ //remove trailing '/'
-              tagName = tagName.substr(0, tagName.length - 1);
-              jPath = jPath.substr(0, jPath.length - 1);
-              tagExp = tagName;
-            }else{
-              tagExp = tagExp.substr(0, tagExp.length - 1);
-            }
-            
-            if(this.options.transformTagName) {
-              tagName = this.options.transformTagName(tagName);
-            }
-
-            const childNode = new xmlNode(tagName);
-            if(tagName !== tagExp && attrExpPresent){
-              childNode[":@"] = this.buildAttributesMap(tagExp, jPath, tagName);
-            }
-            this.addChild(currentNode, childNode, jPath)
-            jPath = jPath.substr(0, jPath.lastIndexOf("."));
-          }
-    //opening tag
-          else{
-            const childNode = new xmlNode( tagName);
-            this.tagsNodeStack.push(currentNode);
-            
-            if(tagName !== tagExp && attrExpPresent){
-              childNode[":@"] = this.buildAttributesMap(tagExp, jPath, tagName);
-            }
-            this.addChild(currentNode, childNode, jPath)
-            currentNode = childNode;
-          }
-          textData = "";
-          i = closeIndex;
-        }
-      }
-    }else{
-      textData += xmlData[i];
-    }
-  }
-  return xmlObj.child;
-}
-
-function addChild(currentNode, childNode, jPath){
-  const result = this.options.updateTag(childNode.tagname, jPath, childNode[":@"])
-  if(result === false){
-  }else if(typeof result === "string"){
-    childNode.tagname = result
-    currentNode.addChild(childNode);
-  }else{
-    currentNode.addChild(childNode);
-  }
-}
-
-const replaceEntitiesValue = function(val){
-
-  if(this.options.processEntities){
-    for(let entityName in this.docTypeEntities){
-      const entity = this.docTypeEntities[entityName];
-      val = val.replace( entity.regx, entity.val);
-    }
-    for(let entityName in this.lastEntities){
-      const entity = this.lastEntities[entityName];
-      val = val.replace( entity.regex, entity.val);
-    }
-    if(this.options.htmlEntities){
-      for(let entityName in this.htmlEntities){
-        const entity = this.htmlEntities[entityName];
-        val = val.replace( entity.regex, entity.val);
-      }
-    }
-    val = val.replace( this.ampEntity.regex, this.ampEntity.val);
-  }
-  return val;
-}
-function saveTextToParentTag(textData, currentNode, jPath, isLeafNode) {
-  if (textData) { //store previously collected data as textNode
-    if(isLeafNode === undefined) isLeafNode = Object.keys(currentNode.child).length === 0
-    
-    textData = this.parseTextData(textData,
-      currentNode.tagname,
-      jPath,
-      false,
-      currentNode[":@"] ? Object.keys(currentNode[":@"]).length !== 0 : false,
-      isLeafNode);
-
-    if (textData !== undefined && textData !== "")
-      currentNode.add(this.options.textNodeName, textData);
-    textData = "";
-  }
-  return textData;
-}
-
-//TODO: use jPath to simplify the logic
-/**
- * 
- * @param {string[]} stopNodes 
- * @param {string} jPath
- * @param {string} currentTagName 
- */
-function isItStopNode(stopNodes, jPath, currentTagName){
-  const allNodesExp = "*." + currentTagName;
-  for (const stopNodePath in stopNodes) {
-    const stopNodeExp = stopNodes[stopNodePath];
-    if( allNodesExp === stopNodeExp || jPath === stopNodeExp  ) return true;
-  }
-  return false;
-}
-
-/**
- * Returns the tag Expression and where it is ending handling single-double quotes situation
- * @param {string} xmlData 
- * @param {number} i starting index
- * @returns 
- */
-function tagExpWithClosingIndex(xmlData, i, closingChar = ">"){
-  let attrBoundary;
-  let tagExp = "";
-  for (let index = i; index < xmlData.length; index++) {
-    let ch = xmlData[index];
-    if (attrBoundary) {
-        if (ch === attrBoundary) attrBoundary = "";//reset
-    } else if (ch === '"' || ch === "'") {
-        attrBoundary = ch;
-    } else if (ch === closingChar[0]) {
-      if(closingChar[1]){
-        if(xmlData[index + 1] === closingChar[1]){
-          return {
-            data: tagExp,
-            index: index
-          }
-        }
-      }else{
-        return {
-          data: tagExp,
-          index: index
-        }
-      }
-    } else if (ch === '\t') {
-      ch = " "
-    }
-    tagExp += ch;
-  }
-}
-
-function findClosingIndex(xmlData, str, i, errMsg){
-  const closingIndex = xmlData.indexOf(str, i);
-  if(closingIndex === -1){
-    throw new Error(errMsg)
-  }else{
-    return closingIndex + str.length - 1;
-  }
-}
-
-function readTagExp(xmlData,i, removeNSPrefix, closingChar = ">"){
-  const result = tagExpWithClosingIndex(xmlData, i+1, closingChar);
-  if(!result) return;
-  let tagExp = result.data;
-  const closeIndex = result.index;
-  const separatorIndex = tagExp.search(/\s/);
-  let tagName = tagExp;
-  let attrExpPresent = true;
-  if(separatorIndex !== -1){//separate tag name and attributes expression
-    tagName = tagExp.substring(0, separatorIndex);
-    tagExp = tagExp.substring(separatorIndex + 1).trimStart();
-  }
-
-  const rawTagName = tagName;
-  if(removeNSPrefix){
-    const colonIndex = tagName.indexOf(":");
-    if(colonIndex !== -1){
-      tagName = tagName.substr(colonIndex+1);
-      attrExpPresent = tagName !== result.data.substr(colonIndex + 1);
-    }
-  }
-
-  return {
-    tagName: tagName,
-    tagExp: tagExp,
-    closeIndex: closeIndex,
-    attrExpPresent: attrExpPresent,
-    rawTagName: rawTagName,
-  }
-}
-/**
- * find paired tag for a stop node
- * @param {string} xmlData 
- * @param {string} tagName 
- * @param {number} i 
- */
-function readStopNodeData(xmlData, tagName, i){
-  const startIndex = i;
-  // Starting at 1 since we already have an open tag
-  let openTagCount = 1;
-
-  for (; i < xmlData.length; i++) {
-    if( xmlData[i] === "<"){ 
-      if (xmlData[i+1] === "/") {//close tag
-          const closeIndex = findClosingIndex(xmlData, ">", i, `${tagName} is not closed`);
-          let closeTagName = xmlData.substring(i+2,closeIndex).trim();
-          if(closeTagName === tagName){
-            openTagCount--;
-            if (openTagCount === 0) {
-              return {
-                tagContent: xmlData.substring(startIndex, i),
-                i : closeIndex
-              }
-            }
-          }
-          i=closeIndex;
-        } else if(xmlData[i+1] === '?') { 
-          const closeIndex = findClosingIndex(xmlData, "?>", i+1, "StopNode is not closed.")
-          i=closeIndex;
-        } else if(xmlData.substr(i + 1, 3) === '!--') { 
-          const closeIndex = findClosingIndex(xmlData, "-->", i+3, "StopNode is not closed.")
-          i=closeIndex;
-        } else if(xmlData.substr(i + 1, 2) === '![') { 
-          const closeIndex = findClosingIndex(xmlData, "]]>", i, "StopNode is not closed.") - 2;
-          i=closeIndex;
-        } else {
-          const tagData = readTagExp(xmlData, i, '>')
-
-          if (tagData) {
-            const openTagName = tagData && tagData.tagName;
-            if (openTagName === tagName && tagData.tagExp[tagData.tagExp.length-1] !== "/") {
-              openTagCount++;
-            }
-            i=tagData.closeIndex;
-          }
-        }
-      }
-  }//end for loop
-}
-
-function parseValue(val, shouldParse, options) {
-  if (shouldParse && typeof val === 'string') {
-    //console.log(options)
-    const newval = val.trim();
-    if(newval === 'true' ) return true;
-    else if(newval === 'false' ) return false;
-    else return toNumber(val, options);
-  } else {
-    if (util.isExist(val)) {
-      return val;
-    } else {
-      return '';
-    }
-  }
-}
-
-
-module.exports = OrderedObjParser;
-
-
-/***/ }),
-
-/***/ 9844:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const { buildOptions} = __nccwpck_require__(4769);
-const OrderedObjParser = __nccwpck_require__(3017);
-const { prettify} = __nccwpck_require__(7594);
-const validator = __nccwpck_require__(9433);
-
-class XMLParser{
-    
-    constructor(options){
-        this.externalEntities = {};
-        this.options = buildOptions(options);
-        
-    }
-    /**
-     * Parse XML dats to JS object 
-     * @param {string|Buffer} xmlData 
-     * @param {boolean|Object} validationOption 
-     */
-    parse(xmlData,validationOption){
-        if(typeof xmlData === "string"){
-        }else if( xmlData.toString){
-            xmlData = xmlData.toString();
-        }else{
-            throw new Error("XML data is accepted in String or Bytes[] form.")
-        }
-        if( validationOption){
-            if(validationOption === true) validationOption = {}; //validate with default options
-            
-            const result = validator.validate(xmlData, validationOption);
-            if (result !== true) {
-              throw Error( `${result.err.msg}:${result.err.line}:${result.err.col}` )
-            }
-          }
-        const orderedObjParser = new OrderedObjParser(this.options);
-        orderedObjParser.addExternalEntities(this.externalEntities);
-        const orderedResult = orderedObjParser.parseXml(xmlData);
-        if(this.options.preserveOrder || orderedResult === undefined) return orderedResult;
-        else return prettify(orderedResult, this.options);
-    }
-
-    /**
-     * Add Entity which is not by default supported by this library
-     * @param {string} key 
-     * @param {string} value 
-     */
-    addEntity(key, value){
-        if(value.indexOf("&") !== -1){
-            throw new Error("Entity value can't have '&'")
-        }else if(key.indexOf("&") !== -1 || key.indexOf(";") !== -1){
-            throw new Error("An entity must be set without '&' and ';'. Eg. use '#xD' for '&#xD;'")
-        }else if(value === "&"){
-            throw new Error("An entity with value '&' is not permitted");
-        }else{
-            this.externalEntities[key] = value;
-        }
-    }
-}
-
-module.exports = XMLParser;
-
-/***/ }),
-
-/***/ 7594:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-/**
- * 
- * @param {array} node 
- * @param {any} options 
- * @returns 
- */
-function prettify(node, options){
-  return compress( node, options);
-}
-
-/**
- * 
- * @param {array} arr 
- * @param {object} options 
- * @param {string} jPath 
- * @returns object
- */
-function compress(arr, options, jPath){
-  let text;
-  const compressedObj = {};
-  for (let i = 0; i < arr.length; i++) {
-    const tagObj = arr[i];
-    const property = propName(tagObj);
-    let newJpath = "";
-    if(jPath === undefined) newJpath = property;
-    else newJpath = jPath + "." + property;
-
-    if(property === options.textNodeName){
-      if(text === undefined) text = tagObj[property];
-      else text += "" + tagObj[property];
-    }else if(property === undefined){
-      continue;
-    }else if(tagObj[property]){
-      
-      let val = compress(tagObj[property], options, newJpath);
-      const isLeaf = isLeafTag(val, options);
-
-      if(tagObj[":@"]){
-        assignAttributes( val, tagObj[":@"], newJpath, options);
-      }else if(Object.keys(val).length === 1 && val[options.textNodeName] !== undefined && !options.alwaysCreateTextNode){
-        val = val[options.textNodeName];
-      }else if(Object.keys(val).length === 0){
-        if(options.alwaysCreateTextNode) val[options.textNodeName] = "";
-        else val = "";
-      }
-
-      if(compressedObj[property] !== undefined && compressedObj.hasOwnProperty(property)) {
-        if(!Array.isArray(compressedObj[property])) {
-            compressedObj[property] = [ compressedObj[property] ];
-        }
-        compressedObj[property].push(val);
-      }else{
-        //TODO: if a node is not an array, then check if it should be an array
-        //also determine if it is a leaf node
-        if (options.isArray(property, newJpath, isLeaf )) {
-          compressedObj[property] = [val];
-        }else{
-          compressedObj[property] = val;
-        }
-      }
-    }
-    
-  }
-  // if(text && text.length > 0) compressedObj[options.textNodeName] = text;
-  if(typeof text === "string"){
-    if(text.length > 0) compressedObj[options.textNodeName] = text;
-  }else if(text !== undefined) compressedObj[options.textNodeName] = text;
-  return compressedObj;
-}
-
-function propName(obj){
-  const keys = Object.keys(obj);
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
-    if(key !== ":@") return key;
-  }
-}
-
-function assignAttributes(obj, attrMap, jpath, options){
-  if (attrMap) {
-    const keys = Object.keys(attrMap);
-    const len = keys.length; //don't make it inline
-    for (let i = 0; i < len; i++) {
-      const atrrName = keys[i];
-      if (options.isArray(atrrName, jpath + "." + atrrName, true, true)) {
-        obj[atrrName] = [ attrMap[atrrName] ];
-      } else {
-        obj[atrrName] = attrMap[atrrName];
-      }
-    }
-  }
-}
-
-function isLeafTag(obj, options){
-  const { textNodeName } = options;
-  const propCount = Object.keys(obj).length;
-  
-  if (propCount === 0) {
-    return true;
-  }
-
-  if (
-    propCount === 1 &&
-    (obj[textNodeName] || typeof obj[textNodeName] === "boolean" || obj[textNodeName] === 0)
-  ) {
-    return true;
-  }
-
-  return false;
-}
-exports.prettify = prettify;
-
-
-/***/ }),
-
-/***/ 9307:
-/***/ ((module) => {
-
-"use strict";
-
-
-class XmlNode{
-  constructor(tagname) {
-    this.tagname = tagname;
-    this.child = []; //nested tags, text, cdata, comments in order
-    this[":@"] = {}; //attributes map
-  }
-  add(key,val){
-    // this.child.push( {name : key, val: val, isCdata: isCdata });
-    if(key === "__proto__") key = "#__proto__";
-    this.child.push( {[key]: val });
-  }
-  addChild(node) {
-    if(node.tagname === "__proto__") node.tagname = "#__proto__";
-    if(node[":@"] && Object.keys(node[":@"]).length > 0){
-      this.child.push( { [node.tagname]: node.child, [":@"]: node[":@"] });
-    }else{
-      this.child.push( { [node.tagname]: node.child });
-    }
-  };
-};
-
-
-module.exports = XmlNode;
-
-/***/ }),
-
 /***/ 3813:
 /***/ ((module) => {
 
@@ -43435,137 +47791,6 @@ exports.join = function (args) {
   }
   return args.map(exports.quote).join(" ")
 }
-
-
-/***/ }),
-
-/***/ 6496:
-/***/ ((module) => {
-
-const hexRegex = /^[-+]?0x[a-fA-F0-9]+$/;
-const numRegex = /^([\-\+])?(0*)(\.[0-9]+([eE]\-?[0-9]+)?|[0-9]+(\.[0-9]+([eE]\-?[0-9]+)?)?)$/;
-// const octRegex = /0x[a-z0-9]+/;
-// const binRegex = /0x[a-z0-9]+/;
-
-
-//polyfill
-if (!Number.parseInt && window.parseInt) {
-    Number.parseInt = window.parseInt;
-}
-if (!Number.parseFloat && window.parseFloat) {
-    Number.parseFloat = window.parseFloat;
-}
-
-  
-const consider = {
-    hex :  true,
-    leadingZeros: true,
-    decimalPoint: "\.",
-    eNotation: true
-    //skipLike: /regex/
-};
-
-function toNumber(str, options = {}){
-    // const options = Object.assign({}, consider);
-    // if(opt.leadingZeros === false){
-    //     options.leadingZeros = false;
-    // }else if(opt.hex === false){
-    //     options.hex = false;
-    // }
-
-    options = Object.assign({}, consider, options );
-    if(!str || typeof str !== "string" ) return str;
-    
-    let trimmedStr  = str.trim();
-    // if(trimmedStr === "0.0") return 0;
-    // else if(trimmedStr === "+0.0") return 0;
-    // else if(trimmedStr === "-0.0") return -0;
-
-    if(options.skipLike !== undefined && options.skipLike.test(trimmedStr)) return str;
-    else if (options.hex && hexRegex.test(trimmedStr)) {
-        return Number.parseInt(trimmedStr, 16);
-    // } else if (options.parseOct && octRegex.test(str)) {
-    //     return Number.parseInt(val, 8);
-    // }else if (options.parseBin && binRegex.test(str)) {
-    //     return Number.parseInt(val, 2);
-    }else{
-        //separate negative sign, leading zeros, and rest number
-        const match = numRegex.exec(trimmedStr);
-        if(match){
-            const sign = match[1];
-            const leadingZeros = match[2];
-            let numTrimmedByZeros = trimZeros(match[3]); //complete num without leading zeros
-            //trim ending zeros for floating number
-            
-            const eNotation = match[4] || match[6];
-            if(!options.leadingZeros && leadingZeros.length > 0 && sign && trimmedStr[2] !== ".") return str; //-0123
-            else if(!options.leadingZeros && leadingZeros.length > 0 && !sign && trimmedStr[1] !== ".") return str; //0123
-            else{//no leading zeros or leading zeros are allowed
-                const num = Number(trimmedStr);
-                const numStr = "" + num;
-                if(numStr.search(/[eE]/) !== -1){ //given number is long and parsed to eNotation
-                    if(options.eNotation) return num;
-                    else return str;
-                }else if(eNotation){ //given number has enotation
-                    if(options.eNotation) return num;
-                    else return str;
-                }else if(trimmedStr.indexOf(".") !== -1){ //floating number
-                    // const decimalPart = match[5].substr(1);
-                    // const intPart = trimmedStr.substr(0,trimmedStr.indexOf("."));
-
-                    
-                    // const p = numStr.indexOf(".");
-                    // const givenIntPart = numStr.substr(0,p);
-                    // const givenDecPart = numStr.substr(p+1);
-                    if(numStr === "0" && (numTrimmedByZeros === "") ) return num; //0.0
-                    else if(numStr === numTrimmedByZeros) return num; //0.456. 0.79000
-                    else if( sign && numStr === "-"+numTrimmedByZeros) return num;
-                    else return str;
-                }
-                
-                if(leadingZeros){
-                    // if(numTrimmedByZeros === numStr){
-                    //     if(options.leadingZeros) return num;
-                    //     else return str;
-                    // }else return str;
-                    if(numTrimmedByZeros === numStr) return num;
-                    else if(sign+numTrimmedByZeros === numStr) return num;
-                    else return str;
-                }
-
-                if(trimmedStr === numStr) return num;
-                else if(trimmedStr === sign+numStr) return num;
-                // else{
-                //     //number with +/- sign
-                //     trimmedStr.test(/[-+][0-9]);
-
-                // }
-                return str;
-            }
-            // else if(!eNotation && trimmedStr && trimmedStr !== Number(trimmedStr) ) return str;
-            
-        }else{ //non-numeric string
-            return str;
-        }
-    }
-}
-
-/**
- * 
- * @param {string} numStr without leading zeros
- * @returns 
- */
-function trimZeros(numStr){
-    if(numStr && numStr.indexOf(".") !== -1){//float
-        numStr = numStr.replace(/0+$/, ""); //remove ending zeros
-        if(numStr === ".")  numStr = "0";
-        else if(numStr[0] === ".")  numStr = "0"+numStr;
-        else if(numStr[numStr.length-1] === ".")  numStr = numStr.substr(0,numStr.length-1);
-        return numStr;
-    }
-    return numStr;
-}
-module.exports = toNumber
 
 
 /***/ }),
@@ -49779,7 +54004,7 @@ module.exports = {
 
 
 const { parseSetCookie } = __nccwpck_require__(8915)
-const { stringify, getHeadersList } = __nccwpck_require__(3834)
+const { stringify } = __nccwpck_require__(3834)
 const { webidl } = __nccwpck_require__(4222)
 const { Headers } = __nccwpck_require__(6349)
 
@@ -49855,14 +54080,13 @@ function getSetCookies (headers) {
 
   webidl.brandCheck(headers, Headers, { strict: false })
 
-  const cookies = getHeadersList(headers).cookies
+  const cookies = headers.getSetCookie()
 
   if (!cookies) {
     return []
   }
 
-  // In older versions of undici, cookies is a list of name:value.
-  return cookies.map((pair) => parseSetCookie(Array.isArray(pair) ? pair[1] : pair))
+  return cookies.map((pair) => parseSetCookie(pair))
 }
 
 /**
@@ -50290,14 +54514,15 @@ module.exports = {
 /***/ }),
 
 /***/ 3834:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+/***/ ((module) => {
 
 "use strict";
 
 
-const assert = __nccwpck_require__(2613)
-const { kHeadersList } = __nccwpck_require__(6443)
-
+/**
+ * @param {string} value
+ * @returns {boolean}
+ */
 function isCTLExcludingHtab (value) {
   if (value.length === 0) {
     return false
@@ -50558,31 +54783,13 @@ function stringify (cookie) {
   return out.join('; ')
 }
 
-let kHeadersListNode
-
-function getHeadersList (headers) {
-  if (headers[kHeadersList]) {
-    return headers[kHeadersList]
-  }
-
-  if (!kHeadersListNode) {
-    kHeadersListNode = Object.getOwnPropertySymbols(headers).find(
-      (symbol) => symbol.description === 'headers list'
-    )
-
-    assert(kHeadersListNode, 'Headers cannot be parsed')
-  }
-
-  const headersList = headers[kHeadersListNode]
-  assert(headersList)
-
-  return headersList
-}
-
 module.exports = {
   isCTLExcludingHtab,
-  stringify,
-  getHeadersList
+  validateCookieName,
+  validateCookiePath,
+  validateCookieValue,
+  toIMFDate,
+  stringify
 }
 
 
@@ -52511,6 +56718,14 @@ const { isUint8Array, isArrayBuffer } = __nccwpck_require__(8253)
 const { File: UndiciFile } = __nccwpck_require__(3041)
 const { parseMIMEType, serializeAMimeType } = __nccwpck_require__(4322)
 
+let random
+try {
+  const crypto = __nccwpck_require__(7598)
+  random = (max) => crypto.randomInt(0, max)
+} catch {
+  random = (max) => Math.floor(Math.random(max))
+}
+
 let ReadableStream = globalThis.ReadableStream
 
 /** @type {globalThis['File']} */
@@ -52596,7 +56811,7 @@ function extractBody (object, keepalive = false) {
     // Set source to a copy of the bytes held by object.
     source = new Uint8Array(object.buffer.slice(object.byteOffset, object.byteOffset + object.byteLength))
   } else if (util.isFormDataLike(object)) {
-    const boundary = `----formdata-undici-0${`${Math.floor(Math.random() * 1e11)}`.padStart(11, '0')}`
+    const boundary = `----formdata-undici-0${`${random(1e11)}`.padStart(11, '0')}`
     const prefix = `--${boundary}\r\nContent-Disposition: form-data`
 
     /*! formdata-polyfill. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
@@ -54578,6 +58793,7 @@ const {
   isValidHeaderName,
   isValidHeaderValue
 } = __nccwpck_require__(5523)
+const util = __nccwpck_require__(9023)
 const { webidl } = __nccwpck_require__(4222)
 const assert = __nccwpck_require__(2613)
 
@@ -55131,6 +59347,9 @@ Object.defineProperties(Headers.prototype, {
   [Symbol.toStringTag]: {
     value: 'Headers',
     configurable: true
+  },
+  [util.inspect.custom]: {
+    enumerable: false
   }
 })
 
@@ -64307,6 +68526,20 @@ class Pool extends PoolBase {
       ? { ...options.interceptors }
       : undefined
     this[kFactory] = factory
+
+    this.on('connectionError', (origin, targets, error) => {
+      // If a connection error occurs, we remove the client from the pool,
+      // and emit a connectionError event. They will not be re-used.
+      // Fixes https://github.com/nodejs/undici/issues/3895
+      for (const target of targets) {
+        // Do not use kRemoveClient here, as it will close the client,
+        // but the client cannot be closed in this state.
+        const idx = this[kClients].indexOf(target)
+        if (idx !== -1) {
+          this[kClients].splice(idx, 1)
+        }
+      }
+    })
   }
 
   [kGetDispatcher] () {
@@ -66715,6 +70948,14 @@ module.exports = require("net");
 
 /***/ }),
 
+/***/ 7598:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:crypto");
+
+/***/ }),
+
 /***/ 8474:
 /***/ ((module) => {
 
@@ -67198,9 +71439,10 @@ function isTokenCredential(credential) {
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.authorizeRequestOnClaimChallenge = exports.parseCAEChallenge = void 0;
+exports.parseCAEChallenge = parseCAEChallenge;
+exports.authorizeRequestOnClaimChallenge = authorizeRequestOnClaimChallenge;
 const log_js_1 = __nccwpck_require__(9994);
 const base64_js_1 = __nccwpck_require__(741);
 /**
@@ -67218,19 +71460,21 @@ function parseCAEChallenge(challenges) {
         return keyValuePairs.reduce((a, b) => (Object.assign(Object.assign({}, a), b)), {});
     });
 }
-exports.parseCAEChallenge = parseCAEChallenge;
 /**
  * This function can be used as a callback for the `bearerTokenAuthenticationPolicy` of `@azure/core-rest-pipeline`, to support CAE challenges:
- * [Continuous Access Evaluation](https://docs.microsoft.com/azure/active-directory/conditional-access/concept-continuous-access-evaluation).
+ * [Continuous Access Evaluation](https://learn.microsoft.com/azure/active-directory/conditional-access/concept-continuous-access-evaluation).
  *
  * Call the `bearerTokenAuthenticationPolicy` with the following options:
  *
- * ```ts
+ * ```ts snippet:AuthorizeRequestOnClaimChallenge
  * import { bearerTokenAuthenticationPolicy } from "@azure/core-rest-pipeline";
  * import { authorizeRequestOnClaimChallenge } from "@azure/core-client";
  *
- * const bearerTokenAuthenticationPolicy = bearerTokenAuthenticationPolicy({
- *   authorizeRequestOnChallenge: authorizeRequestOnClaimChallenge
+ * const policy = bearerTokenAuthenticationPolicy({
+ *   challengeCallbacks: {
+ *     authorizeRequestOnChallenge: authorizeRequestOnClaimChallenge,
+ *   },
+ *   scopes: ["https://service/.default"],
  * });
  * ```
  *
@@ -67246,6 +71490,7 @@ exports.parseCAEChallenge = parseCAEChallenge;
  * ```
  */
 async function authorizeRequestOnClaimChallenge(onChallengeOptions) {
+    var _a;
     const { scopes, response } = onChallengeOptions;
     const logger = onChallengeOptions.logger || log_js_1.logger;
     const challenge = response.headers.get("WWW-Authenticate");
@@ -67265,10 +71510,9 @@ async function authorizeRequestOnClaimChallenge(onChallengeOptions) {
     if (!accessToken) {
         return false;
     }
-    onChallengeOptions.request.headers.set("Authorization", `Bearer ${accessToken.token}`);
+    onChallengeOptions.request.headers.set("Authorization", `${(_a = accessToken.tokenType) !== null && _a !== void 0 ? _a : "Bearer"} ${accessToken.token}`);
     return true;
 }
-exports.authorizeRequestOnClaimChallenge = authorizeRequestOnClaimChallenge;
 //# sourceMappingURL=authorizeRequestOnClaimChallenge.js.map
 
 /***/ }),
@@ -67279,7 +71523,7 @@ exports.authorizeRequestOnClaimChallenge = authorizeRequestOnClaimChallenge;
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.authorizeRequestOnTenantChallenge = void 0;
 /**
@@ -67302,10 +71546,11 @@ function isUuid(text) {
 }
 /**
  * Defines a callback to handle auth challenge for Storage APIs.
- * This implements the bearer challenge process described here: https://docs.microsoft.com/rest/api/storageservices/authorize-with-azure-active-directory#bearer-challenge
+ * This implements the bearer challenge process described here: https://learn.microsoft.com/rest/api/storageservices/authorize-with-azure-active-directory#bearer-challenge
  * Handling has specific features for storage that departs to the general AAD challenge docs.
  **/
 const authorizeRequestOnTenantChallenge = async (challengeOptions) => {
+    var _a;
     const requestOptions = requestToOptions(challengeOptions.request);
     const challenge = getChallenge(challengeOptions.response);
     if (challenge) {
@@ -67319,7 +71564,7 @@ const authorizeRequestOnTenantChallenge = async (challengeOptions) => {
         if (!accessToken) {
             return false;
         }
-        challengeOptions.request.headers.set(Constants.HeaderConstants.AUTHORIZATION, `Bearer ${accessToken.token}`);
+        challengeOptions.request.headers.set(Constants.HeaderConstants.AUTHORIZATION, `${(_a = accessToken.tokenType) !== null && _a !== void 0 ? _a : "Bearer"} ${accessToken.token}`);
         return true;
     }
     return false;
@@ -67403,9 +71648,12 @@ function requestToOptions(request) {
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.decodeStringToString = exports.decodeString = exports.encodeByteArray = exports.encodeString = void 0;
+exports.encodeString = encodeString;
+exports.encodeByteArray = encodeByteArray;
+exports.decodeString = decodeString;
+exports.decodeStringToString = decodeStringToString;
 /**
  * Encodes a string in base64 format.
  * @param value - the string to encode
@@ -67414,7 +71662,6 @@ exports.decodeStringToString = exports.decodeString = exports.encodeByteArray = 
 function encodeString(value) {
     return Buffer.from(value).toString("base64");
 }
-exports.encodeString = encodeString;
 /**
  * Encodes a byte array in base64 format.
  * @param value - the Uint8Aray to encode
@@ -67424,7 +71671,6 @@ function encodeByteArray(value) {
     const bufferValue = value instanceof Buffer ? value : Buffer.from(value.buffer);
     return bufferValue.toString("base64");
 }
-exports.encodeByteArray = encodeByteArray;
 /**
  * Decodes a base64 string into a byte array.
  * @param value - the base64 string to decode
@@ -67433,7 +71679,6 @@ exports.encodeByteArray = encodeByteArray;
 function decodeString(value) {
     return Buffer.from(value, "base64");
 }
-exports.decodeString = decodeString;
 /**
  * Decodes a base64 string into a string.
  * @param value - the base64 string to decode
@@ -67442,7 +71687,6 @@ exports.decodeString = decodeString;
 function decodeStringToString(value) {
     return Buffer.from(value, "base64").toString();
 }
-exports.decodeStringToString = decodeStringToString;
 //# sourceMappingURL=base64.js.map
 
 /***/ }),
@@ -67453,9 +71697,10 @@ exports.decodeStringToString = decodeStringToString;
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.deserializationPolicy = exports.deserializationPolicyName = void 0;
+exports.deserializationPolicyName = void 0;
+exports.deserializationPolicy = deserializationPolicy;
 const interfaces_js_1 = __nccwpck_require__(6058);
 const core_rest_pipeline_1 = __nccwpck_require__(778);
 const serializer_js_1 = __nccwpck_require__(1530);
@@ -67490,7 +71735,6 @@ function deserializationPolicy(options = {}) {
         },
     };
 }
-exports.deserializationPolicy = deserializationPolicy;
 function getOperationResponseMap(parsedResponse) {
     let result;
     const request = parsedResponse.request;
@@ -67579,7 +71823,7 @@ function isOperationSpecEmpty(operationSpec) {
         (expectedStatusCodes.length === 1 && expectedStatusCodes[0] === "default"));
 }
 function handleErrorResponse(parsedResponse, operationSpec, responseSpec, options) {
-    var _a;
+    var _a, _b, _c, _d, _e;
     const isSuccessByStatus = 200 <= parsedResponse.status && parsedResponse.status < 300;
     const isExpectedStatusCode = isOperationSpecEmpty(operationSpec)
         ? isSuccessByStatus
@@ -67604,12 +71848,14 @@ function handleErrorResponse(parsedResponse, operationSpec, responseSpec, option
         response: parsedResponse,
     });
     // If the item failed but there's no error spec or default spec to deserialize the error,
+    // and the parsed body doesn't look like an error object,
     // we should fail so we just throw the parsed response
-    if (!errorResponseSpec) {
+    if (!errorResponseSpec &&
+        !(((_c = (_b = parsedResponse.parsedBody) === null || _b === void 0 ? void 0 : _b.error) === null || _c === void 0 ? void 0 : _c.code) && ((_e = (_d = parsedResponse.parsedBody) === null || _d === void 0 ? void 0 : _d.error) === null || _e === void 0 ? void 0 : _e.message))) {
         throw error;
     }
-    const defaultBodyMapper = errorResponseSpec.bodyMapper;
-    const defaultHeadersMapper = errorResponseSpec.headersMapper;
+    const defaultBodyMapper = errorResponseSpec === null || errorResponseSpec === void 0 ? void 0 : errorResponseSpec.bodyMapper;
+    const defaultHeadersMapper = errorResponseSpec === null || errorResponseSpec === void 0 ? void 0 : errorResponseSpec.headersMapper;
     try {
         // If error response has a body, try to deserialize it using default body mapper.
         // Then try to extract error code & message from it
@@ -67695,9 +71941,9 @@ async function parse(jsonContentTypes, xmlContentTypes, operationResponse, opts,
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getCachedDefaultHttpClient = void 0;
+exports.getCachedDefaultHttpClient = getCachedDefaultHttpClient;
 const core_rest_pipeline_1 = __nccwpck_require__(778);
 let cachedHttpClient;
 function getCachedDefaultHttpClient() {
@@ -67706,7 +71952,6 @@ function getCachedDefaultHttpClient() {
     }
     return cachedHttpClient;
 }
-exports.getCachedDefaultHttpClient = getCachedDefaultHttpClient;
 //# sourceMappingURL=httpClientCache.js.map
 
 /***/ }),
@@ -67717,7 +71962,7 @@ exports.getCachedDefaultHttpClient = getCachedDefaultHttpClient;
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.authorizeRequestOnTenantChallenge = exports.authorizeRequestOnClaimChallenge = exports.serializationPolicyName = exports.serializationPolicy = exports.deserializationPolicyName = exports.deserializationPolicy = exports.XML_CHARKEY = exports.XML_ATTRKEY = exports.createClientPipeline = exports.ServiceClient = exports.MapperTypeNames = exports.createSerializer = void 0;
 var serializer_js_1 = __nccwpck_require__(1530);
@@ -67750,9 +71995,10 @@ Object.defineProperty(exports, "authorizeRequestOnTenantChallenge", ({ enumerabl
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getPathStringFromParameter = exports.getStreamingResponseStatusCodes = void 0;
+exports.getStreamingResponseStatusCodes = getStreamingResponseStatusCodes;
+exports.getPathStringFromParameter = getPathStringFromParameter;
 const serializer_js_1 = __nccwpck_require__(1530);
 /**
  * Gets the list of status codes for streaming responses.
@@ -67769,7 +72015,6 @@ function getStreamingResponseStatusCodes(operationSpec) {
     }
     return result;
 }
-exports.getStreamingResponseStatusCodes = getStreamingResponseStatusCodes;
 /**
  * Get the path to this parameter's value as a dotted string (a.b.c).
  * @param parameter - The parameter to get the path string for.
@@ -67790,7 +72035,6 @@ function getPathStringFromParameter(parameter) {
     }
     return result;
 }
-exports.getPathStringFromParameter = getPathStringFromParameter;
 //# sourceMappingURL=interfaceHelpers.js.map
 
 /***/ }),
@@ -67801,7 +72045,7 @@ exports.getPathStringFromParameter = getPathStringFromParameter;
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.XML_CHARKEY = exports.XML_ATTRKEY = void 0;
 /**
@@ -67822,7 +72066,7 @@ exports.XML_CHARKEY = "_";
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.logger = void 0;
 const logger_1 = __nccwpck_require__(6515);
@@ -67837,9 +72081,10 @@ exports.logger = (0, logger_1.createClientLogger)("core-client");
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getOperationRequestInfo = exports.getOperationArgumentValueFromParameter = void 0;
+exports.getOperationArgumentValueFromParameter = getOperationArgumentValueFromParameter;
+exports.getOperationRequestInfo = getOperationRequestInfo;
 const state_js_1 = __nccwpck_require__(3345);
 /**
  * @internal
@@ -67897,7 +72142,6 @@ function getOperationArgumentValueFromParameter(operationArguments, parameter, f
     }
     return value;
 }
-exports.getOperationArgumentValueFromParameter = getOperationArgumentValueFromParameter;
 function getPropertyFromParameterPath(parent, parameterPath) {
     const result = { propertyFound: false };
     let i = 0;
@@ -67932,7 +72176,6 @@ function getOperationRequestInfo(request) {
     }
     return info;
 }
-exports.getOperationRequestInfo = getOperationRequestInfo;
 //# sourceMappingURL=operationHelpers.js.map
 
 /***/ }),
@@ -67943,9 +72186,9 @@ exports.getOperationRequestInfo = getOperationRequestInfo;
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createClientPipeline = void 0;
+exports.createClientPipeline = createClientPipeline;
 const deserializationPolicy_js_1 = __nccwpck_require__(111);
 const core_rest_pipeline_1 = __nccwpck_require__(778);
 const serializationPolicy_js_1 = __nccwpck_require__(6234);
@@ -67969,7 +72212,6 @@ function createClientPipeline(options = {}) {
     });
     return pipeline;
 }
-exports.createClientPipeline = createClientPipeline;
 //# sourceMappingURL=pipeline.js.map
 
 /***/ }),
@@ -67980,9 +72222,12 @@ exports.createClientPipeline = createClientPipeline;
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.serializeRequestBody = exports.serializeHeaders = exports.serializationPolicy = exports.serializationPolicyName = void 0;
+exports.serializationPolicyName = void 0;
+exports.serializationPolicy = serializationPolicy;
+exports.serializeHeaders = serializeHeaders;
+exports.serializeRequestBody = serializeRequestBody;
 const interfaces_js_1 = __nccwpck_require__(6058);
 const operationHelpers_js_1 = __nccwpck_require__(9688);
 const serializer_js_1 = __nccwpck_require__(1530);
@@ -68011,7 +72256,6 @@ function serializationPolicy(options = {}) {
         },
     };
 }
-exports.serializationPolicy = serializationPolicy;
 /**
  * @internal
  */
@@ -68042,7 +72286,6 @@ function serializeHeaders(request, operationArguments, operationSpec) {
         }
     }
 }
-exports.serializeHeaders = serializeHeaders;
 /**
  * @internal
  */
@@ -68110,7 +72353,6 @@ function serializeRequestBody(request, operationArguments, operationSpec, string
         }
     }
 }
-exports.serializeRequestBody = serializeRequestBody;
 /**
  * Adds an xml namespace to the xml serialized object if needed, otherwise it just returns the value itself
  */
@@ -68146,9 +72388,10 @@ function prepareXMLRootList(obj, elementName, xmlNamespaceKey, xmlNamespace) {
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MapperTypeNames = exports.createSerializer = void 0;
+exports.MapperTypeNames = void 0;
+exports.createSerializer = createSerializer;
 const tslib_1 = __nccwpck_require__(1860);
 const base64 = tslib_1.__importStar(__nccwpck_require__(741));
 const interfaces_js_1 = __nccwpck_require__(6058);
@@ -68402,7 +72645,6 @@ class SerializerImpl {
 function createSerializer(modelMappers = {}, isXML = false) {
     return new SerializerImpl(modelMappers, isXML);
 }
-exports.createSerializer = createSerializer;
 function trimEnd(str, ch) {
     let len = str.length;
     while (len - 1 >= 0 && str[len - 1] === ch) {
@@ -69080,7 +73322,7 @@ exports.MapperTypeNames = {
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ServiceClient = void 0;
 const core_rest_pipeline_1 = __nccwpck_require__(778);
@@ -69097,7 +73339,6 @@ const log_js_1 = __nccwpck_require__(9994);
 class ServiceClient {
     /**
      * The ServiceClient constructor
-     * @param credential - The credentials used for authentication with the service.
      * @param options - The service client options that govern the behavior of the client.
      */
     constructor(options = {}) {
@@ -69240,7 +73481,7 @@ function getCredentialScopes(options) {
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.state = void 0;
 /**
@@ -69259,9 +73500,10 @@ exports.state = {
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.appendQueryParams = exports.getRequestUrl = void 0;
+exports.getRequestUrl = getRequestUrl;
+exports.appendQueryParams = appendQueryParams;
 const operationHelpers_js_1 = __nccwpck_require__(9688);
 const interfaceHelpers_js_1 = __nccwpck_require__(2066);
 const CollectionFormatToDelimiterMap = {
@@ -69304,7 +73546,6 @@ function getRequestUrl(baseUri, operationSpec, operationArguments, fallbackObjec
     requestUrl = appendQueryParams(requestUrl, queryParams, sequenceParams, isAbsolutePath);
     return requestUrl;
 }
-exports.getRequestUrl = getRequestUrl;
 function replaceAll(input, replacements) {
     let result = input;
     for (const [searchValue, replaceValue] of replacements) {
@@ -69495,7 +73736,6 @@ function appendQueryParams(url, queryParams, sequenceParams, noOverwrite = false
     parsedUrl.search = searchPieces.length ? `?${searchPieces.join("&")}` : "";
     return parsedUrl.toString();
 }
-exports.appendQueryParams = appendQueryParams;
 //# sourceMappingURL=urlHelpers.js.map
 
 /***/ }),
@@ -69506,9 +73746,12 @@ exports.appendQueryParams = appendQueryParams;
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.flattenResponse = exports.isValidUuid = exports.isDuration = exports.isPrimitiveBody = void 0;
+exports.isPrimitiveBody = isPrimitiveBody;
+exports.isDuration = isDuration;
+exports.isValidUuid = isValidUuid;
+exports.flattenResponse = flattenResponse;
 /**
  * A type guard for a primitive response body.
  * @param value - Value to test
@@ -69526,7 +73769,6 @@ function isPrimitiveBody(value, mapperTypeName) {
             value === undefined ||
             value === null));
 }
-exports.isPrimitiveBody = isPrimitiveBody;
 const validateISODuration = /^(-|\+)?P(?:([-+]?[0-9,.]*)Y)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)W)?(?:([-+]?[0-9,.]*)D)?(?:T(?:([-+]?[0-9,.]*)H)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)S)?)?$/;
 /**
  * Returns true if the given string is in ISO 8601 format.
@@ -69536,7 +73778,6 @@ const validateISODuration = /^(-|\+)?P(?:([-+]?[0-9,.]*)Y)?(?:([-+]?[0-9,.]*)M)?
 function isDuration(value) {
     return validateISODuration.test(value);
 }
-exports.isDuration = isDuration;
 const validUuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/i;
 /**
  * Returns true if the provided uuid is valid.
@@ -69548,7 +73789,6 @@ const validUuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F
 function isValidUuid(uuid) {
     return validUuidRegex.test(uuid);
 }
-exports.isValidUuid = isValidUuid;
 /**
  * Maps the response as follows:
  * - wraps the response body if needed (typically if its type is primitive).
@@ -69624,7 +73864,6 @@ function flattenResponse(fullResponse, responseSpec) {
         shouldWrapBody: isPrimitiveBody(fullResponse.parsedBody, expectedBodyTypeName),
     });
 }
-exports.flattenResponse = flattenResponse;
 //# sourceMappingURL=utils.js.map
 
 /***/ }),
@@ -69635,7 +73874,7 @@ exports.flattenResponse = flattenResponse;
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExtendedServiceClient = void 0;
 const disableKeepAlivePolicy_js_1 = __nccwpck_require__(2639);
@@ -69697,9 +73936,9 @@ exports.ExtendedServiceClient = ExtendedServiceClient;
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.convertHttpClient = void 0;
+exports.convertHttpClient = convertHttpClient;
 const response_js_1 = __nccwpck_require__(8153);
 const util_js_1 = __nccwpck_require__(3850);
 /**
@@ -69715,7 +73954,6 @@ function convertHttpClient(requestPolicyClient) {
         },
     };
 }
-exports.convertHttpClient = convertHttpClient;
 //# sourceMappingURL=httpClientAdapter.js.map
 
 /***/ }),
@@ -69726,7 +73964,7 @@ exports.convertHttpClient = convertHttpClient;
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.toHttpHeadersLike = exports.convertHttpClient = exports.disableKeepAlivePolicyName = exports.HttpPipelineLogLevel = exports.createRequestPolicyFactoryPolicy = exports.requestPolicyFactoryPolicyName = exports.ExtendedServiceClient = void 0;
 /**
@@ -69756,9 +73994,11 @@ Object.defineProperty(exports, "toHttpHeadersLike", ({ enumerable: true, get: fu
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.pipelineContainsDisableKeepAlivePolicy = exports.createDisableKeepAlivePolicy = exports.disableKeepAlivePolicyName = void 0;
+exports.disableKeepAlivePolicyName = void 0;
+exports.createDisableKeepAlivePolicy = createDisableKeepAlivePolicy;
+exports.pipelineContainsDisableKeepAlivePolicy = pipelineContainsDisableKeepAlivePolicy;
 exports.disableKeepAlivePolicyName = "DisableKeepAlivePolicy";
 function createDisableKeepAlivePolicy() {
     return {
@@ -69769,14 +74009,12 @@ function createDisableKeepAlivePolicy() {
         },
     };
 }
-exports.createDisableKeepAlivePolicy = createDisableKeepAlivePolicy;
 /**
  * @internal
  */
 function pipelineContainsDisableKeepAlivePolicy(pipeline) {
     return pipeline.getOrderedPolicies().some((policy) => policy.name === exports.disableKeepAlivePolicyName);
 }
-exports.pipelineContainsDisableKeepAlivePolicy = pipelineContainsDisableKeepAlivePolicy;
 //# sourceMappingURL=disableKeepAlivePolicy.js.map
 
 /***/ }),
@@ -69787,9 +74025,10 @@ exports.pipelineContainsDisableKeepAlivePolicy = pipelineContainsDisableKeepAliv
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createRequestPolicyFactoryPolicy = exports.requestPolicyFactoryPolicyName = exports.HttpPipelineLogLevel = void 0;
+exports.requestPolicyFactoryPolicyName = exports.HttpPipelineLogLevel = void 0;
+exports.createRequestPolicyFactoryPolicy = createRequestPolicyFactoryPolicy;
 const util_js_1 = __nccwpck_require__(3850);
 const response_js_1 = __nccwpck_require__(8153);
 /**
@@ -69838,7 +74077,6 @@ function createRequestPolicyFactoryPolicy(factories) {
         },
     };
 }
-exports.createRequestPolicyFactoryPolicy = createRequestPolicyFactoryPolicy;
 //# sourceMappingURL=requestPolicyFactoryPolicy.js.map
 
 /***/ }),
@@ -69849,9 +74087,10 @@ exports.createRequestPolicyFactoryPolicy = createRequestPolicyFactoryPolicy;
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.toPipelineResponse = exports.toCompatResponse = void 0;
+exports.toCompatResponse = toCompatResponse;
+exports.toPipelineResponse = toPipelineResponse;
 const core_rest_pipeline_1 = __nccwpck_require__(778);
 const util_js_1 = __nccwpck_require__(3850);
 const originalResponse = Symbol("Original FullOperationResponse");
@@ -69893,7 +74132,6 @@ function toCompatResponse(response, options) {
             headers });
     }
 }
-exports.toCompatResponse = toCompatResponse;
 /**
  * A helper to convert back to a PipelineResponse
  * @param compatResponse - A response compatible with `HttpOperationResponse` from core-http.
@@ -69910,7 +74148,6 @@ function toPipelineResponse(compatResponse) {
         return Object.assign(Object.assign({}, compatResponse), { headers, request: (0, util_js_1.toPipelineRequest)(compatResponse.request) });
     }
 }
-exports.toPipelineResponse = toPipelineResponse;
 //# sourceMappingURL=response.js.map
 
 /***/ }),
@@ -69921,9 +74158,12 @@ exports.toPipelineResponse = toPipelineResponse;
 "use strict";
 
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+// Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.HttpHeaders = exports.toHttpHeadersLike = exports.toWebResourceLike = exports.toPipelineRequest = void 0;
+exports.HttpHeaders = void 0;
+exports.toPipelineRequest = toPipelineRequest;
+exports.toWebResourceLike = toWebResourceLike;
+exports.toHttpHeadersLike = toHttpHeadersLike;
 const core_rest_pipeline_1 = __nccwpck_require__(778);
 // We use a custom symbol to cache a reference to the original request without
 // exposing it on the public interface.
@@ -69957,6 +74197,7 @@ function toPipelineRequest(webResource, options = {}) {
             onUploadProgress: webResource.onUploadProgress,
             proxySettings: webResource.proxySettings,
             streamResponseStatusCodes: webResource.streamResponseStatusCodes,
+            agent: webResource.agent,
         });
         if (options.originalRequest) {
             newRequest[originalClientRequestSymbol] =
@@ -69965,7 +74206,6 @@ function toPipelineRequest(webResource, options = {}) {
         return newRequest;
     }
 }
-exports.toPipelineRequest = toPipelineRequest;
 function toWebResourceLike(request, options) {
     var _a;
     const originalRequest = (_a = options === null || options === void 0 ? void 0 : options.originalRequest) !== null && _a !== void 0 ? _a : request;
@@ -69984,6 +74224,7 @@ function toWebResourceLike(request, options) {
         onUploadProgress: request.onUploadProgress,
         proxySettings: request.proxySettings,
         streamResponseStatusCodes: request.streamResponseStatusCodes,
+        agent: request.agent,
         clone() {
             throw new Error("Cannot clone a non-proxied WebResourceLike");
         },
@@ -70027,6 +74268,7 @@ function toWebResourceLike(request, options) {
                     "onUploadProgress",
                     "proxySettings",
                     "streamResponseStatusCodes",
+                    "agent",
                 ];
                 if (typeof prop === "string" && passThroughProps.includes(prop)) {
                     request[prop] = value;
@@ -70039,7 +74281,6 @@ function toWebResourceLike(request, options) {
         return webResource;
     }
 }
-exports.toWebResourceLike = toWebResourceLike;
 /**
  * Converts HttpHeaders from core-rest-pipeline to look like
  * HttpHeaders from core-http.
@@ -70049,7 +74290,6 @@ exports.toWebResourceLike = toWebResourceLike;
 function toHttpHeadersLike(headers) {
     return new HttpHeaders(headers.toJSON({ preserveCase: true }));
 }
-exports.toHttpHeadersLike = toHttpHeadersLike;
 /**
  * A collection of HttpHeaders that can be sent with a HTTP request.
  */
@@ -71554,7 +75794,7 @@ exports.buildCreatePoller = buildCreatePoller;
 // Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DEFAULT_RETRY_POLICY_COUNT = exports.SDK_VERSION = void 0;
-exports.SDK_VERSION = "1.18.1";
+exports.SDK_VERSION = "1.19.1";
 exports.DEFAULT_RETRY_POLICY_COUNT = 3;
 //# sourceMappingURL=constants.js.map
 
@@ -71580,6 +75820,7 @@ const formDataPolicy_js_1 = __nccwpck_require__(5497);
 const core_util_1 = __nccwpck_require__(7779);
 const proxyPolicy_js_1 = __nccwpck_require__(2815);
 const setClientRequestIdPolicy_js_1 = __nccwpck_require__(5686);
+const agentPolicy_js_1 = __nccwpck_require__(8554);
 const tlsPolicy_js_1 = __nccwpck_require__(5798);
 const tracingPolicy_js_1 = __nccwpck_require__(3237);
 /**
@@ -71590,6 +75831,9 @@ function createPipelineFromOptions(options) {
     var _a;
     const pipeline = (0, pipeline_js_1.createEmptyPipeline)();
     if (core_util_1.isNodeLike) {
+        if (options.agent) {
+            pipeline.addPolicy((0, agentPolicy_js_1.agentPolicy)(options.agent));
+        }
         if (options.tlsOptions) {
             pipeline.addPolicy((0, tlsPolicy_js_1.tlsPolicy)(options.tlsOptions));
         }
@@ -71746,7 +75990,7 @@ function createHttpHeaders(rawHeaders) {
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createFileFromStream = exports.createFile = exports.auxiliaryAuthenticationHeaderPolicyName = exports.auxiliaryAuthenticationHeaderPolicy = exports.ndJsonPolicyName = exports.ndJsonPolicy = exports.bearerTokenAuthenticationPolicyName = exports.bearerTokenAuthenticationPolicy = exports.formDataPolicyName = exports.formDataPolicy = exports.tlsPolicyName = exports.tlsPolicy = exports.userAgentPolicyName = exports.userAgentPolicy = exports.defaultRetryPolicy = exports.tracingPolicyName = exports.tracingPolicy = exports.retryPolicy = exports.throttlingRetryPolicyName = exports.throttlingRetryPolicy = exports.systemErrorRetryPolicyName = exports.systemErrorRetryPolicy = exports.redirectPolicyName = exports.redirectPolicy = exports.getDefaultProxySettings = exports.proxyPolicyName = exports.proxyPolicy = exports.multipartPolicyName = exports.multipartPolicy = exports.logPolicyName = exports.logPolicy = exports.setClientRequestIdPolicyName = exports.setClientRequestIdPolicy = exports.exponentialRetryPolicyName = exports.exponentialRetryPolicy = exports.decompressResponsePolicyName = exports.decompressResponsePolicy = exports.isRestError = exports.RestError = exports.createPipelineRequest = exports.createHttpHeaders = exports.createDefaultHttpClient = exports.createPipelineFromOptions = exports.createEmptyPipeline = void 0;
+exports.createFileFromStream = exports.createFile = exports.agentPolicyName = exports.agentPolicy = exports.auxiliaryAuthenticationHeaderPolicyName = exports.auxiliaryAuthenticationHeaderPolicy = exports.ndJsonPolicyName = exports.ndJsonPolicy = exports.bearerTokenAuthenticationPolicyName = exports.bearerTokenAuthenticationPolicy = exports.formDataPolicyName = exports.formDataPolicy = exports.tlsPolicyName = exports.tlsPolicy = exports.userAgentPolicyName = exports.userAgentPolicy = exports.defaultRetryPolicy = exports.tracingPolicyName = exports.tracingPolicy = exports.retryPolicy = exports.throttlingRetryPolicyName = exports.throttlingRetryPolicy = exports.systemErrorRetryPolicyName = exports.systemErrorRetryPolicy = exports.redirectPolicyName = exports.redirectPolicy = exports.getDefaultProxySettings = exports.proxyPolicyName = exports.proxyPolicy = exports.multipartPolicyName = exports.multipartPolicy = exports.logPolicyName = exports.logPolicy = exports.setClientRequestIdPolicyName = exports.setClientRequestIdPolicy = exports.exponentialRetryPolicyName = exports.exponentialRetryPolicy = exports.decompressResponsePolicyName = exports.decompressResponsePolicy = exports.isRestError = exports.RestError = exports.createPipelineRequest = exports.createHttpHeaders = exports.createDefaultHttpClient = exports.createPipelineFromOptions = exports.createEmptyPipeline = void 0;
 var pipeline_js_1 = __nccwpck_require__(9590);
 Object.defineProperty(exports, "createEmptyPipeline", ({ enumerable: true, get: function () { return pipeline_js_1.createEmptyPipeline; } }));
 var createPipelineFromOptions_js_1 = __nccwpck_require__(862);
@@ -71813,6 +76057,9 @@ Object.defineProperty(exports, "ndJsonPolicyName", ({ enumerable: true, get: fun
 var auxiliaryAuthenticationHeaderPolicy_js_1 = __nccwpck_require__(2262);
 Object.defineProperty(exports, "auxiliaryAuthenticationHeaderPolicy", ({ enumerable: true, get: function () { return auxiliaryAuthenticationHeaderPolicy_js_1.auxiliaryAuthenticationHeaderPolicy; } }));
 Object.defineProperty(exports, "auxiliaryAuthenticationHeaderPolicyName", ({ enumerable: true, get: function () { return auxiliaryAuthenticationHeaderPolicy_js_1.auxiliaryAuthenticationHeaderPolicyName; } }));
+var agentPolicy_js_1 = __nccwpck_require__(8554);
+Object.defineProperty(exports, "agentPolicy", ({ enumerable: true, get: function () { return agentPolicy_js_1.agentPolicy; } }));
+Object.defineProperty(exports, "agentPolicyName", ({ enumerable: true, get: function () { return agentPolicy_js_1.agentPolicyName; } }));
 var file_js_1 = __nccwpck_require__(7073);
 Object.defineProperty(exports, "createFile", ({ enumerable: true, get: function () { return file_js_1.createFile; } }));
 Object.defineProperty(exports, "createFileFromStream", ({ enumerable: true, get: function () { return file_js_1.createFileFromStream; } }));
@@ -71854,6 +76101,7 @@ const abort_controller_1 = __nccwpck_require__(3287);
 const httpHeaders_js_1 = __nccwpck_require__(192);
 const restError_js_1 = __nccwpck_require__(8666);
 const log_js_1 = __nccwpck_require__(544);
+const sanitizer_js_1 = __nccwpck_require__(5204);
 const DEFAULT_TLS_SETTINGS = {};
 function isReadableStream(body) {
     return body && typeof body.pipe === "function";
@@ -71914,7 +76162,7 @@ class NodeHttpClient {
         let abortListener;
         if (request.abortSignal) {
             if (request.abortSignal.aborted) {
-                throw new abort_controller_1.AbortError("The operation was aborted.");
+                throw new abort_controller_1.AbortError("The operation was aborted. Request has already been canceled.");
             }
             abortListener = (event) => {
                 if (event.type === "abort") {
@@ -71923,8 +76171,11 @@ class NodeHttpClient {
             };
             request.abortSignal.addEventListener("abort", abortListener);
         }
+        let timeoutId;
         if (request.timeout > 0) {
-            setTimeout(() => {
+            timeoutId = setTimeout(() => {
+                const sanitizer = new sanitizer_js_1.Sanitizer();
+                log_js_1.logger.info(`request to '${sanitizer.sanitizeUrl(request.url)}' timed out. canceling...`);
                 abortController.abort();
             }, request.timeout);
         }
@@ -71954,6 +76205,9 @@ class NodeHttpClient {
                 body = uploadReportStream;
             }
             const res = await this.makeRequest(request, abortController, body);
+            if (timeoutId !== undefined) {
+                clearTimeout(timeoutId);
+            }
             const headers = getResponseHeaders(res);
             const status = (_a = res.statusCode) !== null && _a !== void 0 ? _a : 0;
             const response = {
@@ -72038,7 +76292,7 @@ class NodeHttpClient {
                 reject(new restError_js_1.RestError(err.message, { code: (_a = err.code) !== null && _a !== void 0 ? _a : restError_js_1.RestError.REQUEST_SEND_ERROR, request }));
             });
             abortController.signal.addEventListener("abort", () => {
-                const abortError = new abort_controller_1.AbortError("The operation was aborted.");
+                const abortError = new abort_controller_1.AbortError("The operation was aborted. Rejecting from abort signal callback while making request.");
                 req.destroy(abortError);
                 reject(abortError);
             });
@@ -72492,6 +76746,8 @@ class PipelineRequestImpl {
         this.requestId = options.requestId || (0, core_util_1.randomUUID)();
         this.allowInsecureConnection = (_f = options.allowInsecureConnection) !== null && _f !== void 0 ? _f : false;
         this.enableBrowserStreams = (_g = options.enableBrowserStreams) !== null && _g !== void 0 ? _g : false;
+        this.agent = options.agent;
+        this.tlsSettings = options.tlsSettings;
     }
 }
 /**
@@ -72503,6 +76759,39 @@ function createPipelineRequest(options) {
     return new PipelineRequestImpl(options);
 }
 //# sourceMappingURL=pipelineRequest.js.map
+
+/***/ }),
+
+/***/ 8554:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.agentPolicyName = void 0;
+exports.agentPolicy = agentPolicy;
+/**
+ * Name of the Agent Policy
+ */
+exports.agentPolicyName = "agentPolicy";
+/**
+ * Gets a pipeline policy that sets http.agent
+ */
+function agentPolicy(agent) {
+    return {
+        name: exports.agentPolicyName,
+        sendRequest: async (req, next) => {
+            // Users may define an agent on the request, honor it over the client level one
+            if (!req.agent) {
+                req.agent = agent;
+            }
+            return next(req);
+        },
+    };
+}
+//# sourceMappingURL=agentPolicy.js.map
 
 /***/ }),
 
@@ -73541,7 +77830,6 @@ function retryPolicy(strategies, options = { maxRetries: constants_js_1.DEFAULT_
             let response;
             let responseError;
             let retryCount = -1;
-            // eslint-disable-next-line no-constant-condition
             retryRequest: while (true) {
                 retryCount += 1;
                 response = undefined;
@@ -73721,9 +78009,9 @@ exports.throttlingRetryPolicyName = "throttlingRetryPolicy";
  * A policy that retries when the server sends a 429 response with a Retry-After header.
  *
  * To learn more, please refer to
- * https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-manager-request-limits,
- * https://docs.microsoft.com/en-us/azure/azure-subscription-service-limits and
- * https://docs.microsoft.com/en-us/azure/virtual-machines/troubleshooting/troubleshooting-throttling-errors
+ * https://learn.microsoft.com/en-us/azure/azure-resource-manager/resource-manager-request-limits,
+ * https://learn.microsoft.com/en-us/azure/azure-subscription-service-limits and
+ * https://learn.microsoft.com/en-us/azure/virtual-machines/troubleshooting/troubleshooting-throttling-errors
  *
  * @param options - Options that configure retry logic.
  */
@@ -73898,9 +78186,14 @@ function tryProcessResponse(span, response) {
         if (serviceRequestId) {
             span.setAttribute("serviceRequestId", serviceRequestId);
         }
-        span.setStatus({
-            status: "success",
-        });
+        // Per semantic conventions, only set the status to error if the status code is 4xx or 5xx.
+        // Otherwise, the status MUST remain unset.
+        // https://opentelemetry.io/docs/specs/semconv/http/http-spans/#status
+        if (response.status >= 400) {
+            span.setStatus({
+                status: "error",
+            });
+        }
         span.end();
     }
     catch (e) {
@@ -74288,6 +78581,9 @@ const core_util_1 = __nccwpck_require__(7779);
 const typeGuards_js_1 = __nccwpck_require__(2621);
 const unimplementedMethods = {
     arrayBuffer: () => {
+        throw new Error("Not implemented");
+    },
+    bytes: () => {
         throw new Error("Not implemented");
     },
     slice: () => {
@@ -75797,7 +80093,7 @@ exports.XML_CHARKEY = "_";
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.stringifyXML = stringifyXML;
 exports.parseXML = parseXML;
-const fast_xml_parser_1 = __nccwpck_require__(9741);
+const fast_xml_parser_1 = __nccwpck_require__(591);
 const xml_common_js_1 = __nccwpck_require__(3406);
 function getCommonOptions(options) {
     var _a;
@@ -75813,7 +80109,7 @@ function getSerializerOptions(options = {}) {
     return Object.assign(Object.assign({}, getCommonOptions(options)), { attributeNamePrefix: "@_", format: true, suppressEmptyNode: true, indentBy: "", rootNodeName: (_a = options.rootName) !== null && _a !== void 0 ? _a : "root", cdataPropName: (_b = options.cdataPropName) !== null && _b !== void 0 ? _b : "__cdata" });
 }
 function getParserOptions(options = {}) {
-    return Object.assign(Object.assign({}, getCommonOptions(options)), { parseAttributeValue: false, parseTagValue: false, attributeNamePrefix: "", stopNodes: options.stopNodes, processEntities: true });
+    return Object.assign(Object.assign({}, getCommonOptions(options)), { parseAttributeValue: false, parseTagValue: false, attributeNamePrefix: "", stopNodes: options.stopNodes, processEntities: true, trimValues: false });
 }
 /**
  * Converts given JSON object to XML string
@@ -77773,6 +82069,191 @@ module.exports = parseParams
 
 /***/ }),
 
+/***/ 1120:
+/***/ ((module) => {
+
+"use strict";
+var __webpack_unused_export__;
+
+
+const NullObject = function NullObject () { }
+NullObject.prototype = Object.create(null)
+
+/**
+ * RegExp to match *( ";" parameter ) in RFC 7231 sec 3.1.1.1
+ *
+ * parameter     = token "=" ( token / quoted-string )
+ * token         = 1*tchar
+ * tchar         = "!" / "#" / "$" / "%" / "&" / "'" / "*"
+ *               / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
+ *               / DIGIT / ALPHA
+ *               ; any VCHAR, except delimiters
+ * quoted-string = DQUOTE *( qdtext / quoted-pair ) DQUOTE
+ * qdtext        = HTAB / SP / %x21 / %x23-5B / %x5D-7E / obs-text
+ * obs-text      = %x80-FF
+ * quoted-pair   = "\" ( HTAB / SP / VCHAR / obs-text )
+ */
+const paramRE = /; *([!#$%&'*+.^\w`|~-]+)=("(?:[\v\u0020\u0021\u0023-\u005b\u005d-\u007e\u0080-\u00ff]|\\[\v\u0020-\u00ff])*"|[!#$%&'*+.^\w`|~-]+) */gu
+
+/**
+ * RegExp to match quoted-pair in RFC 7230 sec 3.2.6
+ *
+ * quoted-pair = "\" ( HTAB / SP / VCHAR / obs-text )
+ * obs-text    = %x80-FF
+ */
+const quotedPairRE = /\\([\v\u0020-\u00ff])/gu
+
+/**
+ * RegExp to match type in RFC 7231 sec 3.1.1.1
+ *
+ * media-type = type "/" subtype
+ * type       = token
+ * subtype    = token
+ */
+const mediaTypeRE = /^[!#$%&'*+.^\w|~-]+\/[!#$%&'*+.^\w|~-]+$/u
+
+// default ContentType to prevent repeated object creation
+const defaultContentType = { type: '', parameters: new NullObject() }
+Object.freeze(defaultContentType.parameters)
+Object.freeze(defaultContentType)
+
+/**
+ * Parse media type to object.
+ *
+ * @param {string|object} header
+ * @return {Object}
+ * @public
+ */
+
+function parse (header) {
+  if (typeof header !== 'string') {
+    throw new TypeError('argument header is required and must be a string')
+  }
+
+  let index = header.indexOf(';')
+  const type = index !== -1
+    ? header.slice(0, index).trim()
+    : header.trim()
+
+  if (mediaTypeRE.test(type) === false) {
+    throw new TypeError('invalid media type')
+  }
+
+  const result = {
+    type: type.toLowerCase(),
+    parameters: new NullObject()
+  }
+
+  // parse parameters
+  if (index === -1) {
+    return result
+  }
+
+  let key
+  let match
+  let value
+
+  paramRE.lastIndex = index
+
+  while ((match = paramRE.exec(header))) {
+    if (match.index !== index) {
+      throw new TypeError('invalid parameter format')
+    }
+
+    index += match[0].length
+    key = match[1].toLowerCase()
+    value = match[2]
+
+    if (value[0] === '"') {
+      // remove quotes and escapes
+      value = value
+        .slice(1, value.length - 1)
+
+      quotedPairRE.test(value) && (value = value.replace(quotedPairRE, '$1'))
+    }
+
+    result.parameters[key] = value
+  }
+
+  if (index !== header.length) {
+    throw new TypeError('invalid parameter format')
+  }
+
+  return result
+}
+
+function safeParse (header) {
+  if (typeof header !== 'string') {
+    return defaultContentType
+  }
+
+  let index = header.indexOf(';')
+  const type = index !== -1
+    ? header.slice(0, index).trim()
+    : header.trim()
+
+  if (mediaTypeRE.test(type) === false) {
+    return defaultContentType
+  }
+
+  const result = {
+    type: type.toLowerCase(),
+    parameters: new NullObject()
+  }
+
+  // parse parameters
+  if (index === -1) {
+    return result
+  }
+
+  let key
+  let match
+  let value
+
+  paramRE.lastIndex = index
+
+  while ((match = paramRE.exec(header))) {
+    if (match.index !== index) {
+      return defaultContentType
+    }
+
+    index += match[0].length
+    key = match[1].toLowerCase()
+    value = match[2]
+
+    if (value[0] === '"') {
+      // remove quotes and escapes
+      value = value
+        .slice(1, value.length - 1)
+
+      quotedPairRE.test(value) && (value = value.replace(quotedPairRE, '$1'))
+    }
+
+    result.parameters[key] = value
+  }
+
+  if (index !== header.length) {
+    return defaultContentType
+  }
+
+  return result
+}
+
+__webpack_unused_export__ = { parse, safeParse }
+__webpack_unused_export__ = parse
+module.exports.xL = safeParse
+__webpack_unused_export__ = defaultContentType
+
+
+/***/ }),
+
+/***/ 591:
+/***/ ((module) => {
+
+(()=>{"use strict";var t={d:(e,n)=>{for(var i in n)t.o(n,i)&&!t.o(e,i)&&Object.defineProperty(e,i,{enumerable:!0,get:n[i]})},o:(t,e)=>Object.prototype.hasOwnProperty.call(t,e),r:t=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})}},e={};t.r(e),t.d(e,{XMLBuilder:()=>dt,XMLParser:()=>it,XMLValidator:()=>gt});const n=":A-Za-z_\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD",i=new RegExp("^["+n+"]["+n+"\\-.\\d\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$");function s(t,e){const n=[];let i=e.exec(t);for(;i;){const s=[];s.startIndex=e.lastIndex-i[0].length;const r=i.length;for(let t=0;t<r;t++)s.push(i[t]);n.push(s),i=e.exec(t)}return n}const r=function(t){return!(null==i.exec(t))},o={allowBooleanAttributes:!1,unpairedTags:[]};function a(t,e){e=Object.assign({},o,e);const n=[];let i=!1,s=!1;"\ufeff"===t[0]&&(t=t.substr(1));for(let o=0;o<t.length;o++)if("<"===t[o]&&"?"===t[o+1]){if(o+=2,o=u(t,o),o.err)return o}else{if("<"!==t[o]){if(l(t[o]))continue;return x("InvalidChar","char '"+t[o]+"' is not expected.",N(t,o))}{let a=o;if(o++,"!"===t[o]){o=h(t,o);continue}{let d=!1;"/"===t[o]&&(d=!0,o++);let c="";for(;o<t.length&&">"!==t[o]&&" "!==t[o]&&"\t"!==t[o]&&"\n"!==t[o]&&"\r"!==t[o];o++)c+=t[o];if(c=c.trim(),"/"===c[c.length-1]&&(c=c.substring(0,c.length-1),o--),!r(c)){let e;return e=0===c.trim().length?"Invalid space after '<'.":"Tag '"+c+"' is an invalid name.",x("InvalidTag",e,N(t,o))}const f=p(t,o);if(!1===f)return x("InvalidAttr","Attributes for '"+c+"' have open quote.",N(t,o));let b=f.value;if(o=f.index,"/"===b[b.length-1]){const n=o-b.length;b=b.substring(0,b.length-1);const s=g(b,e);if(!0!==s)return x(s.err.code,s.err.msg,N(t,n+s.err.line));i=!0}else if(d){if(!f.tagClosed)return x("InvalidTag","Closing tag '"+c+"' doesn't have proper closing.",N(t,o));if(b.trim().length>0)return x("InvalidTag","Closing tag '"+c+"' can't have attributes or invalid starting.",N(t,a));if(0===n.length)return x("InvalidTag","Closing tag '"+c+"' has not been opened.",N(t,a));{const e=n.pop();if(c!==e.tagName){let n=N(t,e.tagStartPos);return x("InvalidTag","Expected closing tag '"+e.tagName+"' (opened in line "+n.line+", col "+n.col+") instead of closing tag '"+c+"'.",N(t,a))}0==n.length&&(s=!0)}}else{const r=g(b,e);if(!0!==r)return x(r.err.code,r.err.msg,N(t,o-b.length+r.err.line));if(!0===s)return x("InvalidXml","Multiple possible root nodes found.",N(t,o));-1!==e.unpairedTags.indexOf(c)||n.push({tagName:c,tagStartPos:a}),i=!0}for(o++;o<t.length;o++)if("<"===t[o]){if("!"===t[o+1]){o++,o=h(t,o);continue}if("?"!==t[o+1])break;if(o=u(t,++o),o.err)return o}else if("&"===t[o]){const e=m(t,o);if(-1==e)return x("InvalidChar","char '&' is not expected.",N(t,o));o=e}else if(!0===s&&!l(t[o]))return x("InvalidXml","Extra text at the end",N(t,o));"<"===t[o]&&o--}}}return i?1==n.length?x("InvalidTag","Unclosed tag '"+n[0].tagName+"'.",N(t,n[0].tagStartPos)):!(n.length>0)||x("InvalidXml","Invalid '"+JSON.stringify(n.map((t=>t.tagName)),null,4).replace(/\r?\n/g,"")+"' found.",{line:1,col:1}):x("InvalidXml","Start tag expected.",1)}function l(t){return" "===t||"\t"===t||"\n"===t||"\r"===t}function u(t,e){const n=e;for(;e<t.length;e++)if("?"!=t[e]&&" "!=t[e]);else{const i=t.substr(n,e-n);if(e>5&&"xml"===i)return x("InvalidXml","XML declaration allowed only at the start of the document.",N(t,e));if("?"==t[e]&&">"==t[e+1]){e++;break}}return e}function h(t,e){if(t.length>e+5&&"-"===t[e+1]&&"-"===t[e+2]){for(e+=3;e<t.length;e++)if("-"===t[e]&&"-"===t[e+1]&&">"===t[e+2]){e+=2;break}}else if(t.length>e+8&&"D"===t[e+1]&&"O"===t[e+2]&&"C"===t[e+3]&&"T"===t[e+4]&&"Y"===t[e+5]&&"P"===t[e+6]&&"E"===t[e+7]){let n=1;for(e+=8;e<t.length;e++)if("<"===t[e])n++;else if(">"===t[e]&&(n--,0===n))break}else if(t.length>e+9&&"["===t[e+1]&&"C"===t[e+2]&&"D"===t[e+3]&&"A"===t[e+4]&&"T"===t[e+5]&&"A"===t[e+6]&&"["===t[e+7])for(e+=8;e<t.length;e++)if("]"===t[e]&&"]"===t[e+1]&&">"===t[e+2]){e+=2;break}return e}const d='"',c="'";function p(t,e){let n="",i="",s=!1;for(;e<t.length;e++){if(t[e]===d||t[e]===c)""===i?i=t[e]:i!==t[e]||(i="");else if(">"===t[e]&&""===i){s=!0;break}n+=t[e]}return""===i&&{value:n,index:e,tagClosed:s}}const f=new RegExp("(\\s*)([^\\s=]+)(\\s*=)?(\\s*(['\"])(([\\s\\S])*?)\\5)?","g");function g(t,e){const n=s(t,f),i={};for(let t=0;t<n.length;t++){if(0===n[t][1].length)return x("InvalidAttr","Attribute '"+n[t][2]+"' has no space in starting.",v(n[t]));if(void 0!==n[t][3]&&void 0===n[t][4])return x("InvalidAttr","Attribute '"+n[t][2]+"' is without value.",v(n[t]));if(void 0===n[t][3]&&!e.allowBooleanAttributes)return x("InvalidAttr","boolean attribute '"+n[t][2]+"' is not allowed.",v(n[t]));const s=n[t][2];if(!b(s))return x("InvalidAttr","Attribute '"+s+"' is an invalid name.",v(n[t]));if(i.hasOwnProperty(s))return x("InvalidAttr","Attribute '"+s+"' is repeated.",v(n[t]));i[s]=1}return!0}function m(t,e){if(";"===t[++e])return-1;if("#"===t[e])return function(t,e){let n=/\d/;for("x"===t[e]&&(e++,n=/[\da-fA-F]/);e<t.length;e++){if(";"===t[e])return e;if(!t[e].match(n))break}return-1}(t,++e);let n=0;for(;e<t.length;e++,n++)if(!(t[e].match(/\w/)&&n<20)){if(";"===t[e])break;return-1}return e}function x(t,e,n){return{err:{code:t,msg:e,line:n.line||n,col:n.col}}}function b(t){return r(t)}function N(t,e){const n=t.substring(0,e).split(/\r?\n/);return{line:n.length,col:n[n.length-1].length+1}}function v(t){return t.startIndex+t[1].length}const E={preserveOrder:!1,attributeNamePrefix:"@_",attributesGroupName:!1,textNodeName:"#text",ignoreAttributes:!0,removeNSPrefix:!1,allowBooleanAttributes:!1,parseTagValue:!0,parseAttributeValue:!1,trimValues:!0,cdataPropName:!1,numberParseOptions:{hex:!0,leadingZeros:!0,eNotation:!0},tagValueProcessor:function(t,e){return e},attributeValueProcessor:function(t,e){return e},stopNodes:[],alwaysCreateTextNode:!1,isArray:()=>!1,commentPropName:!1,unpairedTags:[],processEntities:!0,htmlEntities:!1,ignoreDeclaration:!1,ignorePiTags:!1,transformTagName:!1,transformAttributeName:!1,updateTag:function(t,e,n){return t},captureMetaData:!1};let y;y="function"!=typeof Symbol?"@@xmlMetadata":Symbol("XML Node Metadata");class T{constructor(t){this.tagname=t,this.child=[],this[":@"]={}}add(t,e){"__proto__"===t&&(t="#__proto__"),this.child.push({[t]:e})}addChild(t,e){"__proto__"===t.tagname&&(t.tagname="#__proto__"),t[":@"]&&Object.keys(t[":@"]).length>0?this.child.push({[t.tagname]:t.child,":@":t[":@"]}):this.child.push({[t.tagname]:t.child}),void 0!==e&&(this.child[this.child.length-1][y]={startIndex:e})}static getMetaDataSymbol(){return y}}function P(t,e){const n={};if("O"!==t[e+3]||"C"!==t[e+4]||"T"!==t[e+5]||"Y"!==t[e+6]||"P"!==t[e+7]||"E"!==t[e+8])throw new Error("Invalid Tag instead of DOCTYPE");{e+=9;let i=1,s=!1,r=!1,o="";for(;e<t.length;e++)if("<"!==t[e]||r)if(">"===t[e]){if(r?"-"===t[e-1]&&"-"===t[e-2]&&(r=!1,i--):i--,0===i)break}else"["===t[e]?s=!0:o+=t[e];else{if(s&&A(t,e)){let i,s;e+=7,[i,s,e]=O(t,e+1),-1===s.indexOf("&")&&(n[j(i)]={regx:RegExp(`&${i};`,"g"),val:s})}else if(s&&I(t,e))e+=8;else if(s&&C(t,e))e+=8;else if(s&&S(t,e))e+=9;else{if(!w)throw new Error("Invalid DOCTYPE");r=!0}i++,o=""}if(0!==i)throw new Error("Unclosed DOCTYPE")}return{entities:n,i:e}}function O(t,e){let n="";for(;e<t.length&&"'"!==t[e]&&'"'!==t[e];e++)n+=t[e];if(n=n.trim(),-1!==n.indexOf(" "))throw new Error("External entites are not supported");const i=t[e++];let s="";for(;e<t.length&&t[e]!==i;e++)s+=t[e];return[n,s,e]}function w(t,e){return"!"===t[e+1]&&"-"===t[e+2]&&"-"===t[e+3]}function A(t,e){return"!"===t[e+1]&&"E"===t[e+2]&&"N"===t[e+3]&&"T"===t[e+4]&&"I"===t[e+5]&&"T"===t[e+6]&&"Y"===t[e+7]}function I(t,e){return"!"===t[e+1]&&"E"===t[e+2]&&"L"===t[e+3]&&"E"===t[e+4]&&"M"===t[e+5]&&"E"===t[e+6]&&"N"===t[e+7]&&"T"===t[e+8]}function C(t,e){return"!"===t[e+1]&&"A"===t[e+2]&&"T"===t[e+3]&&"T"===t[e+4]&&"L"===t[e+5]&&"I"===t[e+6]&&"S"===t[e+7]&&"T"===t[e+8]}function S(t,e){return"!"===t[e+1]&&"N"===t[e+2]&&"O"===t[e+3]&&"T"===t[e+4]&&"A"===t[e+5]&&"T"===t[e+6]&&"I"===t[e+7]&&"O"===t[e+8]&&"N"===t[e+9]}function j(t){if(r(t))return t;throw new Error(`Invalid entity name ${t}`)}const D=/^[-+]?0x[a-fA-F0-9]+$/,V=/^([\-\+])?(0*)([0-9]*(\.[0-9]*)?)$/,$={hex:!0,leadingZeros:!0,decimalPoint:".",eNotation:!0};function _(t){return"function"==typeof t?t:Array.isArray(t)?e=>{for(const n of t){if("string"==typeof n&&e===n)return!0;if(n instanceof RegExp&&n.test(e))return!0}}:()=>!1}class k{constructor(t){this.options=t,this.currentNode=null,this.tagsNodeStack=[],this.docTypeEntities={},this.lastEntities={apos:{regex:/&(apos|#39|#x27);/g,val:"'"},gt:{regex:/&(gt|#62|#x3E);/g,val:">"},lt:{regex:/&(lt|#60|#x3C);/g,val:"<"},quot:{regex:/&(quot|#34|#x22);/g,val:'"'}},this.ampEntity={regex:/&(amp|#38|#x26);/g,val:"&"},this.htmlEntities={space:{regex:/&(nbsp|#160);/g,val:" "},cent:{regex:/&(cent|#162);/g,val:"¢"},pound:{regex:/&(pound|#163);/g,val:"£"},yen:{regex:/&(yen|#165);/g,val:"¥"},euro:{regex:/&(euro|#8364);/g,val:"€"},copyright:{regex:/&(copy|#169);/g,val:"©"},reg:{regex:/&(reg|#174);/g,val:"®"},inr:{regex:/&(inr|#8377);/g,val:"₹"},num_dec:{regex:/&#([0-9]{1,7});/g,val:(t,e)=>String.fromCodePoint(Number.parseInt(e,10))},num_hex:{regex:/&#x([0-9a-fA-F]{1,6});/g,val:(t,e)=>String.fromCodePoint(Number.parseInt(e,16))}},this.addExternalEntities=F,this.parseXml=X,this.parseTextData=M,this.resolveNameSpace=L,this.buildAttributesMap=G,this.isItStopNode=Y,this.replaceEntitiesValue=U,this.readStopNodeData=z,this.saveTextToParentTag=Z,this.addChild=R,this.ignoreAttributesFn=_(this.options.ignoreAttributes)}}function F(t){const e=Object.keys(t);for(let n=0;n<e.length;n++){const i=e[n];this.lastEntities[i]={regex:new RegExp("&"+i+";","g"),val:t[i]}}}function M(t,e,n,i,s,r,o){if(void 0!==t&&(this.options.trimValues&&!i&&(t=t.trim()),t.length>0)){o||(t=this.replaceEntitiesValue(t));const i=this.options.tagValueProcessor(e,t,n,s,r);return null==i?t:typeof i!=typeof t||i!==t?i:this.options.trimValues||t.trim()===t?J(t,this.options.parseTagValue,this.options.numberParseOptions):t}}function L(t){if(this.options.removeNSPrefix){const e=t.split(":"),n="/"===t.charAt(0)?"/":"";if("xmlns"===e[0])return"";2===e.length&&(t=n+e[1])}return t}const B=new RegExp("([^\\s=]+)\\s*(=\\s*(['\"])([\\s\\S]*?)\\3)?","gm");function G(t,e,n){if(!0!==this.options.ignoreAttributes&&"string"==typeof t){const n=s(t,B),i=n.length,r={};for(let t=0;t<i;t++){const i=this.resolveNameSpace(n[t][1]);if(this.ignoreAttributesFn(i,e))continue;let s=n[t][4],o=this.options.attributeNamePrefix+i;if(i.length)if(this.options.transformAttributeName&&(o=this.options.transformAttributeName(o)),"__proto__"===o&&(o="#__proto__"),void 0!==s){this.options.trimValues&&(s=s.trim()),s=this.replaceEntitiesValue(s);const t=this.options.attributeValueProcessor(i,s,e);r[o]=null==t?s:typeof t!=typeof s||t!==s?t:J(s,this.options.parseAttributeValue,this.options.numberParseOptions)}else this.options.allowBooleanAttributes&&(r[o]=!0)}if(!Object.keys(r).length)return;if(this.options.attributesGroupName){const t={};return t[this.options.attributesGroupName]=r,t}return r}}const X=function(t){t=t.replace(/\r\n?/g,"\n");const e=new T("!xml");let n=e,i="",s="";for(let r=0;r<t.length;r++)if("<"===t[r])if("/"===t[r+1]){const e=q(t,">",r,"Closing Tag is not closed.");let o=t.substring(r+2,e).trim();if(this.options.removeNSPrefix){const t=o.indexOf(":");-1!==t&&(o=o.substr(t+1))}this.options.transformTagName&&(o=this.options.transformTagName(o)),n&&(i=this.saveTextToParentTag(i,n,s));const a=s.substring(s.lastIndexOf(".")+1);if(o&&-1!==this.options.unpairedTags.indexOf(o))throw new Error(`Unpaired tag can not be used as closing tag: </${o}>`);let l=0;a&&-1!==this.options.unpairedTags.indexOf(a)?(l=s.lastIndexOf(".",s.lastIndexOf(".")-1),this.tagsNodeStack.pop()):l=s.lastIndexOf("."),s=s.substring(0,l),n=this.tagsNodeStack.pop(),i="",r=e}else if("?"===t[r+1]){let e=W(t,r,!1,"?>");if(!e)throw new Error("Pi Tag is not closed.");if(i=this.saveTextToParentTag(i,n,s),this.options.ignoreDeclaration&&"?xml"===e.tagName||this.options.ignorePiTags);else{const t=new T(e.tagName);t.add(this.options.textNodeName,""),e.tagName!==e.tagExp&&e.attrExpPresent&&(t[":@"]=this.buildAttributesMap(e.tagExp,s,e.tagName)),this.addChild(n,t,s,r)}r=e.closeIndex+1}else if("!--"===t.substr(r+1,3)){const e=q(t,"--\x3e",r+4,"Comment is not closed.");if(this.options.commentPropName){const o=t.substring(r+4,e-2);i=this.saveTextToParentTag(i,n,s),n.add(this.options.commentPropName,[{[this.options.textNodeName]:o}])}r=e}else if("!D"===t.substr(r+1,2)){const e=P(t,r);this.docTypeEntities=e.entities,r=e.i}else if("!["===t.substr(r+1,2)){const e=q(t,"]]>",r,"CDATA is not closed.")-2,o=t.substring(r+9,e);i=this.saveTextToParentTag(i,n,s);let a=this.parseTextData(o,n.tagname,s,!0,!1,!0,!0);null==a&&(a=""),this.options.cdataPropName?n.add(this.options.cdataPropName,[{[this.options.textNodeName]:o}]):n.add(this.options.textNodeName,a),r=e+2}else{let o=W(t,r,this.options.removeNSPrefix),a=o.tagName;const l=o.rawTagName;let u=o.tagExp,h=o.attrExpPresent,d=o.closeIndex;this.options.transformTagName&&(a=this.options.transformTagName(a)),n&&i&&"!xml"!==n.tagname&&(i=this.saveTextToParentTag(i,n,s,!1));const c=n;c&&-1!==this.options.unpairedTags.indexOf(c.tagname)&&(n=this.tagsNodeStack.pop(),s=s.substring(0,s.lastIndexOf("."))),a!==e.tagname&&(s+=s?"."+a:a);const p=r;if(this.isItStopNode(this.options.stopNodes,s,a)){let e="";if(u.length>0&&u.lastIndexOf("/")===u.length-1)"/"===a[a.length-1]?(a=a.substr(0,a.length-1),s=s.substr(0,s.length-1),u=a):u=u.substr(0,u.length-1),r=o.closeIndex;else if(-1!==this.options.unpairedTags.indexOf(a))r=o.closeIndex;else{const n=this.readStopNodeData(t,l,d+1);if(!n)throw new Error(`Unexpected end of ${l}`);r=n.i,e=n.tagContent}const i=new T(a);a!==u&&h&&(i[":@"]=this.buildAttributesMap(u,s,a)),e&&(e=this.parseTextData(e,a,s,!0,h,!0,!0)),s=s.substr(0,s.lastIndexOf(".")),i.add(this.options.textNodeName,e),this.addChild(n,i,s,p)}else{if(u.length>0&&u.lastIndexOf("/")===u.length-1){"/"===a[a.length-1]?(a=a.substr(0,a.length-1),s=s.substr(0,s.length-1),u=a):u=u.substr(0,u.length-1),this.options.transformTagName&&(a=this.options.transformTagName(a));const t=new T(a);a!==u&&h&&(t[":@"]=this.buildAttributesMap(u,s,a)),this.addChild(n,t,s,p),s=s.substr(0,s.lastIndexOf("."))}else{const t=new T(a);this.tagsNodeStack.push(n),a!==u&&h&&(t[":@"]=this.buildAttributesMap(u,s,a)),this.addChild(n,t,s,p),n=t}i="",r=d}}else i+=t[r];return e.child};function R(t,e,n,i){this.options.captureMetaData||(i=void 0);const s=this.options.updateTag(e.tagname,n,e[":@"]);!1===s||("string"==typeof s?(e.tagname=s,t.addChild(e,i)):t.addChild(e,i))}const U=function(t){if(this.options.processEntities){for(let e in this.docTypeEntities){const n=this.docTypeEntities[e];t=t.replace(n.regx,n.val)}for(let e in this.lastEntities){const n=this.lastEntities[e];t=t.replace(n.regex,n.val)}if(this.options.htmlEntities)for(let e in this.htmlEntities){const n=this.htmlEntities[e];t=t.replace(n.regex,n.val)}t=t.replace(this.ampEntity.regex,this.ampEntity.val)}return t};function Z(t,e,n,i){return t&&(void 0===i&&(i=0===e.child.length),void 0!==(t=this.parseTextData(t,e.tagname,n,!1,!!e[":@"]&&0!==Object.keys(e[":@"]).length,i))&&""!==t&&e.add(this.options.textNodeName,t),t=""),t}function Y(t,e,n){const i="*."+n;for(const n in t){const s=t[n];if(i===s||e===s)return!0}return!1}function q(t,e,n,i){const s=t.indexOf(e,n);if(-1===s)throw new Error(i);return s+e.length-1}function W(t,e,n,i=">"){const s=function(t,e,n=">"){let i,s="";for(let r=e;r<t.length;r++){let e=t[r];if(i)e===i&&(i="");else if('"'===e||"'"===e)i=e;else if(e===n[0]){if(!n[1])return{data:s,index:r};if(t[r+1]===n[1])return{data:s,index:r}}else"\t"===e&&(e=" ");s+=e}}(t,e+1,i);if(!s)return;let r=s.data;const o=s.index,a=r.search(/\s/);let l=r,u=!0;-1!==a&&(l=r.substring(0,a),r=r.substring(a+1).trimStart());const h=l;if(n){const t=l.indexOf(":");-1!==t&&(l=l.substr(t+1),u=l!==s.data.substr(t+1))}return{tagName:l,tagExp:r,closeIndex:o,attrExpPresent:u,rawTagName:h}}function z(t,e,n){const i=n;let s=1;for(;n<t.length;n++)if("<"===t[n])if("/"===t[n+1]){const r=q(t,">",n,`${e} is not closed`);if(t.substring(n+2,r).trim()===e&&(s--,0===s))return{tagContent:t.substring(i,n),i:r};n=r}else if("?"===t[n+1])n=q(t,"?>",n+1,"StopNode is not closed.");else if("!--"===t.substr(n+1,3))n=q(t,"--\x3e",n+3,"StopNode is not closed.");else if("!["===t.substr(n+1,2))n=q(t,"]]>",n,"StopNode is not closed.")-2;else{const i=W(t,n,">");i&&((i&&i.tagName)===e&&"/"!==i.tagExp[i.tagExp.length-1]&&s++,n=i.closeIndex)}}function J(t,e,n){if(e&&"string"==typeof t){const e=t.trim();return"true"===e||"false"!==e&&function(t,e={}){if(e=Object.assign({},$,e),!t||"string"!=typeof t)return t;let n=t.trim();if(void 0!==e.skipLike&&e.skipLike.test(n))return t;if("0"===t)return 0;if(e.hex&&D.test(n))return function(t){if(parseInt)return parseInt(t,16);if(Number.parseInt)return Number.parseInt(t,16);if(window&&window.parseInt)return window.parseInt(t,16);throw new Error("parseInt, Number.parseInt, window.parseInt are not supported")}(n);if(-1!==n.search(/[eE]/)){const i=n.match(/^([-\+])?(0*)([0-9]*(\.[0-9]*)?[eE][-\+]?[0-9]+)$/);if(i){if(e.leadingZeros)n=(i[1]||"")+i[3];else if("0"!==i[2]||"."!==i[3][0])return t;return e.eNotation?Number(n):t}return t}{const s=V.exec(n);if(s){const r=s[1],o=s[2];let a=(i=s[3])&&-1!==i.indexOf(".")?("."===(i=i.replace(/0+$/,""))?i="0":"."===i[0]?i="0"+i:"."===i[i.length-1]&&(i=i.substr(0,i.length-1)),i):i;if(!e.leadingZeros&&o.length>0&&r&&"."!==n[2])return t;if(!e.leadingZeros&&o.length>0&&!r&&"."!==n[1])return t;if(e.leadingZeros&&o===t)return 0;{const i=Number(n),s=""+i;return-1!==s.search(/[eE]/)?e.eNotation?i:t:-1!==n.indexOf(".")?"0"===s&&""===a||s===a||r&&s==="-"+a?i:t:o?a===s||r+a===s?i:t:n===s||n===r+s?i:t}}return t}var i}(t,n)}return void 0!==t?t:""}const H=T.getMetaDataSymbol();function K(t,e){return Q(t,e)}function Q(t,e,n){let i;const s={};for(let r=0;r<t.length;r++){const o=t[r],a=tt(o);let l="";if(l=void 0===n?a:n+"."+a,a===e.textNodeName)void 0===i?i=o[a]:i+=""+o[a];else{if(void 0===a)continue;if(o[a]){let t=Q(o[a],e,l);const n=nt(t,e);void 0!==o[H]&&(t[H]=o[H]),o[":@"]?et(t,o[":@"],l,e):1!==Object.keys(t).length||void 0===t[e.textNodeName]||e.alwaysCreateTextNode?0===Object.keys(t).length&&(e.alwaysCreateTextNode?t[e.textNodeName]="":t=""):t=t[e.textNodeName],void 0!==s[a]&&s.hasOwnProperty(a)?(Array.isArray(s[a])||(s[a]=[s[a]]),s[a].push(t)):e.isArray(a,l,n)?s[a]=[t]:s[a]=t}}}return"string"==typeof i?i.length>0&&(s[e.textNodeName]=i):void 0!==i&&(s[e.textNodeName]=i),s}function tt(t){const e=Object.keys(t);for(let t=0;t<e.length;t++){const n=e[t];if(":@"!==n)return n}}function et(t,e,n,i){if(e){const s=Object.keys(e),r=s.length;for(let o=0;o<r;o++){const r=s[o];i.isArray(r,n+"."+r,!0,!0)?t[r]=[e[r]]:t[r]=e[r]}}}function nt(t,e){const{textNodeName:n}=e,i=Object.keys(t).length;return 0===i||!(1!==i||!t[n]&&"boolean"!=typeof t[n]&&0!==t[n])}class it{constructor(t){this.externalEntities={},this.options=function(t){return Object.assign({},E,t)}(t)}parse(t,e){if("string"==typeof t);else{if(!t.toString)throw new Error("XML data is accepted in String or Bytes[] form.");t=t.toString()}if(e){!0===e&&(e={});const n=a(t,e);if(!0!==n)throw Error(`${n.err.msg}:${n.err.line}:${n.err.col}`)}const n=new k(this.options);n.addExternalEntities(this.externalEntities);const i=n.parseXml(t);return this.options.preserveOrder||void 0===i?i:K(i,this.options)}addEntity(t,e){if(-1!==e.indexOf("&"))throw new Error("Entity value can't have '&'");if(-1!==t.indexOf("&")||-1!==t.indexOf(";"))throw new Error("An entity must be set without '&' and ';'. Eg. use '#xD' for '&#xD;'");if("&"===e)throw new Error("An entity with value '&' is not permitted");this.externalEntities[t]=e}static getMetaDataSymbol(){return T.getMetaDataSymbol()}}function st(t,e){let n="";return e.format&&e.indentBy.length>0&&(n="\n"),rt(t,e,"",n)}function rt(t,e,n,i){let s="",r=!1;for(let o=0;o<t.length;o++){const a=t[o],l=ot(a);if(void 0===l)continue;let u="";if(u=0===n.length?l:`${n}.${l}`,l===e.textNodeName){let t=a[l];lt(u,e)||(t=e.tagValueProcessor(l,t),t=ut(t,e)),r&&(s+=i),s+=t,r=!1;continue}if(l===e.cdataPropName){r&&(s+=i),s+=`<![CDATA[${a[l][0][e.textNodeName]}]]>`,r=!1;continue}if(l===e.commentPropName){s+=i+`\x3c!--${a[l][0][e.textNodeName]}--\x3e`,r=!0;continue}if("?"===l[0]){const t=at(a[":@"],e),n="?xml"===l?"":i;let o=a[l][0][e.textNodeName];o=0!==o.length?" "+o:"",s+=n+`<${l}${o}${t}?>`,r=!0;continue}let h=i;""!==h&&(h+=e.indentBy);const d=i+`<${l}${at(a[":@"],e)}`,c=rt(a[l],e,u,h);-1!==e.unpairedTags.indexOf(l)?e.suppressUnpairedNode?s+=d+">":s+=d+"/>":c&&0!==c.length||!e.suppressEmptyNode?c&&c.endsWith(">")?s+=d+`>${c}${i}</${l}>`:(s+=d+">",c&&""!==i&&(c.includes("/>")||c.includes("</"))?s+=i+e.indentBy+c+i:s+=c,s+=`</${l}>`):s+=d+"/>",r=!0}return s}function ot(t){const e=Object.keys(t);for(let n=0;n<e.length;n++){const i=e[n];if(t.hasOwnProperty(i)&&":@"!==i)return i}}function at(t,e){let n="";if(t&&!e.ignoreAttributes)for(let i in t){if(!t.hasOwnProperty(i))continue;let s=e.attributeValueProcessor(i,t[i]);s=ut(s,e),!0===s&&e.suppressBooleanAttributes?n+=` ${i.substr(e.attributeNamePrefix.length)}`:n+=` ${i.substr(e.attributeNamePrefix.length)}="${s}"`}return n}function lt(t,e){let n=(t=t.substr(0,t.length-e.textNodeName.length-1)).substr(t.lastIndexOf(".")+1);for(let i in e.stopNodes)if(e.stopNodes[i]===t||e.stopNodes[i]==="*."+n)return!0;return!1}function ut(t,e){if(t&&t.length>0&&e.processEntities)for(let n=0;n<e.entities.length;n++){const i=e.entities[n];t=t.replace(i.regex,i.val)}return t}const ht={attributeNamePrefix:"@_",attributesGroupName:!1,textNodeName:"#text",ignoreAttributes:!0,cdataPropName:!1,format:!1,indentBy:"  ",suppressEmptyNode:!1,suppressUnpairedNode:!0,suppressBooleanAttributes:!0,tagValueProcessor:function(t,e){return e},attributeValueProcessor:function(t,e){return e},preserveOrder:!1,commentPropName:!1,unpairedTags:[],entities:[{regex:new RegExp("&","g"),val:"&amp;"},{regex:new RegExp(">","g"),val:"&gt;"},{regex:new RegExp("<","g"),val:"&lt;"},{regex:new RegExp("'","g"),val:"&apos;"},{regex:new RegExp('"',"g"),val:"&quot;"}],processEntities:!0,stopNodes:[],oneListGroup:!1};function dt(t){this.options=Object.assign({},ht,t),!0===this.options.ignoreAttributes||this.options.attributesGroupName?this.isAttribute=function(){return!1}:(this.ignoreAttributesFn=_(this.options.ignoreAttributes),this.attrPrefixLen=this.options.attributeNamePrefix.length,this.isAttribute=ft),this.processTextOrObjNode=ct,this.options.format?(this.indentate=pt,this.tagEndChar=">\n",this.newLine="\n"):(this.indentate=function(){return""},this.tagEndChar=">",this.newLine="")}function ct(t,e,n,i){const s=this.j2x(t,n+1,i.concat(e));return void 0!==t[this.options.textNodeName]&&1===Object.keys(t).length?this.buildTextValNode(t[this.options.textNodeName],e,s.attrStr,n):this.buildObjectNode(s.val,e,s.attrStr,n)}function pt(t){return this.options.indentBy.repeat(t)}function ft(t){return!(!t.startsWith(this.options.attributeNamePrefix)||t===this.options.textNodeName)&&t.substr(this.attrPrefixLen)}dt.prototype.build=function(t){return this.options.preserveOrder?st(t,this.options):(Array.isArray(t)&&this.options.arrayNodeName&&this.options.arrayNodeName.length>1&&(t={[this.options.arrayNodeName]:t}),this.j2x(t,0,[]).val)},dt.prototype.j2x=function(t,e,n){let i="",s="";const r=n.join(".");for(let o in t)if(Object.prototype.hasOwnProperty.call(t,o))if(void 0===t[o])this.isAttribute(o)&&(s+="");else if(null===t[o])this.isAttribute(o)||o===this.options.cdataPropName?s+="":"?"===o[0]?s+=this.indentate(e)+"<"+o+"?"+this.tagEndChar:s+=this.indentate(e)+"<"+o+"/"+this.tagEndChar;else if(t[o]instanceof Date)s+=this.buildTextValNode(t[o],o,"",e);else if("object"!=typeof t[o]){const n=this.isAttribute(o);if(n&&!this.ignoreAttributesFn(n,r))i+=this.buildAttrPairStr(n,""+t[o]);else if(!n)if(o===this.options.textNodeName){let e=this.options.tagValueProcessor(o,""+t[o]);s+=this.replaceEntitiesValue(e)}else s+=this.buildTextValNode(t[o],o,"",e)}else if(Array.isArray(t[o])){const i=t[o].length;let r="",a="";for(let l=0;l<i;l++){const i=t[o][l];if(void 0===i);else if(null===i)"?"===o[0]?s+=this.indentate(e)+"<"+o+"?"+this.tagEndChar:s+=this.indentate(e)+"<"+o+"/"+this.tagEndChar;else if("object"==typeof i)if(this.options.oneListGroup){const t=this.j2x(i,e+1,n.concat(o));r+=t.val,this.options.attributesGroupName&&i.hasOwnProperty(this.options.attributesGroupName)&&(a+=t.attrStr)}else r+=this.processTextOrObjNode(i,o,e,n);else if(this.options.oneListGroup){let t=this.options.tagValueProcessor(o,i);t=this.replaceEntitiesValue(t),r+=t}else r+=this.buildTextValNode(i,o,"",e)}this.options.oneListGroup&&(r=this.buildObjectNode(r,o,a,e)),s+=r}else if(this.options.attributesGroupName&&o===this.options.attributesGroupName){const e=Object.keys(t[o]),n=e.length;for(let s=0;s<n;s++)i+=this.buildAttrPairStr(e[s],""+t[o][e[s]])}else s+=this.processTextOrObjNode(t[o],o,e,n);return{attrStr:i,val:s}},dt.prototype.buildAttrPairStr=function(t,e){return e=this.options.attributeValueProcessor(t,""+e),e=this.replaceEntitiesValue(e),this.options.suppressBooleanAttributes&&"true"===e?" "+t:" "+t+'="'+e+'"'},dt.prototype.buildObjectNode=function(t,e,n,i){if(""===t)return"?"===e[0]?this.indentate(i)+"<"+e+n+"?"+this.tagEndChar:this.indentate(i)+"<"+e+n+this.closeTag(e)+this.tagEndChar;{let s="</"+e+this.tagEndChar,r="";return"?"===e[0]&&(r="?",s=""),!n&&""!==n||-1!==t.indexOf("<")?!1!==this.options.commentPropName&&e===this.options.commentPropName&&0===r.length?this.indentate(i)+`\x3c!--${t}--\x3e`+this.newLine:this.indentate(i)+"<"+e+n+r+this.tagEndChar+t+this.indentate(i)+s:this.indentate(i)+"<"+e+n+r+">"+t+s}},dt.prototype.closeTag=function(t){let e="";return-1!==this.options.unpairedTags.indexOf(t)?this.options.suppressUnpairedNode||(e="/"):e=this.options.suppressEmptyNode?"/":`></${t}`,e},dt.prototype.buildTextValNode=function(t,e,n,i){if(!1!==this.options.cdataPropName&&e===this.options.cdataPropName)return this.indentate(i)+`<![CDATA[${t}]]>`+this.newLine;if(!1!==this.options.commentPropName&&e===this.options.commentPropName)return this.indentate(i)+`\x3c!--${t}--\x3e`+this.newLine;if("?"===e[0])return this.indentate(i)+"<"+e+n+"?"+this.tagEndChar;{let s=this.options.tagValueProcessor(e,t);return s=this.replaceEntitiesValue(s),""===s?this.indentate(i)+"<"+e+n+this.closeTag(e)+this.tagEndChar:this.indentate(i)+"<"+e+n+">"+s+"</"+e+this.tagEndChar}},dt.prototype.replaceEntitiesValue=function(t){if(t&&t.length>0&&this.options.processEntities)for(let e=0;e<this.options.entities.length;e++){const n=this.options.entities[e];t=t.replace(n.regex,n.val)}return t};const gt={validate:a};module.exports=e})();
+
+/***/ }),
+
 /***/ 6999:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
@@ -77979,13 +82460,10 @@ function lowercaseKeys(object) {
 
 // pkg/dist-src/util/is-plain-object.js
 function isPlainObject(value) {
-  if (typeof value !== "object" || value === null)
-    return false;
-  if (Object.prototype.toString.call(value) !== "[object Object]")
-    return false;
+  if (typeof value !== "object" || value === null) return false;
+  if (Object.prototype.toString.call(value) !== "[object Object]") return false;
   const proto = Object.getPrototypeOf(value);
-  if (proto === null)
-    return true;
+  if (proto === null) return true;
   const Ctor = Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor;
   return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
 }
@@ -77995,10 +82473,8 @@ function mergeDeep(defaults, options) {
   const result = Object.assign({}, defaults);
   Object.keys(options).forEach((key) => {
     if (isPlainObject(options[key])) {
-      if (!(key in defaults))
-        Object.assign(result, { [key]: options[key] });
-      else
-        result[key] = mergeDeep(defaults[key], options[key]);
+      if (!(key in defaults)) Object.assign(result, { [key]: options[key] });
+      else result[key] = mergeDeep(defaults[key], options[key]);
     } else {
       Object.assign(result, { [key]: options[key] });
     }
@@ -78055,9 +82531,9 @@ function addQueryParameters(url, parameters) {
 }
 
 // pkg/dist-src/util/extract-url-variable-names.js
-var urlVariableRegex = /\{[^}]+\}/g;
+var urlVariableRegex = /\{[^{}}]+\}/g;
 function removeNonChars(variableName) {
-  return variableName.replace(/^\W+|\W+$/g, "").split(/,/);
+  return variableName.replace(/(?:^\W+)|(?:(?<!\W)\W+$)/g, "").split(/,/);
 }
 function extractUrlVariableNames(url) {
   const matches = url.match(urlVariableRegex);
@@ -78243,7 +82719,7 @@ function parse(options) {
     }
     if (url.endsWith("/graphql")) {
       if (options.mediaType.previews?.length) {
-        const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
+        const previewsFromAcceptHeader = headers.accept.match(/(?<![\w-])[\w-]+(?=-preview)/g) || [];
         headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
           const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
           return `application/vnd.github.${preview}-preview${format}`;
@@ -78296,6 +82772,8 @@ function withDefaults(oldDefaults, newDefaults) {
 var endpoint = withDefaults(null, DEFAULTS);
 
 
+// EXTERNAL MODULE: ./node_modules/fast-content-type-parse/index.js
+var fast_content_type_parse = __nccwpck_require__(1120);
 ;// CONCATENATED MODULE: ./node_modules/@octokit/request-error/dist-src/index.js
 class RequestError extends Error {
   name;
@@ -78325,7 +82803,7 @@ class RequestError extends Error {
     if (options.request.headers.authorization) {
       requestCopy.headers = Object.assign({}, options.request.headers, {
         authorization: options.request.headers.authorization.replace(
-          / .*$/,
+          /(?<! ) .*$/,
           " [REDACTED]"
         )
       });
@@ -78352,6 +82830,9 @@ var defaults_default = {
     "user-agent": `octokit-request.js/${dist_bundle_VERSION} ${getUserAgent()}`
   }
 };
+
+// pkg/dist-src/fetch-wrapper.js
+
 
 // pkg/dist-src/is-plain-object.js
 function dist_bundle_isPlainObject(value) {
@@ -78428,7 +82909,7 @@ async function fetchWrapper(requestOptions) {
     data: ""
   };
   if ("deprecation" in responseHeaders) {
-    const matches = responseHeaders.link && responseHeaders.link.match(/<([^>]+)>; rel="deprecation"/);
+    const matches = responseHeaders.link && responseHeaders.link.match(/<([^<>]+)>; rel="deprecation"/);
     const deprecationLink = matches && matches.pop();
     log.warn(
       `[@octokit/request] "${requestOptions.method} ${requestOptions.url}" is deprecated. It is scheduled to be removed on ${responseHeaders.sunset}${deprecationLink ? `. See ${deprecationLink}` : ""}`
@@ -78465,13 +82946,26 @@ async function fetchWrapper(requestOptions) {
 }
 async function getResponseData(response) {
   const contentType = response.headers.get("content-type");
-  if (/application\/json/.test(contentType)) {
-    return response.json().catch(() => response.text()).catch(() => "");
+  if (!contentType) {
+    return response.text().catch(() => "");
   }
-  if (!contentType || /^text\/|charset=utf-8$/.test(contentType)) {
-    return response.text();
+  const mimetype = (0,fast_content_type_parse/* safeParse */.xL)(contentType);
+  if (isJSONResponse(mimetype)) {
+    let text = "";
+    try {
+      text = await response.text();
+      return JSON.parse(text);
+    } catch (err) {
+      return text;
+    }
+  } else if (mimetype.type.startsWith("text/") || mimetype.parameters.charset?.toLowerCase() === "utf-8") {
+    return response.text().catch(() => "");
+  } else {
+    return response.arrayBuffer().catch(() => new ArrayBuffer(0));
   }
-  return response.arrayBuffer();
+}
+function isJSONResponse(mimetype) {
+  return mimetype.type === "application/json" || mimetype.type === "application/scim+json";
 }
 function toErrorMessage(data) {
   if (typeof data === "string") {
@@ -78560,7 +83054,8 @@ var NON_VARIABLE_OPTIONS = [
   "headers",
   "request",
   "query",
-  "mediaType"
+  "mediaType",
+  "operationName"
 ];
 var FORBIDDEN_VARIABLE_OPTIONS = ["query", "method", "url"];
 var GHES_V3_SUFFIX_REGEX = /\/api\/v3\/?$/;
@@ -78572,8 +83067,7 @@ function graphql(request2, query, options) {
       );
     }
     for (const key in options) {
-      if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key))
-        continue;
+      if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key)) continue;
       return Promise.reject(
         new Error(
           `[@octokit/graphql] "${key}" cannot be used as variable name`
@@ -78644,14 +83138,17 @@ function withCustomRequest(customRequest) {
 
 
 ;// CONCATENATED MODULE: ./node_modules/@octokit/auth-token/dist-bundle/index.js
+// pkg/dist-src/is-jwt.js
+var b64url = "(?:[a-zA-Z0-9_-]+)";
+var sep = "\\.";
+var jwtRE = new RegExp(`^${b64url}${sep}${b64url}${sep}${b64url}$`);
+var isJWT = jwtRE.test.bind(jwtRE);
+
 // pkg/dist-src/auth.js
-var REGEX_IS_INSTALLATION_LEGACY = /^v1\./;
-var REGEX_IS_INSTALLATION = /^ghs_/;
-var REGEX_IS_USER_TO_SERVER = /^ghu_/;
 async function auth(token) {
-  const isApp = token.split(/\./).length === 3;
-  const isInstallation = REGEX_IS_INSTALLATION_LEGACY.test(token) || REGEX_IS_INSTALLATION.test(token);
-  const isUserToServer = REGEX_IS_USER_TO_SERVER.test(token);
+  const isApp = isJWT(token);
+  const isInstallation = token.startsWith("v1.") || token.startsWith("ghs_");
+  const isUserToServer = token.startsWith("ghu_");
   const tokenType = isApp ? "app" : isInstallation ? "installation" : isUserToServer ? "user-to-server" : "oauth";
   return {
     type: "token",
@@ -78696,7 +83193,7 @@ var createTokenAuth = function createTokenAuth2(token) {
 
 
 ;// CONCATENATED MODULE: ./node_modules/@octokit/core/dist-src/version.js
-const version_VERSION = "6.1.2";
+const version_VERSION = "6.1.5";
 
 
 ;// CONCATENATED MODULE: ./node_modules/@octokit/core/dist-src/index.js
@@ -78911,7 +83408,7 @@ function iterator(octokit, route, parameters) {
           const response = await requestMethod({ method, url, headers });
           const normalizedResponse = normalizePaginatedListResponse(response);
           url = ((normalizedResponse.headers.link || "").match(
-            /<([^>]+)>;\s*rel="next"/
+            /<([^<>]+)>;\s*rel="next"/
           ) || [])[1];
           return { value: normalizedResponse };
         } catch (error) {
@@ -78976,7 +83473,8 @@ var paginatingEndpoints = (/* unused pure expression or super */ null && ([
   "GET /assignments/{assignment_id}/accepted_assignments",
   "GET /classrooms",
   "GET /classrooms/{classroom_id}/assignments",
-  "GET /enterprises/{enterprise}/copilot/usage",
+  "GET /enterprises/{enterprise}/code-security/configurations",
+  "GET /enterprises/{enterprise}/code-security/configurations/{configuration_id}/repositories",
   "GET /enterprises/{enterprise}/dependabot/alerts",
   "GET /enterprises/{enterprise}/secret-scanning/alerts",
   "GET /events",
@@ -78997,18 +83495,27 @@ var paginatingEndpoints = (/* unused pure expression or super */ null && ([
   "GET /notifications",
   "GET /organizations",
   "GET /orgs/{org}/actions/cache/usage-by-repository",
+  "GET /orgs/{org}/actions/hosted-runners",
   "GET /orgs/{org}/actions/permissions/repositories",
+  "GET /orgs/{org}/actions/runner-groups",
+  "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/hosted-runners",
+  "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories",
+  "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/runners",
   "GET /orgs/{org}/actions/runners",
   "GET /orgs/{org}/actions/secrets",
   "GET /orgs/{org}/actions/secrets/{secret_name}/repositories",
   "GET /orgs/{org}/actions/variables",
   "GET /orgs/{org}/actions/variables/{name}/repositories",
+  "GET /orgs/{org}/attestations/{subject_digest}",
   "GET /orgs/{org}/blocks",
   "GET /orgs/{org}/code-scanning/alerts",
+  "GET /orgs/{org}/code-security/configurations",
+  "GET /orgs/{org}/code-security/configurations/{configuration_id}/repositories",
   "GET /orgs/{org}/codespaces",
   "GET /orgs/{org}/codespaces/secrets",
   "GET /orgs/{org}/codespaces/secrets/{secret_name}/repositories",
   "GET /orgs/{org}/copilot/billing/seats",
+  "GET /orgs/{org}/copilot/metrics",
   "GET /orgs/{org}/copilot/usage",
   "GET /orgs/{org}/dependabot/alerts",
   "GET /orgs/{org}/dependabot/secrets",
@@ -79017,6 +83524,9 @@ var paginatingEndpoints = (/* unused pure expression or super */ null && ([
   "GET /orgs/{org}/failed_invitations",
   "GET /orgs/{org}/hooks",
   "GET /orgs/{org}/hooks/{hook_id}/deliveries",
+  "GET /orgs/{org}/insights/api/route-stats/{actor_type}/{actor_id}",
+  "GET /orgs/{org}/insights/api/subject-stats",
+  "GET /orgs/{org}/insights/api/user-stats/{user_id}",
   "GET /orgs/{org}/installations",
   "GET /orgs/{org}/invitations",
   "GET /orgs/{org}/invitations/{invitation_id}/teams",
@@ -79034,14 +83544,18 @@ var paginatingEndpoints = (/* unused pure expression or super */ null && ([
   "GET /orgs/{org}/personal-access-token-requests/{pat_request_id}/repositories",
   "GET /orgs/{org}/personal-access-tokens",
   "GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories",
+  "GET /orgs/{org}/private-registries",
   "GET /orgs/{org}/projects",
   "GET /orgs/{org}/properties/values",
   "GET /orgs/{org}/public_members",
   "GET /orgs/{org}/repos",
   "GET /orgs/{org}/rulesets",
   "GET /orgs/{org}/rulesets/rule-suites",
+  "GET /orgs/{org}/rulesets/{ruleset_id}/history",
   "GET /orgs/{org}/secret-scanning/alerts",
   "GET /orgs/{org}/security-advisories",
+  "GET /orgs/{org}/settings/network-configurations",
+  "GET /orgs/{org}/team/{team_slug}/copilot/metrics",
   "GET /orgs/{org}/team/{team_slug}/copilot/usage",
   "GET /orgs/{org}/teams",
   "GET /orgs/{org}/teams/{team_slug}/discussions",
@@ -79071,6 +83585,7 @@ var paginatingEndpoints = (/* unused pure expression or super */ null && ([
   "GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs",
   "GET /repos/{owner}/{repo}/activity",
   "GET /repos/{owner}/{repo}/assignees",
+  "GET /repos/{owner}/{repo}/attestations/{subject_digest}",
   "GET /repos/{owner}/{repo}/branches",
   "GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations",
   "GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs",
@@ -79113,6 +83628,7 @@ var paginatingEndpoints = (/* unused pure expression or super */ null && ([
   "GET /repos/{owner}/{repo}/issues/{issue_number}/events",
   "GET /repos/{owner}/{repo}/issues/{issue_number}/labels",
   "GET /repos/{owner}/{repo}/issues/{issue_number}/reactions",
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/sub_issues",
   "GET /repos/{owner}/{repo}/issues/{issue_number}/timeline",
   "GET /repos/{owner}/{repo}/keys",
   "GET /repos/{owner}/{repo}/labels",
@@ -79135,6 +83651,7 @@ var paginatingEndpoints = (/* unused pure expression or super */ null && ([
   "GET /repos/{owner}/{repo}/rules/branches/{branch}",
   "GET /repos/{owner}/{repo}/rulesets",
   "GET /repos/{owner}/{repo}/rulesets/rule-suites",
+  "GET /repos/{owner}/{repo}/rulesets/{ruleset_id}/history",
   "GET /repos/{owner}/{repo}/secret-scanning/alerts",
   "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations",
   "GET /repos/{owner}/{repo}/security-advisories",
@@ -79188,6 +83705,7 @@ var paginatingEndpoints = (/* unused pure expression or super */ null && ([
   "GET /user/subscriptions",
   "GET /user/teams",
   "GET /users",
+  "GET /users/{username}/attestations/{subject_digest}",
   "GET /users/{username}/events",
   "GET /users/{username}/events/orgs/{org}",
   "GET /users/{username}/events/public",
@@ -79229,7 +83747,7 @@ paginateRest.VERSION = plugin_paginate_rest_dist_bundle_VERSION;
 
 
 ;// CONCATENATED MODULE: ./node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/version.js
-const plugin_rest_endpoint_methods_dist_src_version_VERSION = "13.2.6";
+const plugin_rest_endpoint_methods_dist_src_version_VERSION = "13.5.0";
 
 //# sourceMappingURL=version.js.map
 
@@ -79241,6 +83759,9 @@ const Endpoints = {
     ],
     addCustomLabelsToSelfHostedRunnerForRepo: [
       "POST /repos/{owner}/{repo}/actions/runners/{runner_id}/labels"
+    ],
+    addRepoAccessToSelfHostedRunnerGroupInOrg: [
+      "PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories/{repository_id}"
     ],
     addSelectedRepoToOrgSecret: [
       "PUT /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}"
@@ -79257,6 +83778,7 @@ const Endpoints = {
     createEnvironmentVariable: [
       "POST /repos/{owner}/{repo}/environments/{environment_name}/variables"
     ],
+    createHostedRunnerForOrg: ["POST /orgs/{org}/actions/hosted-runners"],
     createOrUpdateEnvironmentSecret: [
       "PUT /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}"
     ],
@@ -79293,6 +83815,9 @@ const Endpoints = {
     ],
     deleteEnvironmentVariable: [
       "DELETE /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}"
+    ],
+    deleteHostedRunnerForOrg: [
+      "DELETE /orgs/{org}/actions/hosted-runners/{hosted_runner_id}"
     ],
     deleteOrgSecret: ["DELETE /orgs/{org}/actions/secrets/{secret_name}"],
     deleteOrgVariable: ["DELETE /orgs/{org}/actions/variables/{name}"],
@@ -79382,6 +83907,24 @@ const Endpoints = {
     getGithubActionsPermissionsRepository: [
       "GET /repos/{owner}/{repo}/actions/permissions"
     ],
+    getHostedRunnerForOrg: [
+      "GET /orgs/{org}/actions/hosted-runners/{hosted_runner_id}"
+    ],
+    getHostedRunnersGithubOwnedImagesForOrg: [
+      "GET /orgs/{org}/actions/hosted-runners/images/github-owned"
+    ],
+    getHostedRunnersLimitsForOrg: [
+      "GET /orgs/{org}/actions/hosted-runners/limits"
+    ],
+    getHostedRunnersMachineSpecsForOrg: [
+      "GET /orgs/{org}/actions/hosted-runners/machine-sizes"
+    ],
+    getHostedRunnersPartnerImagesForOrg: [
+      "GET /orgs/{org}/actions/hosted-runners/images/partner"
+    ],
+    getHostedRunnersPlatformsForOrg: [
+      "GET /orgs/{org}/actions/hosted-runners/platforms"
+    ],
     getJobForWorkflowRun: ["GET /repos/{owner}/{repo}/actions/jobs/{job_id}"],
     getOrgPublicKey: ["GET /orgs/{org}/actions/secrets/public-key"],
     getOrgSecret: ["GET /orgs/{org}/actions/secrets/{secret_name}"],
@@ -79425,6 +83968,10 @@ const Endpoints = {
     listEnvironmentVariables: [
       "GET /repos/{owner}/{repo}/environments/{environment_name}/variables"
     ],
+    listGithubHostedRunnersInGroupForOrg: [
+      "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/hosted-runners"
+    ],
+    listHostedRunnersForOrg: ["GET /orgs/{org}/actions/hosted-runners"],
     listJobsForWorkflowRun: [
       "GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs"
     ],
@@ -79542,6 +84089,9 @@ const Endpoints = {
     ],
     updateEnvironmentVariable: [
       "PATCH /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}"
+    ],
+    updateHostedRunnerForOrg: [
+      "PATCH /orgs/{org}/actions/hosted-runners/{hosted_runner_id}"
     ],
     updateOrgVariable: ["PATCH /orgs/{org}/actions/variables/{name}"],
     updateRepoVariable: [
@@ -79670,6 +84220,9 @@ const Endpoints = {
     getGithubActionsBillingUser: [
       "GET /users/{username}/settings/billing/actions"
     ],
+    getGithubBillingUsageReportOrg: [
+      "GET /organizations/{org}/settings/billing/usage"
+    ],
     getGithubPackagesBillingOrg: ["GET /orgs/{org}/settings/billing/packages"],
     getGithubPackagesBillingUser: [
       "GET /users/{username}/settings/billing/packages"
@@ -79706,8 +84259,20 @@ const Endpoints = {
     update: ["PATCH /repos/{owner}/{repo}/check-runs/{check_run_id}"]
   },
   codeScanning: {
+    commitAutofix: [
+      "POST /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix/commits"
+    ],
+    createAutofix: [
+      "POST /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix"
+    ],
+    createVariantAnalysis: [
+      "POST /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses"
+    ],
     deleteAnalysis: [
       "DELETE /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}{?confirm_delete}"
+    ],
+    deleteCodeqlDatabase: [
+      "DELETE /repos/{owner}/{repo}/code-scanning/codeql/databases/{language}"
     ],
     getAlert: [
       "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}",
@@ -79717,11 +84282,20 @@ const Endpoints = {
     getAnalysis: [
       "GET /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}"
     ],
+    getAutofix: [
+      "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix"
+    ],
     getCodeqlDatabase: [
       "GET /repos/{owner}/{repo}/code-scanning/codeql/databases/{language}"
     ],
     getDefaultSetup: ["GET /repos/{owner}/{repo}/code-scanning/default-setup"],
     getSarif: ["GET /repos/{owner}/{repo}/code-scanning/sarifs/{sarif_id}"],
+    getVariantAnalysis: [
+      "GET /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses/{codeql_variant_analysis_id}"
+    ],
+    getVariantAnalysisRepoTask: [
+      "GET /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses/{codeql_variant_analysis_id}/repos/{repo_owner}/{repo_name}"
+    ],
     listAlertInstances: [
       "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances"
     ],
@@ -79743,6 +84317,64 @@ const Endpoints = {
       "PATCH /repos/{owner}/{repo}/code-scanning/default-setup"
     ],
     uploadSarif: ["POST /repos/{owner}/{repo}/code-scanning/sarifs"]
+  },
+  codeSecurity: {
+    attachConfiguration: [
+      "POST /orgs/{org}/code-security/configurations/{configuration_id}/attach"
+    ],
+    attachEnterpriseConfiguration: [
+      "POST /enterprises/{enterprise}/code-security/configurations/{configuration_id}/attach"
+    ],
+    createConfiguration: ["POST /orgs/{org}/code-security/configurations"],
+    createConfigurationForEnterprise: [
+      "POST /enterprises/{enterprise}/code-security/configurations"
+    ],
+    deleteConfiguration: [
+      "DELETE /orgs/{org}/code-security/configurations/{configuration_id}"
+    ],
+    deleteConfigurationForEnterprise: [
+      "DELETE /enterprises/{enterprise}/code-security/configurations/{configuration_id}"
+    ],
+    detachConfiguration: [
+      "DELETE /orgs/{org}/code-security/configurations/detach"
+    ],
+    getConfiguration: [
+      "GET /orgs/{org}/code-security/configurations/{configuration_id}"
+    ],
+    getConfigurationForRepository: [
+      "GET /repos/{owner}/{repo}/code-security-configuration"
+    ],
+    getConfigurationsForEnterprise: [
+      "GET /enterprises/{enterprise}/code-security/configurations"
+    ],
+    getConfigurationsForOrg: ["GET /orgs/{org}/code-security/configurations"],
+    getDefaultConfigurations: [
+      "GET /orgs/{org}/code-security/configurations/defaults"
+    ],
+    getDefaultConfigurationsForEnterprise: [
+      "GET /enterprises/{enterprise}/code-security/configurations/defaults"
+    ],
+    getRepositoriesForConfiguration: [
+      "GET /orgs/{org}/code-security/configurations/{configuration_id}/repositories"
+    ],
+    getRepositoriesForEnterpriseConfiguration: [
+      "GET /enterprises/{enterprise}/code-security/configurations/{configuration_id}/repositories"
+    ],
+    getSingleConfigurationForEnterprise: [
+      "GET /enterprises/{enterprise}/code-security/configurations/{configuration_id}"
+    ],
+    setConfigurationAsDefault: [
+      "PUT /orgs/{org}/code-security/configurations/{configuration_id}/defaults"
+    ],
+    setConfigurationAsDefaultForEnterprise: [
+      "PUT /enterprises/{enterprise}/code-security/configurations/{configuration_id}/defaults"
+    ],
+    updateConfiguration: [
+      "PATCH /orgs/{org}/code-security/configurations/{configuration_id}"
+    ],
+    updateEnterpriseConfiguration: [
+      "PATCH /enterprises/{enterprise}/code-security/configurations/{configuration_id}"
+    ]
   },
   codesOfConduct: {
     getAllCodesOfConduct: ["GET /codes_of_conduct"],
@@ -79874,12 +84506,13 @@ const Endpoints = {
     cancelCopilotSeatAssignmentForUsers: [
       "DELETE /orgs/{org}/copilot/billing/selected_users"
     ],
+    copilotMetricsForOrganization: ["GET /orgs/{org}/copilot/metrics"],
+    copilotMetricsForTeam: ["GET /orgs/{org}/team/{team_slug}/copilot/metrics"],
     getCopilotOrganizationDetails: ["GET /orgs/{org}/copilot/billing"],
     getCopilotSeatDetailsForUser: [
       "GET /orgs/{org}/members/{username}/copilot"
     ],
     listCopilotSeats: ["GET /orgs/{org}/copilot/billing/seats"],
-    usageMetricsForEnterprise: ["GET /enterprises/{enterprise}/copilot/usage"],
     usageMetricsForOrg: ["GET /orgs/{org}/copilot/usage"],
     usageMetricsForTeam: ["GET /orgs/{org}/team/{team_slug}/copilot/usage"]
   },
@@ -79977,6 +84610,26 @@ const Endpoints = {
     getAllTemplates: ["GET /gitignore/templates"],
     getTemplate: ["GET /gitignore/templates/{name}"]
   },
+  hostedCompute: {
+    createNetworkConfigurationForOrg: [
+      "POST /orgs/{org}/settings/network-configurations"
+    ],
+    deleteNetworkConfigurationFromOrg: [
+      "DELETE /orgs/{org}/settings/network-configurations/{network_configuration_id}"
+    ],
+    getNetworkConfigurationForOrg: [
+      "GET /orgs/{org}/settings/network-configurations/{network_configuration_id}"
+    ],
+    getNetworkSettingsForOrg: [
+      "GET /orgs/{org}/settings/network-settings/{network_settings_id}"
+    ],
+    listNetworkConfigurationsForOrg: [
+      "GET /orgs/{org}/settings/network-configurations"
+    ],
+    updateNetworkConfigurationForOrg: [
+      "PATCH /orgs/{org}/settings/network-configurations/{network_configuration_id}"
+    ]
+  },
   interactions: {
     getRestrictionsForAuthenticatedUser: ["GET /user/interaction-limits"],
     getRestrictionsForOrg: ["GET /orgs/{org}/interaction-limits"],
@@ -80010,6 +84663,9 @@ const Endpoints = {
       "POST /repos/{owner}/{repo}/issues/{issue_number}/assignees"
     ],
     addLabels: ["POST /repos/{owner}/{repo}/issues/{issue_number}/labels"],
+    addSubIssue: [
+      "POST /repos/{owner}/{repo}/issues/{issue_number}/sub_issues"
+    ],
     checkUserCanBeAssigned: ["GET /repos/{owner}/{repo}/assignees/{assignee}"],
     checkUserCanBeAssignedToIssue: [
       "GET /repos/{owner}/{repo}/issues/{issue_number}/assignees/{assignee}"
@@ -80052,6 +84708,9 @@ const Endpoints = {
       "GET /repos/{owner}/{repo}/issues/{issue_number}/labels"
     ],
     listMilestones: ["GET /repos/{owner}/{repo}/milestones"],
+    listSubIssues: [
+      "GET /repos/{owner}/{repo}/issues/{issue_number}/sub_issues"
+    ],
     lock: ["PUT /repos/{owner}/{repo}/issues/{issue_number}/lock"],
     removeAllLabels: [
       "DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels"
@@ -80061,6 +84720,12 @@ const Endpoints = {
     ],
     removeLabel: [
       "DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}"
+    ],
+    removeSubIssue: [
+      "DELETE /repos/{owner}/{repo}/issues/{issue_number}/sub_issue"
+    ],
+    reprioritizeSubIssue: [
+      "PATCH /repos/{owner}/{repo}/issues/{issue_number}/sub_issues/priority"
     ],
     setLabels: ["PUT /repos/{owner}/{repo}/issues/{issue_number}/labels"],
     unlock: ["DELETE /repos/{owner}/{repo}/issues/{issue_number}/lock"],
@@ -80135,7 +84800,11 @@ const Endpoints = {
   },
   orgs: {
     addSecurityManagerTeam: [
-      "PUT /orgs/{org}/security-managers/teams/{team_slug}"
+      "PUT /orgs/{org}/security-managers/teams/{team_slug}",
+      {},
+      {
+        deprecated: "octokit.rest.orgs.addSecurityManagerTeam() is deprecated, see https://docs.github.com/rest/orgs/security-managers#add-a-security-manager-team"
+      }
     ],
     assignTeamToOrgRole: [
       "PUT /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}"
@@ -80151,8 +84820,8 @@ const Endpoints = {
     convertMemberToOutsideCollaborator: [
       "PUT /orgs/{org}/outside_collaborators/{username}"
     ],
-    createCustomOrganizationRole: ["POST /orgs/{org}/organization-roles"],
     createInvitation: ["POST /orgs/{org}/invitations"],
+    createIssueType: ["POST /orgs/{org}/issue-types"],
     createOrUpdateCustomProperties: ["PATCH /orgs/{org}/properties/schema"],
     createOrUpdateCustomPropertiesValuesForRepos: [
       "PATCH /orgs/{org}/properties/values"
@@ -80162,12 +84831,14 @@ const Endpoints = {
     ],
     createWebhook: ["POST /orgs/{org}/hooks"],
     delete: ["DELETE /orgs/{org}"],
-    deleteCustomOrganizationRole: [
-      "DELETE /orgs/{org}/organization-roles/{role_id}"
-    ],
+    deleteIssueType: ["DELETE /orgs/{org}/issue-types/{issue_type_id}"],
     deleteWebhook: ["DELETE /orgs/{org}/hooks/{hook_id}"],
     enableOrDisableSecurityProductOnAllOrgRepos: [
-      "POST /orgs/{org}/{security_product}/{enablement}"
+      "POST /orgs/{org}/{security_product}/{enablement}",
+      {},
+      {
+        deprecated: "octokit.rest.orgs.enableOrDisableSecurityProductOnAllOrgRepos() is deprecated, see https://docs.github.com/rest/orgs/orgs#enable-or-disable-a-security-feature-for-an-organization"
+      }
     ],
     get: ["GET /orgs/{org}"],
     getAllCustomProperties: ["GET /orgs/{org}/properties/schema"],
@@ -80177,6 +84848,10 @@ const Endpoints = {
     getMembershipForAuthenticatedUser: ["GET /user/memberships/orgs/{org}"],
     getMembershipForUser: ["GET /orgs/{org}/memberships/{username}"],
     getOrgRole: ["GET /orgs/{org}/organization-roles/{role_id}"],
+    getOrgRulesetHistory: ["GET /orgs/{org}/rulesets/{ruleset_id}/history"],
+    getOrgRulesetVersion: [
+      "GET /orgs/{org}/rulesets/{ruleset_id}/history/{version_id}"
+    ],
     getWebhook: ["GET /orgs/{org}/hooks/{hook_id}"],
     getWebhookConfigForOrg: ["GET /orgs/{org}/hooks/{hook_id}/config"],
     getWebhookDelivery: [
@@ -80184,12 +84859,14 @@ const Endpoints = {
     ],
     list: ["GET /organizations"],
     listAppInstallations: ["GET /orgs/{org}/installations"],
+    listAttestations: ["GET /orgs/{org}/attestations/{subject_digest}"],
     listBlockedUsers: ["GET /orgs/{org}/blocks"],
     listCustomPropertiesValuesForRepos: ["GET /orgs/{org}/properties/values"],
     listFailedInvitations: ["GET /orgs/{org}/failed_invitations"],
     listForAuthenticatedUser: ["GET /user/orgs"],
     listForUser: ["GET /users/{username}/orgs"],
     listInvitationTeams: ["GET /orgs/{org}/invitations/{invitation_id}/teams"],
+    listIssueTypes: ["GET /orgs/{org}/issue-types"],
     listMembers: ["GET /orgs/{org}/members"],
     listMembershipsForAuthenticatedUser: ["GET /user/memberships/orgs"],
     listOrgRoleTeams: ["GET /orgs/{org}/organization-roles/{role_id}/teams"],
@@ -80209,12 +84886,15 @@ const Endpoints = {
     listPatGrants: ["GET /orgs/{org}/personal-access-tokens"],
     listPendingInvitations: ["GET /orgs/{org}/invitations"],
     listPublicMembers: ["GET /orgs/{org}/public_members"],
-    listSecurityManagerTeams: ["GET /orgs/{org}/security-managers"],
+    listSecurityManagerTeams: [
+      "GET /orgs/{org}/security-managers",
+      {},
+      {
+        deprecated: "octokit.rest.orgs.listSecurityManagerTeams() is deprecated, see https://docs.github.com/rest/orgs/security-managers#list-security-manager-teams"
+      }
+    ],
     listWebhookDeliveries: ["GET /orgs/{org}/hooks/{hook_id}/deliveries"],
     listWebhooks: ["GET /orgs/{org}/hooks"],
-    patchCustomOrganizationRole: [
-      "PATCH /orgs/{org}/organization-roles/{role_id}"
-    ],
     pingWebhook: ["POST /orgs/{org}/hooks/{hook_id}/pings"],
     redeliverWebhookDelivery: [
       "POST /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}/attempts"
@@ -80231,7 +84911,11 @@ const Endpoints = {
       "DELETE /orgs/{org}/public_members/{username}"
     ],
     removeSecurityManagerTeam: [
-      "DELETE /orgs/{org}/security-managers/teams/{team_slug}"
+      "DELETE /orgs/{org}/security-managers/teams/{team_slug}",
+      {},
+      {
+        deprecated: "octokit.rest.orgs.removeSecurityManagerTeam() is deprecated, see https://docs.github.com/rest/orgs/security-managers#remove-a-security-manager-team"
+      }
     ],
     reviewPatGrantRequest: [
       "POST /orgs/{org}/personal-access-token-requests/{pat_request_id}"
@@ -80257,6 +84941,7 @@ const Endpoints = {
     ],
     unblockUser: ["DELETE /orgs/{org}/blocks/{username}"],
     update: ["PATCH /orgs/{org}"],
+    updateIssueType: ["PUT /orgs/{org}/issue-types/{issue_type_id}"],
     updateMembershipForAuthenticatedUser: [
       "PATCH /user/memberships/orgs/{org}"
     ],
@@ -80357,36 +85042,194 @@ const Endpoints = {
       "POST /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore"
     ]
   },
+  privateRegistries: {
+    createOrgPrivateRegistry: ["POST /orgs/{org}/private-registries"],
+    deleteOrgPrivateRegistry: [
+      "DELETE /orgs/{org}/private-registries/{secret_name}"
+    ],
+    getOrgPrivateRegistry: ["GET /orgs/{org}/private-registries/{secret_name}"],
+    getOrgPublicKey: ["GET /orgs/{org}/private-registries/public-key"],
+    listOrgPrivateRegistries: ["GET /orgs/{org}/private-registries"],
+    updateOrgPrivateRegistry: [
+      "PATCH /orgs/{org}/private-registries/{secret_name}"
+    ]
+  },
   projects: {
-    addCollaborator: ["PUT /projects/{project_id}/collaborators/{username}"],
-    createCard: ["POST /projects/columns/{column_id}/cards"],
-    createColumn: ["POST /projects/{project_id}/columns"],
-    createForAuthenticatedUser: ["POST /user/projects"],
-    createForOrg: ["POST /orgs/{org}/projects"],
-    createForRepo: ["POST /repos/{owner}/{repo}/projects"],
-    delete: ["DELETE /projects/{project_id}"],
-    deleteCard: ["DELETE /projects/columns/cards/{card_id}"],
-    deleteColumn: ["DELETE /projects/columns/{column_id}"],
-    get: ["GET /projects/{project_id}"],
-    getCard: ["GET /projects/columns/cards/{card_id}"],
-    getColumn: ["GET /projects/columns/{column_id}"],
+    addCollaborator: [
+      "PUT /projects/{project_id}/collaborators/{username}",
+      {},
+      {
+        deprecated: "octokit.rest.projects.addCollaborator() is deprecated, see https://docs.github.com/rest/projects/collaborators#add-project-collaborator"
+      }
+    ],
+    createCard: [
+      "POST /projects/columns/{column_id}/cards",
+      {},
+      {
+        deprecated: "octokit.rest.projects.createCard() is deprecated, see https://docs.github.com/rest/projects/cards#create-a-project-card"
+      }
+    ],
+    createColumn: [
+      "POST /projects/{project_id}/columns",
+      {},
+      {
+        deprecated: "octokit.rest.projects.createColumn() is deprecated, see https://docs.github.com/rest/projects/columns#create-a-project-column"
+      }
+    ],
+    createForAuthenticatedUser: [
+      "POST /user/projects",
+      {},
+      {
+        deprecated: "octokit.rest.projects.createForAuthenticatedUser() is deprecated, see https://docs.github.com/rest/projects/projects#create-a-user-project"
+      }
+    ],
+    createForOrg: [
+      "POST /orgs/{org}/projects",
+      {},
+      {
+        deprecated: "octokit.rest.projects.createForOrg() is deprecated, see https://docs.github.com/rest/projects/projects#create-an-organization-project"
+      }
+    ],
+    createForRepo: [
+      "POST /repos/{owner}/{repo}/projects",
+      {},
+      {
+        deprecated: "octokit.rest.projects.createForRepo() is deprecated, see https://docs.github.com/rest/projects/projects#create-a-repository-project"
+      }
+    ],
+    delete: [
+      "DELETE /projects/{project_id}",
+      {},
+      {
+        deprecated: "octokit.rest.projects.delete() is deprecated, see https://docs.github.com/rest/projects/projects#delete-a-project"
+      }
+    ],
+    deleteCard: [
+      "DELETE /projects/columns/cards/{card_id}",
+      {},
+      {
+        deprecated: "octokit.rest.projects.deleteCard() is deprecated, see https://docs.github.com/rest/projects/cards#delete-a-project-card"
+      }
+    ],
+    deleteColumn: [
+      "DELETE /projects/columns/{column_id}",
+      {},
+      {
+        deprecated: "octokit.rest.projects.deleteColumn() is deprecated, see https://docs.github.com/rest/projects/columns#delete-a-project-column"
+      }
+    ],
+    get: [
+      "GET /projects/{project_id}",
+      {},
+      {
+        deprecated: "octokit.rest.projects.get() is deprecated, see https://docs.github.com/rest/projects/projects#get-a-project"
+      }
+    ],
+    getCard: [
+      "GET /projects/columns/cards/{card_id}",
+      {},
+      {
+        deprecated: "octokit.rest.projects.getCard() is deprecated, see https://docs.github.com/rest/projects/cards#get-a-project-card"
+      }
+    ],
+    getColumn: [
+      "GET /projects/columns/{column_id}",
+      {},
+      {
+        deprecated: "octokit.rest.projects.getColumn() is deprecated, see https://docs.github.com/rest/projects/columns#get-a-project-column"
+      }
+    ],
     getPermissionForUser: [
-      "GET /projects/{project_id}/collaborators/{username}/permission"
+      "GET /projects/{project_id}/collaborators/{username}/permission",
+      {},
+      {
+        deprecated: "octokit.rest.projects.getPermissionForUser() is deprecated, see https://docs.github.com/rest/projects/collaborators#get-project-permission-for-a-user"
+      }
     ],
-    listCards: ["GET /projects/columns/{column_id}/cards"],
-    listCollaborators: ["GET /projects/{project_id}/collaborators"],
-    listColumns: ["GET /projects/{project_id}/columns"],
-    listForOrg: ["GET /orgs/{org}/projects"],
-    listForRepo: ["GET /repos/{owner}/{repo}/projects"],
-    listForUser: ["GET /users/{username}/projects"],
-    moveCard: ["POST /projects/columns/cards/{card_id}/moves"],
-    moveColumn: ["POST /projects/columns/{column_id}/moves"],
+    listCards: [
+      "GET /projects/columns/{column_id}/cards",
+      {},
+      {
+        deprecated: "octokit.rest.projects.listCards() is deprecated, see https://docs.github.com/rest/projects/cards#list-project-cards"
+      }
+    ],
+    listCollaborators: [
+      "GET /projects/{project_id}/collaborators",
+      {},
+      {
+        deprecated: "octokit.rest.projects.listCollaborators() is deprecated, see https://docs.github.com/rest/projects/collaborators#list-project-collaborators"
+      }
+    ],
+    listColumns: [
+      "GET /projects/{project_id}/columns",
+      {},
+      {
+        deprecated: "octokit.rest.projects.listColumns() is deprecated, see https://docs.github.com/rest/projects/columns#list-project-columns"
+      }
+    ],
+    listForOrg: [
+      "GET /orgs/{org}/projects",
+      {},
+      {
+        deprecated: "octokit.rest.projects.listForOrg() is deprecated, see https://docs.github.com/rest/projects/projects#list-organization-projects"
+      }
+    ],
+    listForRepo: [
+      "GET /repos/{owner}/{repo}/projects",
+      {},
+      {
+        deprecated: "octokit.rest.projects.listForRepo() is deprecated, see https://docs.github.com/rest/projects/projects#list-repository-projects"
+      }
+    ],
+    listForUser: [
+      "GET /users/{username}/projects",
+      {},
+      {
+        deprecated: "octokit.rest.projects.listForUser() is deprecated, see https://docs.github.com/rest/projects/projects#list-user-projects"
+      }
+    ],
+    moveCard: [
+      "POST /projects/columns/cards/{card_id}/moves",
+      {},
+      {
+        deprecated: "octokit.rest.projects.moveCard() is deprecated, see https://docs.github.com/rest/projects/cards#move-a-project-card"
+      }
+    ],
+    moveColumn: [
+      "POST /projects/columns/{column_id}/moves",
+      {},
+      {
+        deprecated: "octokit.rest.projects.moveColumn() is deprecated, see https://docs.github.com/rest/projects/columns#move-a-project-column"
+      }
+    ],
     removeCollaborator: [
-      "DELETE /projects/{project_id}/collaborators/{username}"
+      "DELETE /projects/{project_id}/collaborators/{username}",
+      {},
+      {
+        deprecated: "octokit.rest.projects.removeCollaborator() is deprecated, see https://docs.github.com/rest/projects/collaborators#remove-user-as-a-collaborator"
+      }
     ],
-    update: ["PATCH /projects/{project_id}"],
-    updateCard: ["PATCH /projects/columns/cards/{card_id}"],
-    updateColumn: ["PATCH /projects/columns/{column_id}"]
+    update: [
+      "PATCH /projects/{project_id}",
+      {},
+      {
+        deprecated: "octokit.rest.projects.update() is deprecated, see https://docs.github.com/rest/projects/projects#update-a-project"
+      }
+    ],
+    updateCard: [
+      "PATCH /projects/columns/cards/{card_id}",
+      {},
+      {
+        deprecated: "octokit.rest.projects.updateCard() is deprecated, see https://docs.github.com/rest/projects/cards#update-an-existing-project-card"
+      }
+    ],
+    updateColumn: [
+      "PATCH /projects/columns/{column_id}",
+      {},
+      {
+        deprecated: "octokit.rest.projects.updateColumn() is deprecated, see https://docs.github.com/rest/projects/columns#update-an-existing-project-column"
+      }
+    ]
   },
   pulls: {
     checkIfMerged: ["GET /repos/{owner}/{repo}/pulls/{pull_number}/merge"],
@@ -80559,6 +85402,7 @@ const Endpoints = {
     compareCommitsWithBasehead: [
       "GET /repos/{owner}/{repo}/compare/{basehead}"
     ],
+    createAttestation: ["POST /repos/{owner}/{repo}/attestations"],
     createAutolink: ["POST /repos/{owner}/{repo}/autolinks"],
     createCommitComment: [
       "POST /repos/{owner}/{repo}/commits/{commit_sha}/comments"
@@ -80594,7 +85438,6 @@ const Endpoints = {
     createPagesSite: ["POST /repos/{owner}/{repo}/pages"],
     createRelease: ["POST /repos/{owner}/{repo}/releases"],
     createRepoRuleset: ["POST /repos/{owner}/{repo}/rulesets"],
-    createTagProtection: ["POST /repos/{owner}/{repo}/tags/protection"],
     createUsingTemplate: [
       "POST /repos/{template_owner}/{template_repo}/generate"
     ],
@@ -80646,9 +85489,6 @@ const Endpoints = {
       "DELETE /repos/{owner}/{repo}/releases/assets/{asset_id}"
     ],
     deleteRepoRuleset: ["DELETE /repos/{owner}/{repo}/rulesets/{ruleset_id}"],
-    deleteTagProtection: [
-      "DELETE /repos/{owner}/{repo}/tags/protection/{tag_protection_id}"
-    ],
     deleteWebhook: ["DELETE /repos/{owner}/{repo}/hooks/{hook_id}"],
     disableAutomatedSecurityFixes: [
       "DELETE /repos/{owner}/{repo}/automated-security-fixes"
@@ -80762,6 +85602,12 @@ const Endpoints = {
     ],
     getRepoRuleSuites: ["GET /repos/{owner}/{repo}/rulesets/rule-suites"],
     getRepoRuleset: ["GET /repos/{owner}/{repo}/rulesets/{ruleset_id}"],
+    getRepoRulesetHistory: [
+      "GET /repos/{owner}/{repo}/rulesets/{ruleset_id}/history"
+    ],
+    getRepoRulesetVersion: [
+      "GET /repos/{owner}/{repo}/rulesets/{ruleset_id}/history/{version_id}"
+    ],
     getRepoRulesets: ["GET /repos/{owner}/{repo}/rulesets"],
     getStatusChecksProtection: [
       "GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks"
@@ -80783,6 +85629,9 @@ const Endpoints = {
       "GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}"
     ],
     listActivities: ["GET /repos/{owner}/{repo}/activity"],
+    listAttestations: [
+      "GET /repos/{owner}/{repo}/attestations/{subject_digest}"
+    ],
     listAutolinks: ["GET /repos/{owner}/{repo}/autolinks"],
     listBranches: ["GET /repos/{owner}/{repo}/branches"],
     listBranchesForHeadCommit: [
@@ -80825,7 +85674,6 @@ const Endpoints = {
       "GET /repos/{owner}/{repo}/releases/{release_id}/assets"
     ],
     listReleases: ["GET /repos/{owner}/{repo}/releases"],
-    listTagProtection: ["GET /repos/{owner}/{repo}/tags/protection"],
     listTags: ["GET /repos/{owner}/{repo}/tags"],
     listTeams: ["GET /repos/{owner}/{repo}/teams"],
     listWebhookDeliveries: [
@@ -80933,16 +85781,26 @@ const Endpoints = {
   search: {
     code: ["GET /search/code"],
     commits: ["GET /search/commits"],
-    issuesAndPullRequests: ["GET /search/issues"],
+    issuesAndPullRequests: [
+      "GET /search/issues",
+      {},
+      {
+        deprecated: "octokit.rest.search.issuesAndPullRequests() is deprecated, see https://docs.github.com/rest/search/search#search-issues-and-pull-requests"
+      }
+    ],
     labels: ["GET /search/labels"],
     repos: ["GET /search/repositories"],
     topics: ["GET /search/topics"],
     users: ["GET /search/users"]
   },
   secretScanning: {
+    createPushProtectionBypass: [
+      "POST /repos/{owner}/{repo}/secret-scanning/push-protection-bypasses"
+    ],
     getAlert: [
       "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}"
     ],
+    getScanHistory: ["GET /repos/{owner}/{repo}/secret-scanning/scan-history"],
     listAlertsForEnterprise: [
       "GET /enterprises/{enterprise}/secret-scanning/alerts"
     ],
@@ -80984,13 +85842,35 @@ const Endpoints = {
       "PUT /orgs/{org}/teams/{team_slug}/memberships/{username}"
     ],
     addOrUpdateProjectPermissionsInOrg: [
-      "PUT /orgs/{org}/teams/{team_slug}/projects/{project_id}"
+      "PUT /orgs/{org}/teams/{team_slug}/projects/{project_id}",
+      {},
+      {
+        deprecated: "octokit.rest.teams.addOrUpdateProjectPermissionsInOrg() is deprecated, see https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions"
+      }
+    ],
+    addOrUpdateProjectPermissionsLegacy: [
+      "PUT /teams/{team_id}/projects/{project_id}",
+      {},
+      {
+        deprecated: "octokit.rest.teams.addOrUpdateProjectPermissionsLegacy() is deprecated, see https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions-legacy"
+      }
     ],
     addOrUpdateRepoPermissionsInOrg: [
       "PUT /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}"
     ],
     checkPermissionsForProjectInOrg: [
-      "GET /orgs/{org}/teams/{team_slug}/projects/{project_id}"
+      "GET /orgs/{org}/teams/{team_slug}/projects/{project_id}",
+      {},
+      {
+        deprecated: "octokit.rest.teams.checkPermissionsForProjectInOrg() is deprecated, see https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project"
+      }
+    ],
+    checkPermissionsForProjectLegacy: [
+      "GET /teams/{team_id}/projects/{project_id}",
+      {},
+      {
+        deprecated: "octokit.rest.teams.checkPermissionsForProjectLegacy() is deprecated, see https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project-legacy"
+      }
     ],
     checkPermissionsForRepoInOrg: [
       "GET /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}"
@@ -81028,13 +85908,37 @@ const Endpoints = {
     listPendingInvitationsInOrg: [
       "GET /orgs/{org}/teams/{team_slug}/invitations"
     ],
-    listProjectsInOrg: ["GET /orgs/{org}/teams/{team_slug}/projects"],
+    listProjectsInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/projects",
+      {},
+      {
+        deprecated: "octokit.rest.teams.listProjectsInOrg() is deprecated, see https://docs.github.com/rest/teams/teams#list-team-projects"
+      }
+    ],
+    listProjectsLegacy: [
+      "GET /teams/{team_id}/projects",
+      {},
+      {
+        deprecated: "octokit.rest.teams.listProjectsLegacy() is deprecated, see https://docs.github.com/rest/teams/teams#list-team-projects-legacy"
+      }
+    ],
     listReposInOrg: ["GET /orgs/{org}/teams/{team_slug}/repos"],
     removeMembershipForUserInOrg: [
       "DELETE /orgs/{org}/teams/{team_slug}/memberships/{username}"
     ],
     removeProjectInOrg: [
-      "DELETE /orgs/{org}/teams/{team_slug}/projects/{project_id}"
+      "DELETE /orgs/{org}/teams/{team_slug}/projects/{project_id}",
+      {},
+      {
+        deprecated: "octokit.rest.teams.removeProjectInOrg() is deprecated, see https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team"
+      }
+    ],
+    removeProjectLegacy: [
+      "DELETE /teams/{team_id}/projects/{project_id}",
+      {},
+      {
+        deprecated: "octokit.rest.teams.removeProjectLegacy() is deprecated, see https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team-legacy"
+      }
     ],
     removeRepoInOrg: [
       "DELETE /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}"
@@ -81096,6 +86000,7 @@ const Endpoints = {
     ],
     follow: ["PUT /user/following/{username}"],
     getAuthenticated: ["GET /user"],
+    getById: ["GET /user/{account_id}"],
     getByUsername: ["GET /users/{username}"],
     getContextForUser: ["GET /users/{username}/hovercard"],
     getGpgKeyForAuthenticated: [
@@ -81114,6 +86019,7 @@ const Endpoints = {
       "GET /user/ssh_signing_keys/{ssh_signing_key_id}"
     ],
     list: ["GET /users"],
+    listAttestations: ["GET /users/{username}/attestations/{subject_digest}"],
     listBlockedByAuthenticated: [
       "GET /user/blocks",
       {},
@@ -81324,7 +86230,7 @@ legacyRestEndpointMethods.VERSION = plugin_rest_endpoint_methods_dist_src_versio
 //# sourceMappingURL=index.js.map
 
 ;// CONCATENATED MODULE: ./node_modules/@octokit/rest/dist-src/version.js
-const rest_dist_src_version_VERSION = "21.0.2";
+const rest_dist_src_version_VERSION = "21.1.1";
 
 
 ;// CONCATENATED MODULE: ./node_modules/@octokit/rest/dist-src/index.js
@@ -81340,6 +86246,14 @@ const dist_src_Octokit = Octokit.plugin(requestLog, legacyRestEndpointMethods, p
 );
 
 
+
+/***/ }),
+
+/***/ 4012:
+/***/ ((module) => {
+
+"use strict";
+module.exports = /*#__PURE__*/JSON.parse('{"name":"@actions/cache","version":"4.0.3","preview":true,"description":"Actions cache lib","keywords":["github","actions","cache"],"homepage":"https://github.com/actions/toolkit/tree/main/packages/cache","license":"MIT","main":"lib/cache.js","types":"lib/cache.d.ts","directories":{"lib":"lib","test":"__tests__"},"files":["lib","!.DS_Store"],"publishConfig":{"access":"public"},"repository":{"type":"git","url":"git+https://github.com/actions/toolkit.git","directory":"packages/cache"},"scripts":{"audit-moderate":"npm install && npm audit --json --audit-level=moderate > audit.json","test":"echo \\"Error: run tests from root\\" && exit 1","tsc":"tsc"},"bugs":{"url":"https://github.com/actions/toolkit/issues"},"dependencies":{"@actions/core":"^1.11.1","@actions/exec":"^1.0.1","@actions/glob":"^0.1.0","@actions/http-client":"^2.1.1","@actions/io":"^1.0.1","@azure/abort-controller":"^1.1.0","@azure/ms-rest-js":"^2.6.0","@azure/storage-blob":"^12.13.0","@protobuf-ts/plugin":"^2.9.4","semver":"^6.3.1"},"devDependencies":{"@types/node":"^22.13.9","@types/semver":"^6.0.0","typescript":"^5.2.2"}}');
 
 /***/ })
 

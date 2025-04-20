@@ -582,7 +582,7 @@ export function parse_version_string(
       version = new Version(version_str);
     }
     return { version: version, type: version_type };
-  } catch (e) {
+  } catch {
     return { version: version_request, type: ReleaseType.Commit };
   }
 }
