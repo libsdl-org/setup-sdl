@@ -65,9 +65,10 @@ find_package(SDL3 REQUIRED CONFIG)
 If CMake is still not able to find SDL, the minimum required CMake version of your project is probably less than 3.12.
 Since this version, CMake will also look for packages using environment variables as hints (see [CMP0074](https://cmake.org/cmake/help/latest/policy/CMP0074.html)).
 
-When bumping the minimum required CMake version is not desirable, here are 2 alternative methods (pick one!):
+When bumping the minimum required CMake version is not desirable, here are 3 alternative methods (pick one!):
 - Add `-DCMAKE_PREFIX_PATH=${{ steps.sdl.outputs.prefix }}` to the CMake configure command (or add SDL's prefix to an already-existing `-DCMAKE_PREFIX_PATH=` argument)
 - Add `-DCMAKE_POLICY_DEFAULT_CMP0074=NEW` to the CMake configure command (this only works when the actual CMake version is >= 3.12).
+- Append `...3.12` to the minimum CMake version - this enables the new behaviour for policies introduced in CMake 3.12 or earlier while preserving support for older versions.
 
 ### `install-linux-dependencies` does things on non-Linux GitHub runners
 
