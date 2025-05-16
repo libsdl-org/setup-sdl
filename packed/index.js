@@ -1810,7 +1810,7 @@ exports.project_descriptions = (_a = {},
     },
     _a[Project.SDL2_compat] = {
         option_name: "version-sdl2-compat",
-        cmake_var_out_prefix: "SDL2",
+        cmake_var_out_prefix: "SDL",
         cmake_var_out_suffix: "_ROOT",
         deps: [Project.SDL],
         major_define: "SDL_MAJOR_VERSION",
