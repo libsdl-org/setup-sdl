@@ -75,7 +75,9 @@ class AptGetPackageManager extends PackageManager {
   }
 
   install(packages: string[]) {
-    this.maybe_sudo_execute(`apt-get install -y ${packages.join(" ")}`);
+    this.maybe_sudo_execute(
+      `apt-get install --no-install-recommends -y ${packages.join(" ")}`,
+    );
   }
 }
 
