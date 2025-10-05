@@ -112,6 +112,7 @@ class ApkPackageManager extends PackageManager {
 class BrewPackageManager extends PackageManager {
   constructor(executor: Executor) {
     super({ executor: executor, type: PackageManagerType.Apk });
+    this.sudo = false;
   }
 
   update() {

@@ -393,31 +393,40 @@ function parse_package_manager(args: {
 }
 
 async function install_dependencies(args: {
-  project: Project;
-  package_manager_type: pm.PackageManagerType;
-  packages: pm.Packages;
+  package_manager_type: pm.PackageManagerType | undefined;
+  packages: pm.Packages[];
   executor: Executor;
 }) {
-  const package_manager = pm.create_package_manager({
-    type: args.package_manager_type,
-    executor: args.executor,
-  });
-  const pm_packages = args.packages[args.package_manager_type];
-  if (pm_packages && !package_manager) {
+  if (!args.package_manager_type) {
     core.info(
       `Don't know how to install packages the for current platform (${args.package_manager_type}). Please create a pr.`,
     );
     return;
   }
-  if (!pm_packages) {
+  const package_manager = pm.create_package_manager({
+    type: args.package_manager_type,
+    executor: args.executor,
+  });
+  const required_packages: string[] = [];
+  const optional_packages: string[] = [];
+  for (const packages of args.packages) {
+    const pm_list = packages[args.package_manager_type];
+    if (pm_list) {
+      required_packages.push(...pm_list.required);
+      optional_packages.push(...pm_list.optional);
+    }
+  }
+  if (required_packages.length == 0 && optional_packages.length == 0) {
     return;
   }
   await core.group(
-    `Installing ${args.project} dependencies using ${args.package_manager_type}`,
+    `Installing dependencies using ${args.package_manager_type}`,
     async () => {
       package_manager.update();
-      package_manager.install(pm_packages.required);
-      pm_packages.optional.forEach((optional_package) => {
+      if (required_packages.length != 0) {
+        package_manager.install(required_packages);
+      }
+      optional_packages.forEach((optional_package) => {
         try {
           package_manager.install([optional_package]);
         } catch {
@@ -436,6 +445,13 @@ import {
   VersionExtractor,
   Version,
 } from "./version";
+
+interface ProjectBuildInformation {
+  source_dir: string;
+  build_dir: string;
+  cmake_configure_args: string[];
+  cache_key: string;
+}
 
 async function run() {
   core.debug("hello");
@@ -567,7 +583,11 @@ async function run() {
 
   const project_hashes: { [key in Project]?: string } = {};
   const package_dirs: { [key in Project]?: string } = {};
-  const project_versions: { [key in Project]?: Version } = {};
+
+  const packages_to_install: pm.Packages[] = [];
+  const project_build_informations: {
+    [key in Project]?: ProjectBuildInformation;
+  } = {};
 
   for (const project of build_order) {
     const project_description = project_descriptions[project];
@@ -690,12 +710,7 @@ async function run() {
     // Always install linux dependencies (SDL_ttf links to libfreetype)
     const project_packages = project_description.packages;
     if (project_packages && PACKAGE_MANAGER_TYPE) {
-      await install_dependencies({
-        project: project,
-        executor: EXECUTOR,
-        package_manager_type: PACKAGE_MANAGER_TYPE,
-        packages: project_packages,
-      });
+      packages_to_install.push(project_packages);
     }
 
     // if not in cache, fetch sources + build + install + store
@@ -731,20 +746,47 @@ async function run() {
         cmake_configure_args.push("-G", `"${CMAKE_GENERATOR}"`);
       }
 
-      await cmake_configure_build({
-        project: project,
+      project_build_informations[project] = {
         source_dir: source_dir,
         build_dir: build_dir,
+        cmake_configure_args: cmake_configure_args,
+        cache_key: cache_key,
+      };
+    }
+  }
+
+  await install_dependencies({
+    executor: EXECUTOR,
+    package_manager_type: PACKAGE_MANAGER_TYPE,
+    packages: packages_to_install,
+  });
+
+  const project_versions: { [key in Project]?: Version } = {};
+  const dep_cmake_arguments: string[] = [];
+
+  for (const project of build_order) {
+    const project_description = project_descriptions[project];
+    const project_build_info = project_build_informations[project];
+    const package_dir = package_dirs[project] as string;
+    if (project_build_info) {
+      const cmake_configure_args =
+        project_build_info.cmake_configure_args.slice();
+      cmake_configure_args.push(...dep_cmake_arguments);
+      await cmake_configure_build({
+        project: project,
+        source_dir: project_build_info.source_dir,
+        build_dir: project_build_info.build_dir,
         package_dir: package_dir,
         build_type: CMAKE_BUILD_TYPE,
         cmake_configure_args: cmake_configure_args,
         executor: EXECUTOR,
       });
 
+      const cache_paths = [package_dir];
       await core.group(`Storing ${project} in the cache`, async () => {
         core.info(`Caching ${cache_paths}.`);
         // Pass a copy of cache_paths since cache.saveCache modifies/modified its arguments
-        await cache.saveCache(cache_paths.slice(), cache_key);
+        await cache.saveCache([package_dir], project_build_info.cache_key);
       });
     }
 
@@ -758,6 +800,7 @@ async function run() {
     const infix = project_version.major == 1 ? "" : `${project_version.major}`;
     const cmake_export_name = `${project_description.cmake_var_out_prefix}${infix}${project_description.cmake_var_out_suffix}`;
     core.exportVariable(cmake_export_name, package_dir);
+    dep_cmake_arguments.push(`-D{cmake_export_name}={package_dir}`);
   }
 
   if (core.getBooleanInput("add-to-environment")) {
