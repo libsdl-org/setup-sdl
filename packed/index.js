@@ -737,7 +737,7 @@ function run() {
                                     }
                                     CMAKE_GENERATOR = core.getInput("cmake-generator");
                                     if (CMAKE_GENERATOR && CMAKE_GENERATOR.length > 0) {
-                                        cmake_configure_args.push("-G", "\"".concat(CMAKE_GENERATOR, "\""));
+                                        cmake_configure_args.push("-G", "".concat(CMAKE_GENERATOR));
                                     }
                                     project_build_informations[project] = {
                                         source_dir: source_dir,
