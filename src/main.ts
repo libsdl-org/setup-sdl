@@ -755,11 +755,13 @@ async function run() {
     }
   }
 
-  await install_dependencies({
-    executor: EXECUTOR,
-    package_manager_type: PACKAGE_MANAGER_TYPE,
-    packages: packages_to_install,
-  });
+  if (packages_to_install.length > 0 ) {
+    await install_dependencies({
+      executor: EXECUTOR,
+      package_manager_type: PACKAGE_MANAGER_TYPE,
+      packages: packages_to_install,
+    });
+  }
 
   const project_versions: { [key in Project]?: Version } = {};
   const dep_cmake_arguments: string[] = [];

@@ -762,13 +762,17 @@ function run() {
                 case 3:
                     _a++;
                     return [3 /*break*/, 1];
-                case 4: return [4 /*yield*/, install_dependencies({
-                        executor: EXECUTOR,
-                        package_manager_type: PACKAGE_MANAGER_TYPE,
-                        packages: packages_to_install,
-                    })];
+                case 4:
+                    if (!(packages_to_install.length > 0)) return [3 /*break*/, 6];
+                    return [4 /*yield*/, install_dependencies({
+                            executor: EXECUTOR,
+                            package_manager_type: PACKAGE_MANAGER_TYPE,
+                            packages: packages_to_install,
+                        })];
                 case 5:
                     _c.sent();
+                    _c.label = 6;
+                case 6:
                     project_versions = {};
                     dep_cmake_arguments = [];
                     _loop_2 = function (project) {
@@ -825,18 +829,18 @@ function run() {
                         });
                     };
                     _b = 0, build_order_2 = build_order;
-                    _c.label = 6;
-                case 6:
-                    if (!(_b < build_order_2.length)) return [3 /*break*/, 9];
+                    _c.label = 7;
+                case 7:
+                    if (!(_b < build_order_2.length)) return [3 /*break*/, 10];
                     project = build_order_2[_b];
                     return [5 /*yield**/, _loop_2(project)];
-                case 7:
-                    _c.sent();
-                    _c.label = 8;
                 case 8:
-                    _b++;
-                    return [3 /*break*/, 6];
+                    _c.sent();
+                    _c.label = 9;
                 case 9:
+                    _b++;
+                    return [3 /*break*/, 7];
+                case 10:
                     if (core.getBooleanInput("add-to-environment")) {
                         (0, platform_1.export_environment_variables)(SDL_BUILD_PLATFORM, Object.values(package_dirs));
                     }
