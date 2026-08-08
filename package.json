@@ -2,14 +2,14 @@
   "name": "setup-sdl",
   "description": "GitHub actin to setup SDL",
   "license": "MIT",
-  "homepage": "https://github.com/madebr/setup-sdl",
+  "homepage": "https://github.com/libsdl-org/setup-sdl",
   "bugs": {
-    "url": "https://github.com/madebr/setup-sdl/issues"
+    "url": "https://github.com/libsdl-org/setup-sdl/issues"
   },
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/madebr/setup-sdl.git"
+    "url": "https://github.com/libsdl-org/setup-sdl.git"
   },
   "directories": {
     "test": "tests"
