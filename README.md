@@ -18,8 +18,8 @@ jobs:
         id: sdl
         with:
           install-linux-dependencies: true
-          version: 2-latest
-          version-sdl-image: 2-latest
+          version: 3-latest
+          version-sdl-image: 3-latest
           
       - name: 'Configure and build your project'
         run: |
